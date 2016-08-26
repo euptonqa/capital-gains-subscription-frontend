@@ -19,8 +19,8 @@ private object AppDependencies {
   private val frontendBootstrapVersion = "6.7.0"
   private val govukTemplateVersion = "4.0.0"
   private val playUiVersion = "4.16.0"
-  private val playPartialsVersion = "4.5.0"
-  private val playAuthorisedFrontendVersion = "5.5.0"
+  private val playPartialsVersion = "4.6.0"
+  private val playAuthorisedFrontendVersion = "5.6.0"
   private val playConfigVersion = "2.1.0"
   private val hmrcTestVersion = "1.8.0"
   private val scalaTestVersion = "2.2.6"
@@ -49,7 +49,7 @@ private object AppDependencies {
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatest" %% "scalatest" % scalaTestVersion % scope,
         "org.pegdown" % "pegdown" % pegdownVersion % scope,
-        "org.jsoup" % "jsoup" % "1.8.1" % scope,
+        "org.jsoup" % "jsoup" % "1.8.3" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
       )
     }.test
