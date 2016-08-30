@@ -1,8 +1,30 @@
-# capital-gains-subscription-frontend
+# Frontend for the Capital Gains Tax Subscription service
 
-[![Build Status](https://travis-ci.org/hmrc/capital-gains-subscription-frontend.svg)](https://travis-ci.org/hmrc/capital-gains-subscription-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/capital-gains-subscription-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/capital-gains-subscription-frontend/_latestVersion)
+[![Apache-2.0 license](http://img.shields.io/badge/license-Apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![Build Status](https://travis-ci.org/hmrc/capital-gains-subscription-frontend.svg)](https://travis-ci.org/hmrc/capital-gains-subscription-frontend) [ ![Download](https://api.bintray.com/packages/hmrc/releases/capital-gains-subscription-frontend/images/download.svg) ](https://bintray.com/hmrc/releases/capital-gains-subscription-frontend/_latestVersion)
 
-This is a placeholder README.md for a new repository
+### Summary
+
+This service provides end users with a mechanism for subscribing to the Capital Gains Tax service
+
+### Run the application
+
+To run the application execute
+
+```
+sbt 'run 9771' 
+```
+
+### Test the application
+
+To test the application execute
+
+```
+sbt test
+```
+
+### Requirements
+
+This service is written in [Scala](http://www.scala-lang.org/) and [Play](http://playframework.com/), so needs at least a [JRE] to run.
 
 ### License
 
