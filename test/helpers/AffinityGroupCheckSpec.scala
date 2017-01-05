@@ -31,7 +31,7 @@ class AffinityGroupCheckSpec extends UnitSpec{
       await(AffinityGroupCheck.affinityGroupCheck(Agent)) shouldBe false
     }
 
-    "return true when supplied with an organisation user" in {
+    "return false when supplied with an organisation user" in {
       await(AffinityGroupCheck.affinityGroupCheck(Organisation)) shouldBe false
     }
   }
