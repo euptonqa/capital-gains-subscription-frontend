@@ -19,16 +19,14 @@ package helpers
 import uk.gov.hmrc.play.test.UnitSpec
 import builders.TestUserBuilder._
 
-class StrongCredentialCheckSpec extends UnitSpec {
+class NINOCheckSpec extends UnitSpec {
 
-  "Calling .checkCredential" should {
-
-    "return true with the credential strength Strong" in {
-      await(StrongCredentialCheck.checkCredential(strongUserAuthContext)) shouldBe true
+  "Calling .checkNINO" should {
+    "when called with a user with no NINO" in {
+      await(NINOCheck.checkNINO(strongUserAuthContext)) shouldBe false
     }
-
-    "return false with the credential strength Weak" in {
-      await(StrongCredentialCheck.checkCredential(weakUserAuthContext)) shouldBe false
+    "when called with a user with a NINO" in {
+      await(NINOCheck.checkNINO(userWithNINO)) shouldBe true
     }
   }
 }

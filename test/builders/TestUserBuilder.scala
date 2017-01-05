@@ -16,8 +16,9 @@
 
 package builders
 
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, Authority, ConfidenceLevel, CredentialStrength}
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, Authority, ConfidenceLevel, CredentialStrength, PayeAccount}
 
 object TestUserBuilder {
 
@@ -31,5 +32,10 @@ object TestUserBuilder {
 
   val noCredUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.None, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
+  }
+
+  val userWithNINO: AuthContext = {
+    AuthContext.apply(Authority("testUserId", Accounts(paye = Some(PayeAccount("Some link", Nino("testNINO")))), None, None,
+      CredentialStrength.None, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
   }
 }
