@@ -18,14 +18,18 @@ package helpers
 
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.test.UnitSpec
+import builders.TestUserBuilder._
 
-class StrongCredentialCheck extends UnitSpec {
+class StrongCredentialCheckSpec extends UnitSpec {
 
   "Calling .checkCredential" should {
 
-    "return true with the confidence level Strong" in {
-      val authContext = AuthContext()
-      StrongCredentialCheck.checkCredential()
+    "return true with the credential strength Strong" in {
+      await(StrongCredentialCheck.checkCredential(strongUserAuthContext)) shouldBe true
+    }
+
+    "return false with the credential strength Weak" in {
+      await(StrongCredentialCheck.checkCredential(weakUserAuthContext)) shouldBe false
     }
   }
 }

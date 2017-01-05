@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package builders
+package helpers
 
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, Authority, ConfidenceLevel, CredentialStrength}
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.CredentialStrength
 
-object TestUserBuilder {
+import scala.concurrent.Future
 
-  val weakUserAuthContext: AuthContext = {
-    AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
-  }
+object StrongCredentialCheck extends StrongCredentialCheck
 
-  val strongUserAuthContext: AuthContext = {
-    AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Strong, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
-  }
+trait StrongCredentialCheck {
+
+  def checkCredential(authContext: AuthContext): Future[Boolean] = Future.successful(authContext.user.credentialStrength == CredentialStrength.Strong)
+
 }
+
