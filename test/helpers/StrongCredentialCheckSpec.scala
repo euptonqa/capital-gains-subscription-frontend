@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-package controllers
+package helpers
 
-import play.api.http.Status
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.test.UnitSpec
+import builders.TestUserBuilder._
 
+class StrongCredentialCheckSpec extends UnitSpec {
 
-class HelloWorldControllerSpec extends UnitSpec with WithFakeApplication{
+  "Calling .checkCredential" should {
 
-  val fakeRequest = FakeRequest("GET", "/")
-
-
-  "GET /" should {
-    "return 200" in {
-      val result = HelloWorld.helloWorld(fakeRequest)
-      status(result) shouldBe Status.OK
+    "return true with the credential strength Strong" in {
+      await(StrongCredentialCheck.checkCredential(strongUserAuthContext)) shouldBe true
     }
 
-    "return HTML" in {
-      val result = HelloWorld.helloWorld(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+    "return false with the credential strength Weak" in {
+      await(StrongCredentialCheck.checkCredential(weakUserAuthContext)) shouldBe false
     }
-
-
   }
-
-
 }
