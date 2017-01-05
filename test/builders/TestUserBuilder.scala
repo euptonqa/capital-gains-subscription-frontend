@@ -21,7 +21,6 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, Authority, Co
 
 object TestUserBuilder {
 
-<<<<<<< HEAD
   val weakUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
   }
@@ -29,18 +28,8 @@ object TestUserBuilder {
   val strongUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Strong, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
   }
-}
-=======
-  val createNoCredUserAuthContext: AuthContext = {
+
+  val noCredUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.None, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
   }
-
-  val createWeakUserAuthContext: AuthContext = {
-    AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
-  }
-
-  val createStrongUserAuthContext: AuthContext = {
-    AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Strong, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
-  }
 }
->>>>>>> e618b19ac5ba7cbb093abd3e180f5dd36d62f323

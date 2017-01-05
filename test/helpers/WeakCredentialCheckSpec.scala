@@ -22,15 +22,15 @@ import builders.TestUserBuilder._
 class WeakCredentialCheckSpec extends UnitSpec {
   "Calling .weakCredentialCheck" should {
     "return false when supplied with an AuthContext with CredentialStrength None" in {
-      await(WeakCredentialCheck.weakCredentialCheck(createNoCredUserAuthContext)) shouldBe false
+      await(WeakCredentialCheck.weakCredentialCheck(noCredUserAuthContext)) shouldBe false
     }
 
     "return true when supplied with an AuthContext with CredentialStrength Weak" in {
-      await(WeakCredentialCheck.weakCredentialCheck(createWeakUserAuthContext)) shouldBe true
+      await(WeakCredentialCheck.weakCredentialCheck(weakUserAuthContext)) shouldBe true
     }
 
     "return true when supplied with an AuthContext with CredentialStrength Strong" in {
-      await(WeakCredentialCheck.weakCredentialCheck(createStrongUserAuthContext)) shouldBe true
+      await(WeakCredentialCheck.weakCredentialCheck(strongUserAuthContext)) shouldBe true
     }
   }
 }
