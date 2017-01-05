@@ -16,21 +16,20 @@
 
 package helpers
 
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.test.UnitSpec
 import builders.TestUserBuilder._
 
-class WeakCredentialCheckSpec extends UnitSpec {
-  "Calling .weakCredentialCheck" should {
-    "return false when supplied with an AuthContext with CredentialStrength None" in {
-      await(WeakCredentialCheck.weakCredentialCheck(noCredUserAuthContext)) shouldBe false
+class StrongCredentialCheckSpec extends UnitSpec {
+
+  "Calling .checkCredential" should {
+
+    "return true with the credential strength Strong" in {
+      await(StrongCredentialCheck.checkCredential(strongUserAuthContext)) shouldBe true
     }
 
-    "return true when supplied with an AuthContext with CredentialStrength Weak" in {
-      await(WeakCredentialCheck.weakCredentialCheck(weakUserAuthContext)) shouldBe true
-    }
-
-    "return true when supplied with an AuthContext with CredentialStrength Strong" in {
-      await(WeakCredentialCheck.weakCredentialCheck(strongUserAuthContext)) shouldBe true
+    "return false with the credential strength Weak" in {
+      await(StrongCredentialCheck.checkCredential(weakUserAuthContext)) shouldBe false
     }
   }
 }

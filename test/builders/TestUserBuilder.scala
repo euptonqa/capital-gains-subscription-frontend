@@ -21,15 +21,11 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, Authority, Co
 
 object TestUserBuilder {
 
-  val createNoCredUserAuthContext: AuthContext = {
-    AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.None, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
-  }
-
-  val createWeakUserAuthContext: AuthContext = {
+  val weakUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
   }
 
-  val createStrongUserAuthContext: AuthContext = {
+  val strongUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Strong, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
   }
 
@@ -46,5 +42,8 @@ object TestUserBuilder {
   val create500ConfidenceUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Strong,
       ConfidenceLevel.L500, None, Some("testEnrolmentUri"), None, ""))
+  }
+  val noCredUserAuthContext: AuthContext = {
+    AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.None, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
   }
 }
