@@ -25,6 +25,9 @@ trait AppConfig {
   val analyticsHost: String
   val reportAProblemPartialUrl: String
   val reportAProblemNonJSUrl: String
+  val identityVerification: Boolean
+  val ivUpliftUrl: String
+
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
@@ -39,4 +42,6 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val analyticsHost = loadConfig(s"google-analytics.host")
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  override val identityVerification: Boolean = configuration.getBoolean("microservice.services.features.identityVerification").getOrElse(false)
+  override val ivUpliftUrl: String = configuration.getString(s"identity-verification-uplift.host").getOrElse("")
 }
