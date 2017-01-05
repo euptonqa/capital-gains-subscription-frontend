@@ -16,19 +16,11 @@
 
 package helpers
 
-import uk.gov.hmrc.play.test.UnitSpec
-import builders.TestUserBuilder._
+import uk.gov.hmrc.play.frontend.auth.AuthContext
+import scala.concurrent.Future
 
-class StrongCredentialCheckSpec extends UnitSpec {
+object NINOCheck extends NINOCheck
 
-  "Calling .checkCredential" should {
-
-    "return true with the credential strength Strong" in {
-      await(StrongCredentialCheck.checkCredential(strongUserAuthContext)) shouldBe true
-    }
-
-    "return false with the credential strength Weak" in {
-      await(StrongCredentialCheck.checkCredential(weakUserAuthContext)) shouldBe false
-    }
-  }
+trait NINOCheck {
+  def checkNINO(authContext: AuthContext): Future[Boolean] = Future.successful(authContext.principal.accounts.paye.isDefined)
 }

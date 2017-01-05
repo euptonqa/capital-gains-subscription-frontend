@@ -16,10 +16,17 @@
 
 package builders
 
+import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, Authority, ConfidenceLevel, CredentialStrength}
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, Authority, ConfidenceLevel, CredentialStrength, PayeAccount}
+
+import scala.util.Random
 
 object TestUserBuilder {
+
+  def createRandomNino: String = new Generator(new Random()).nextNino.nino.replaceFirst("MA", "AA")
+
+  val testNINO = createRandomNino
 
   val weakUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Weak, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
@@ -31,5 +38,10 @@ object TestUserBuilder {
 
   val noCredUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.None, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
+  }
+
+  val userWithNINO: AuthContext = {
+    AuthContext.apply(Authority("testUserId", Accounts(paye = Some(PayeAccount(s"/paye/$testNINO", Nino(testNINO)))), None, None,
+      CredentialStrength.None, ConfidenceLevel.L50, None, None, None, ""))
   }
 }
