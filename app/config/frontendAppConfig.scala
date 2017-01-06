@@ -27,7 +27,7 @@ trait AppConfig {
   val reportAProblemNonJSUrl: String
   val identityVerification: Boolean
   val ivUpliftUrl: String
-
+  val twoFactorUrl: String
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
@@ -44,4 +44,5 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override val identityVerification: Boolean = configuration.getBoolean("microservice.services.features.identityVerification").getOrElse(false)
   override val ivUpliftUrl: String = configuration.getString(s"identity-verification-uplift.host").getOrElse("")
+  override lazy val twoFactorUrl: String = configuration.getString(s"two-factor.host").getOrElse("")
 }
