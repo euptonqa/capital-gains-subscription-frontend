@@ -16,13 +16,31 @@
 
 package predicates
 
-import play.api.mvc.Request
-import play.mvc.BodyParser.AnyContent
-import uk.gov.hmrc.play.frontend.auth.{AuthContext, PageVisibilityPredicate, PageVisibilityResult}
+import java.net.URI
 
+import play.api.mvc.Results._
+import play.api.mvc.{Request, AnyContent}
+import uk.gov.hmrc.play.frontend.auth._
+import helpers._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class Login2FA extends PageVisibilityPredicate {
-  override def apply(authContext: AuthContext, request:Request[AnyContent]): Future[PageVisibilityResult] =
-    Future.successful(authContext.)
+class Login2FA(errorPageUri: URI) extends PageVisibilityPredicate {
+
+  private val errorPage = Future.successful(Redirect(errorPageUri.toString))
+
+  override def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
+
+    val weak = WeakCredentialCheck.weakCredentialCheck(authContext)
+    val strong = StrongCredentialCheck.checkCredential(authContext)
+
+    for {
+      weakCred <- weak
+      strongCred <- strong
+    } yield (weakCred, strongCred) match {
+      case (true, true) => PageIsVisible
+      case _ => PageBlocked(errorPage)
+    }
+  }
 }
