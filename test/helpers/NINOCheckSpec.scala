@@ -14,33 +14,19 @@
  * limitations under the License.
  */
 
-package controllers
+package helpers
 
-import play.api.http.Status
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.UnitSpec
+import builders.TestUserBuilder._
 
+class NINOCheckSpec extends UnitSpec {
 
-class HelloWorldControllerSpec extends UnitSpec with WithFakeApplication{
-
-  val fakeRequest = FakeRequest("GET", "/")
-
-
-  "GET /" should {
-    "return 200" in {
-      val result = HelloWorld.helloWorld(fakeRequest)
-      status(result) shouldBe Status.OK
+  "Calling .checkNINO" should {
+    "when called with a user with no NINO" in {
+      await(NINOCheck.checkNINO(strongUserAuthContext)) shouldBe false
     }
-
-    "return HTML" in {
-      val result = HelloWorld.helloWorld(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+    "when called with a user with a NINO" in {
+      await(NINOCheck.checkNINO(userWithNINO)) shouldBe true
     }
-
-
   }
-
-
 }
