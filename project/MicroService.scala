@@ -23,32 +23,26 @@ import play.sbt.routes.RoutesKeys.routesGenerator
 
 trait MicroService {
 
-  import uk.gov.hmrc._
-  import DefaultBuildSettings._
+  import uk.gov.hmrc.DefaultBuildSettings._
   import uk.gov.hmrc.SbtAutoBuildPlugin
   import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
   import uk.gov.hmrc.versioning.SbtGitVersioning
-
-  import TestPhases._
+  import scoverage.ScoverageKeys
 
   val appName: String
 
-  lazy val appDependencies: Seq[ModuleID] = ???
+  lazy val appDependencies: Seq[ModuleID] = Seq.empty
   lazy val plugins: Seq[Plugins] = Seq.empty
   lazy val playSettings: Seq[Setting[_]] = Seq.empty
 
-  lazy val scoverageSettings = {
-    import scoverage.ScoverageKeys
-    Seq(
-      // Semicolon-separated list of regexs matching classes to exclude
-      ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;.*AuthService.*;models\\.data\\..*;uk.gov.hmrc.BuildInfo;app.*;prod.*;config.*",
-      ScoverageKeys.coverageMinimum := 90,
-      ScoverageKeys.coverageFailOnMinimum := false,
-      ScoverageKeys.coverageHighlighting := true
-    )
-  }
+  lazy val scoverageSettings = Seq(
+    ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;.*AuthService.*;models\\.data\\..*;uk.gov.hmrc.BuildInfo;app.*;prod.*;config.*",
+    ScoverageKeys.coverageMinimum := 90,
+    ScoverageKeys.coverageFailOnMinimum := false,
+    ScoverageKeys.coverageHighlighting := true
+  )
 
-  lazy val microservice = Project(appName, file("."))
+  lazy val microservice: Project = Project(appName, file("."))
     .enablePlugins(Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins: _*)
     .settings(playSettings: _*)
     .settings(scalaSettings: _*)
@@ -67,9 +61,9 @@ trait MicroService {
       Keys.fork in IntegrationTest := false,
       unmanagedSourceDirectories in IntegrationTest <<= (baseDirectory in IntegrationTest) (base => Seq(base / "it")),
       addTestReportOption(IntegrationTest, "int-test-reports"),
-      testGrouping in IntegrationTest := oneForkedJvmPerTest((definedTests in IntegrationTest).value),
+      testGrouping in IntegrationTest := TestPhases.oneForkedJvmPerTest((definedTests in IntegrationTest).value),
       parallelExecution in IntegrationTest := false)
-    .settings(resolvers ++= Seq(Resolver.bintrayIvyRepo("hmrc", "releases"), Resolver.jcenterRepo))
+    .settings(resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo))
 }
 
 private object TestPhases {
