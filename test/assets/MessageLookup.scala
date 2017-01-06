@@ -24,8 +24,10 @@ object MessageLookup {
     val textOne = "This service only works with accounts set up for individuals."
     val textTwo = "If you want to continue as an individual, you’ll need to sign out and log back in with an individual account."
     val signOut = "sign out"
-    val textThreeAgent = ""
+    val textThreeAgent = "For more information about how to report taxable gains for your agencies client, see Self Assessment for Agents."
+    val linkTextAgent = "Self Assessment for Agents"
     val textThreeCompany = "For more information about how to report taxable gains for your company, see Corporation Tax when you sell business assets."
+    val linkTextCompany = "Corporation Tax when you sell business assets"
 
   }
 

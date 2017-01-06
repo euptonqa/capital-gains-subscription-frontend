@@ -48,33 +48,44 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
       s"Should have a second paragraph" which {
 
         s"should have the text ${messages.textTwo}" in {
-          doc.select("p").get(2).text shouldEqual messages.textOne
+          doc.select("p").get(2).text shouldEqual messages.textTwo
         }
 
         s"should have a link" which {
 
           s"has the text ${messages.signOut}" in {
-            doc.select("p a").text shouldEqual messages.signOut
+            doc.select("p").get(2).select("a").text shouldEqual messages.signOut
           }
 
-          s"has a href to The Government Gateway Login" in {
-            doc.select("p a").attr("href") shouldEqual
+          s"has a href to https://www.tax.service.gov.uk/gg/sign-in?continue=/account" in {
+            doc.select("p").get(2).select("a").attr("href") shouldEqual "https://www.tax.service.gov.uk/gg/sign-in?continue=/account"
+          }
+        }
+      }
+
+      s"Should have a third paragraph" which {
+
+        "should have the text ${messages.textThreeAgent}" in {
+          doc.select("p").get(3).text shouldEqual messages.textThreeAgent
+        }
+
+        s"should have a link" which {
+
+          s"has the text ${messages.linkTextAgent}" in {
+            doc.select("p").get(3).select("a").text shouldEqual messages.linkTextAgent
           }
 
+          s"has a href to https://www.tax.service.gov.uk/gg/sign-in?continue=/account" in {
+            doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.tax.service.gov.uk/gg/sign-in?continue=/account"
+          }
         }
 
       }
-
-      s"Should have a third paragraph with the text ${messages.textThreeAgent}" in {
-
-      }
-
     }
 
     "Have the link for agent - https://www.gov.uk/guidance/self-assessment-for-agents-online-service" in {
 
     }
-
   }
 
   "The something or other view for a company" should {

@@ -1,3 +1,7 @@
 ## Invalid Affinity Group Messages ##
 invalidAffinityGroup.title = You''ve signed in with the wrong type of account
 invalidAffinityGroup.paragraph.one = This service only works with accounts set up for individuals.
+invalidAffinityGroup.paragraph.two.first = If you want to continue as an individual, you''ll need to
+invalidAffinityGroup.paragraph.two.link = sign out
+invalidAffinityGroup.paragraph.two.last = and log back in with an individual account.
+invalidAffinityGroup.paragraph.three = a
