@@ -14,33 +14,25 @@
  * limitations under the License.
  */
 
-package controllers
+package helpers
 
-import play.api.http.Status
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.UnitSpec
+import common.Constants.AffinityGroup._
 
+class AffinityGroupCheckSpec extends UnitSpec{
 
-class HelloWorldControllerSpec extends UnitSpec with WithFakeApplication{
+  "Calling .affinityGroupCheck" should {
 
-  val fakeRequest = FakeRequest("GET", "/")
-
-
-  "GET /" should {
-    "return 200" in {
-      val result = HelloWorld.helloWorld(fakeRequest)
-      status(result) shouldBe Status.OK
+    "return true when supplied with an individual user" in {
+      await(AffinityGroupCheck.affinityGroupCheck(Individual)) shouldBe true
     }
 
-    "return HTML" in {
-      val result = HelloWorld.helloWorld(fakeRequest)
-      contentType(result) shouldBe Some("text/html")
-      charset(result) shouldBe Some("utf-8")
+    "return false when supplied with an agent user" in {
+      await(AffinityGroupCheck.affinityGroupCheck(Agent)) shouldBe false
     }
 
-
+    "return false when supplied with an organisation user" in {
+      await(AffinityGroupCheck.affinityGroupCheck(Organisation)) shouldBe false
+    }
   }
-
-
 }
