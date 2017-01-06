@@ -16,10 +16,17 @@
 
 package predicates
 
-import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import builders.TestUserBuilder._
+import helpers._
 
-class Login2FAPredicateSpec extends UnitSpec {
-  "Instantiating Login2$APredicate" when {
-    "supplied with an auth "
+class Login2FAPredicateSpec extends UnitSpec with WithFakeApplication {
+
+
+
+  "Instantiating LoginPredicate" when {
+    "supplied with an authContext with a weak credential should return a PageIsVisible result" in {
+      val predicate = new LoginPredicate("http://google.com")
+    }
   }
 }

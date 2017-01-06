@@ -26,21 +26,19 @@ import helpers._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class Login2FAPredicate(errorPageUri: URI) extends PageVisibilityPredicate {
+class LoginPredicate(errorPageUri: URI) extends PageVisibilityPredicate {
 
   private val errorPage = Future.successful(Redirect(errorPageUri.toString))
 
   override def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
 
     val weak = WeakCredentialCheck.weakCredentialCheck(authContext)
-    val strong = StrongCredentialCheck.checkCredential(authContext)
 
     for {
       weakCred <- weak
-      strongCred <- strong
-    } yield (weakCred, strongCred) match {
-      case (true, true) => PageIsVisible
-      case _ => PageBlocked(errorPage)
+    } yield weakCred match {
+      case true => PageIsVisible
+      case false => PageBlocked(errorPage)
     }
   }
 }
