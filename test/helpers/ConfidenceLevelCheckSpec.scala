@@ -35,7 +35,7 @@ class ConfidenceLevelCheckSpec extends UnitSpec {
     }
 
     "return false when supplied with an AuthContext with a ConfidenceLevel of 200 or below (in this case 50)" in {
-      await(ConfidenceLevelCheck.confidenceLevelCheck(createNoCredUserAuthContext)) shouldBe false
+      await(ConfidenceLevelCheck.confidenceLevelCheck(noCredUserAuthContext)) shouldBe false
     }
   }
 }
