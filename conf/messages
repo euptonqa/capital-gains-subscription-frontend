@@ -1,0 +1,3 @@
+## Invalid Affinity Group Messages ##
+invalidAffinityGroup.title = You''ve signed in with the wrong type of account
+invalidAffinityGroup.paragraph.one = This service only works with accounts set up for individuals.

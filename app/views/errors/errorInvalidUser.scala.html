@@ -1,0 +1,8 @@
+@()(implicit request: Request[_], messages: Messages)
+
+@views.html.main_template(title = Messages("invalidAffinityGroup.title"), bodyClasses = None) {
+
+    <h1>@Messages("invalidAffinityGroup.title")</h1>
+
+    <p>@Messages("invalidAffinityGroup.paragraph.one")</p>
+}

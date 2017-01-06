@@ -16,12 +16,18 @@
 
 package controllers
 
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
+
+import scala.concurrent.Future
 
 object IncorrectAffinityGroupController extends IncorrectAffinityGroupController
 
 trait IncorrectAffinityGroupController extends FrontendController {
 
-  val incorrectAffinityGroup = TODO
-
+  val incorrectAffinityGroup: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(views.html.errors.errorInvalidUser()))
+  }
 }

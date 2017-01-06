@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package routes
+package assets
 
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+object MessageLookup {
 
-class RoutesSpec extends UnitSpec with WithFakeApplication {
+  object InvalidAffinityGroup {
 
-  "The URL for the incorrectAffinityGroup Action" should {
-    "be equal to /capital-gains-subscription-frontend/subscribe/individual/invalid-user" in {
-      val path = controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup().url
-      path shouldEqual "/capital-gains-subscription-frontend/subscribe/individual/invalid-user"
-    }
+    val title = "You've signed in with the wrong type of account"
+    val textOne = "This service only works with accounts set up for individuals."
+    val textTwo = "If you want to continue as an individual, you’ll need to sign out and log back in with an individual account."
+    val signOut = "sign out"
+    val textThreeAgent = ""
+    val textThreeCompany = "For more information about how to report taxable gains for your company, see Corporation Tax when you sell business assets."
+
   }
+
 }

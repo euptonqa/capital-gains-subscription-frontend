@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package routes
+package assets
 
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
+import uk.gov.hmrc.play.filters.MicroserviceFilterSupport
+import uk.gov.hmrc.play.http.SessionKeys
 
-class RoutesSpec extends UnitSpec with WithFakeApplication {
+trait FakeRequestHelper extends MicroserviceFilterSupport {
+  lazy implicit val fakeRequest = FakeRequest()
+  lazy val fakeRequestWithSession = fakeRequest.withSession((SessionKeys.sessionId, ""))
 
-  "The URL for the incorrectAffinityGroup Action" should {
-    "be equal to /capital-gains-subscription-frontend/subscribe/individual/invalid-user" in {
-      val path = controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup().url
-      path shouldEqual "/capital-gains-subscription-frontend/subscribe/individual/invalid-user"
-    }
-  }
+  def fakeRequestToPOSTWithSession (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] =
+    fakeRequestWithSession.withFormUrlEncodedBody(input: _*)
 }
