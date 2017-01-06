@@ -16,17 +16,61 @@
 
 package predicates
 
+import java.net.URI
+
+import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import builders.TestUserBuilder._
+import builders.TestUserBuilder
 import helpers._
 
-class Login2FAPredicateSpec extends UnitSpec with WithFakeApplication {
+class LoginPredicateSpec extends UnitSpec with WithFakeApplication {
 
-
+  val dummyUri = new URI("http://example.com")
 
   "Instantiating LoginPredicate" when {
-    "supplied with an authContext with a weak credential should return a PageIsVisible result" in {
-      val predicate = new LoginPredicate("http://google.com")
+
+    "supplied with an authContext with a weak credential should return false for page visibility" in {
+      val predicate = new LoginPredicate(dummyUri)
+      val authContext = TestUserBuilder.weakUserAuthContext
+
+      val result = predicate(authContext, FakeRequest())
+      val pageVisibility = await(result)
+
+      pageVisibility.isVisible shouldBe true
     }
+
+    "supplied with an authContext with no credential should return false for page visibility" in {
+      val predicate = new LoginPredicate(dummyUri)
+      val authContext = TestUserBuilder.noCredUserAuthContext
+
+      val result = predicate(authContext, FakeRequest())
+      val pageVisibility = await(result)
+
+      pageVisibility.isVisible shouldBe false
+    }
+  }
+
+  "Instantiating TwoFAPredicate" when {
+
+    "supplied with an authContext with a strong credidential should return true for page visibility" in {
+      val predicate = new TwoFAPredicate(dummyUri)
+      val authContext = TestUserBuilder.strongUserAuthContext
+
+      val result = predicate(authContext, FakeRequest())
+      val pageVisibility = await(result)
+
+      pageVisibility.isVisible shouldBe true
+    }
+
+    "supplied with an authContent with a weak credidential should return false for page visibility" in {
+      val predicate = new TwoFAPredicate(dummyUri)
+      val authContext = TestUserBuilder.weakUserAuthContext
+
+      val result = predicate(authContext, FakeRequest())
+      val pageVisibility = await(result)
+
+      pageVisibility.isVisible shouldBe false
+    }
+
   }
 }
