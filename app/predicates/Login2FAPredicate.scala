@@ -26,7 +26,7 @@ import helpers._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class Login2FA(errorPageUri: URI) extends PageVisibilityPredicate {
+class Login2FAPredicate(errorPageUri: URI) extends PageVisibilityPredicate {
 
   private val errorPage = Future.successful(Redirect(errorPageUri.toString))
 
