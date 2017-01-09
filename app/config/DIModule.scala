@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package config
 
-import com.google.inject.{Inject, Singleton}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import com.google.inject.AbstractModule
 
-@Singleton
-class IncorrectAffinityGroupController @Inject()() extends FrontendController {
-
-  val incorrectAffinityGroup = TODO
-
+class DIModule extends AbstractModule {
+  protected override def configure(): Unit = {
+    bind(classOf[AppConfig]) to classOf[ApplicationConfig]
+  }
 }
