@@ -28,6 +28,6 @@ object IncorrectAffinityGroupController extends IncorrectAffinityGroupController
 trait IncorrectAffinityGroupController extends FrontendController {
 
   val incorrectAffinityGroup: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.errors.errorInvalidUser()))
+    Future.successful(Ok(views.html.errors.errorInvalidUser("company")))
   }
 }

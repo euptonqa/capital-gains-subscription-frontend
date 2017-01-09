@@ -22,12 +22,20 @@ object MessageLookup {
 
     val title = "You've signed in with the wrong type of account"
     val textOne = "This service only works with accounts set up for individuals."
-    val textTwo = "If you want to continue as an individual, you’ll need to sign out and log back in with an individual account."
+    val textTwo = "If you want to continue as an individual, you'll need to sign out and log back in with an individual account."
     val signOut = "sign out"
     val textThreeAgent = "For more information about how to report taxable gains for your agencies client, see Self Assessment for Agents."
     val linkTextAgent = "Self Assessment for Agents"
     val textThreeCompany = "For more information about how to report taxable gains for your company, see Corporation Tax when you sell business assets."
     val linkTextCompany = "Corporation Tax when you sell business assets"
+    val textThreeCharity = "For more information about how to report taxable gains for your registered charity, see Charities and tax."
+    val linkTextCharity = "Charities and tax"
+    val textThreePartnership = "For more information about how to report taxable gains for your partnership, see Partnerships and Capital Gains tax."
+    val linkTextPartnership = "Partnerships and Capital Gains tax"
+    val textThreeTrust = "For more information about how to report taxable gains for your trust, see Trusts and Capital Gains tax."
+    val linkTextTrust = "Trusts and Capital Gains tax"
+    val textThreePensionTrust = "For more information about how to report taxable gains for your pension trust, see Pension trustees: investments and tax."
+    val linkTextPensionTrust = "Pension trustees: investments and tax"
 
   }
 

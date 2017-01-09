@@ -4,4 +4,22 @@ invalidAffinityGroup.paragraph.one = This service only works with accounts set u
 invalidAffinityGroup.paragraph.two.first = If you want to continue as an individual, you''ll need to
 invalidAffinityGroup.paragraph.two.link = sign out
 invalidAffinityGroup.paragraph.two.last = and log back in with an individual account.
-invalidAffinityGroup.paragraph.three = a
+invalidAffinityGroup.paragraph.three.first = For more information about how to report taxable gains for your
+
+invalidAffinityGroup.paragraph.three.agent = agencies client, see
+invalidAffinityGroup.paragraph.three.agent.link = Self Assessment for Agents
+
+invalidAffinityGroup.paragraph.three.company = company, see
+invalidAffinityGroup.paragraph.three.company.link = Corporation Tax when you sell business assets
+
+invalidAffinityGroup.paragraph.three.charity = registered charity, see
+invalidAffinityGroup.paragraph.three.charity.link = Charities and tax
+
+invalidAffinityGroup.paragraph.three.partnership = partnership, see
+invalidAffinityGroup.paragraph.three.partnership.link = Partnerships and Capital Gains tax
+
+invalidAffinityGroup.paragraph.three.trust = trust, see
+invalidAffinityGroup.paragraph.three.trust.link = Trusts and Capital Gains tax
+
+invalidAffinityGroup.paragraph.three.pensionTrust = pension trust, see
+invalidAffinityGroup.paragraph.three.pensionTrust.link = Pension trustees: investments and tax

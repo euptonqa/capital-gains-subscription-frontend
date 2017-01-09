@@ -26,110 +26,183 @@ import play.api.Play.current
 
 class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper {
 
-  "The something or other view for an agent" should {
+  "The invalid affinity group view for an agent" should {
 
-    lazy val view = errorInvalidUser()
+    lazy val view = errorInvalidUser("agent")
     lazy val doc = Jsoup.parse(view.body)
 
-    s"Display a title of ${messages.title}" in {
+    s"display a title of ${messages.title}" in {
       doc.title shouldEqual messages.title
     }
 
-    s"Have the heading ${messages.title}" in {
+    s"have the heading ${messages.title}" in {
       doc.select("h1").text shouldEqual messages.title
     }
 
-    "Have the content" which {
+    "have the content" which {
 
       s"Should have a first paragraph with the text ${messages.textOne}" in {
         doc.select("p").get(1).text shouldEqual messages.textOne
       }
 
-      s"Should have a second paragraph" which {
+      "should have a second paragraph" which {
 
         s"should have the text ${messages.textTwo}" in {
           doc.select("p").get(2).text shouldEqual messages.textTwo
         }
 
-        s"should have a link" which {
+        "should have a link" which {
 
           s"has the text ${messages.signOut}" in {
             doc.select("p").get(2).select("a").text shouldEqual messages.signOut
           }
 
-          s"has a href to https://www.tax.service.gov.uk/gg/sign-in?continue=/account" in {
+          "has a href to https://www.tax.service.gov.uk/gg/sign-in?continue=/account" in {
             doc.select("p").get(2).select("a").attr("href") shouldEqual "https://www.tax.service.gov.uk/gg/sign-in?continue=/account"
           }
         }
       }
 
-      s"Should have a third paragraph" which {
+      "should have a third paragraph" which {
 
-        "should have the text ${messages.textThreeAgent}" in {
+        s"should have the text ${messages.textThreeAgent}" in {
           doc.select("p").get(3).text shouldEqual messages.textThreeAgent
         }
 
-        s"should have a link" which {
+        "should have a link" which {
 
           s"has the text ${messages.linkTextAgent}" in {
             doc.select("p").get(3).select("a").text shouldEqual messages.linkTextAgent
           }
 
-          s"has a href to https://www.tax.service.gov.uk/gg/sign-in?continue=/account" in {
-            doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.tax.service.gov.uk/gg/sign-in?continue=/account"
+          "has a href to https://www.gov.uk/guidance/self-assessment-for-agents-online-service" in {
+            doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/guidance/self-assessment-for-agents-online-service"
           }
         }
 
       }
-    }
-
-    "Have the link for agent - https://www.gov.uk/guidance/self-assessment-for-agents-online-service" in {
-
     }
   }
 
-  "The something or other view for a company" should {
+  "The invalid affinity group view for a company" should {
 
-    s"Display a title of ${messages.title}" in {
+    lazy val view = errorInvalidUser("company")
+    lazy val doc = Jsoup.parse(view.body)
 
-    }
+    "should have a third paragraph" which {
 
-    "Have the content" which {
-
-      s"Should have a first paragraph with the text ${messages.textOne}" in {
-
+      s"should have the text ${messages.textThreeCompany}" in {
+        doc.select("p").get(3).text shouldEqual messages.textThreeCompany
       }
 
-      s"Should have a second paragraph" which {
+      "should have a link" which {
 
-        s"should have the text ${messages.textOne}" in {
-
+        s"has the text ${messages.linkTextCompany}" in {
+          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextCompany
         }
 
-        s"should have a link" which {
-
-          s"has the text ${messages.signOut}" in {
-
-          }
-
-          s"has a href to The Government Gateway Login" in {
-
-          }
-
+        "has a href to https://www.gov.uk/tax-when-your-company-sells-assets" in {
+          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/tax-when-your-company-sells-assets"
         }
-
       }
-
-      s"Should have a third paragraph with the text ${messages.textThreeCompany}" in {
-
-      }
-
     }
-
-    "Have the link for company - https://www.gov.uk/tax-when-your-company-sells-assets" in {
-
-    }
-
   }
 
+  "The invalid affinity group view for a charity" should {
+
+    lazy val view = errorInvalidUser("charity")
+    lazy val doc = Jsoup.parse(view.body)
+
+    "should have a third paragraph" which {
+
+      s"should have the text ${messages.textThreeCharity}" in {
+        doc.select("p").get(3).text shouldEqual messages.textThreeCharity
+      }
+
+      "should have a link" which {
+
+        s"has the text ${messages.linkTextCharity}" in {
+          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextCharity
+        }
+
+        "has a href to https://www.gov.uk/charities-and-tax/tax-reliefs" in {
+          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/charities-and-tax/tax-reliefs"
+        }
+      }
+    }
+  }
+
+  "The invalid affinity group view for a partnership" should {
+
+    lazy val view = errorInvalidUser("partnership")
+    lazy val doc = Jsoup.parse(view.body)
+
+    "should have a third paragraph" which {
+
+      s"should have the text ${messages.textThreePartnership}" in {
+        doc.select("p").get(3).text shouldEqual messages.textThreePartnership
+      }
+
+      "should have a link" which {
+
+        s"has the text ${messages.linkTextPartnership}" in {
+          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextPartnership
+        }
+
+        "has a href to https://www.gov.uk/government/publications/partnerships-and-capital-gains-tax-hs288-self-assessment-helpsheet/" +
+          "hs288-partnerships-and-capital-gains-tax-2016" in {
+          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/government/publications/" +
+            "partnerships-and-capital-gains-tax-hs288-self-assessment-helpsheet/hs288-partnerships-and-capital-gains-tax-2016"
+        }
+      }
+    }
+  }
+
+  "The invalid affinity group view for a trust" should {
+
+    lazy val view = errorInvalidUser("trust")
+    lazy val doc = Jsoup.parse(view.body)
+
+    "should have a third paragraph" which {
+
+      s"should have the text ${messages.textThreeTrust}" in {
+        doc.select("p").get(3).text shouldEqual messages.textThreeTrust
+      }
+
+      "should have a link" which {
+
+        s"has the text ${messages.linkTextTrust}" in {
+          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextTrust
+        }
+
+        "has a href to https://www.gov.uk/guidance/trusts-and-capital-gains-tax" in {
+          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/guidance/trusts-and-capital-gains-tax"
+        }
+      }
+    }
+  }
+
+  "The invalid affinity group view for a pension trust" should {
+
+    lazy val view = errorInvalidUser("pensionTrust")
+    lazy val doc = Jsoup.parse(view.body)
+
+    "should have a third paragraph" which {
+
+      s"should have the text ${messages.textThreePensionTrust}" in {
+        doc.select("p").get(3).text shouldEqual messages.textThreePensionTrust
+      }
+
+      "should have a link" which {
+
+        s"has the text ${messages.linkTextPensionTrust}" in {
+          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextPensionTrust
+        }
+
+        "has a href to https://www.gov.uk/guidance/pension-trustees-investments-and-tax" in {
+          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/guidance/pension-trustees-investments-and-tax"
+        }
+      }
+    }
+  }
 }
