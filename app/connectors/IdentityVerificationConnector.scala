@@ -16,18 +16,18 @@
 
 package connectors
 
+import config.WSHttp
 import enums.IdentityVerificationResult.IdentityVerificationResult
-import play.api.Logger
-import play.api.data.validation.ValidationError
-import play.api.libs.json.{JsPath, Json}
+import play.api.libs.json.Json
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
 
-object IdentityVerificationConnector {
-
+object IdentityVerificationConnector extends IdentityVerificationConnector with ServicesConfig {
+  override val serviceUrl = baseUrl("identity-verification")
+  override def http: HttpGet = WSHttp
 }
 
 trait IdentityVerificationConnector {
