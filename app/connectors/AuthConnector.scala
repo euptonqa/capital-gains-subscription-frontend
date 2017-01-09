@@ -18,12 +18,11 @@ package connectors
 
 import config.WSHttp
 import play.api.http.Status._
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent}
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
-import play.api.mvc.Results.Ok
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait AuthConnector extends ServicesConfig {
@@ -32,14 +31,13 @@ trait AuthConnector extends ServicesConfig {
   def authorityUri: String
   def http: HttpGet with HttpPost
 
-  def getAuthResponse()(implicit hc: HeaderCarrier): Action[AnyContent] = {
+  def getAuthResponse()(implicit hc: HeaderCarrier): Future[Option[JsValue]] = {
     val getUrl = s"""$serviceUrl/$authorityUri"""
     http.GET[HttpResponse](getUrl).map {
       response => response.status match {
         case OK => {
-          Future.successful(Ok(Json.toJson(response)))
+          Some(response.json)
         }
-
         case _ => None
       }
     }
