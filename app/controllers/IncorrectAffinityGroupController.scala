@@ -16,11 +16,11 @@
 
 package controllers
 
+import com.google.inject.{Inject, Singleton}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-object IncorrectAffinityGroupController extends IncorrectAffinityGroupController
-
-trait IncorrectAffinityGroupController extends FrontendController {
+@Singleton
+class IncorrectAffinityGroupController @Inject()() extends FrontendController {
 
   val incorrectAffinityGroup = TODO
 
