@@ -28,6 +28,6 @@ class HelloWorld @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi)
   extends FrontendController with I18nSupport {
 
   val helloWorld: Action[AnyContent] = Action.async { implicit request =>
-		Future.successful(Ok(views.html.helloworld.hello_world(appConfig)))
+    Future.successful(Ok(views.html.helloworld.hello_world(appConfig)))
   }
 }
