@@ -16,8 +16,10 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+
 import scala.concurrent.Future
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -26,6 +28,6 @@ object HelloWorld extends HelloWorld
 
 trait HelloWorld extends FrontendController {
   val helloWorld = Action.async { implicit request =>
-		Future.successful(Ok(views.html.helloworld.hello_world()))
+		Future.successful(Ok(views.html.helloworld.hello_world(FrontendAppConfig)))
   }
 }
