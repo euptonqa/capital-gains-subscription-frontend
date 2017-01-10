@@ -18,34 +18,34 @@ package predicates
 
 import java.net.URI
 
-import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import builders.TestUserBuilder
+import play.api.test.FakeRequest
+import uk.gov.hmrc.play.test.UnitSpec
 
-class LoginPredicateSpec extends UnitSpec {
+class NINOPredicateSpec extends UnitSpec {
 
-  val dummyUri = new URI("http://example.com")
+  val dummyURI = new URI("http://example.com")
 
-  "Instantiating LoginPredicate" when {
+  "Calling the NINOPredicate" should {
 
-    "supplied with an authContext with a weak credential should return false for page visibility" in {
-      val predicate = new LoginPredicate(dummyUri)
-      val authContext = TestUserBuilder.weakUserAuthContext
-
-      val result = predicate(authContext, FakeRequest())
-      val pageVisibility = await(result)
-
-      pageVisibility.isVisible shouldBe true
-    }
-
-    "supplied with an authContext with no credential should return false for page visibility" in {
-      val predicate = new LoginPredicate(dummyUri)
-      val authContext = TestUserBuilder.noCredUserAuthContext
+    "return a false for users without a NINO" in {
+      val predicate =  new NINOPredicate(dummyURI)
+      val authContext = TestUserBuilder.create200ConfidenceUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
       val pageVisibility = await(result)
 
       pageVisibility.isVisible shouldBe false
+    }
+
+    "return a true for users with a NINO" in {
+      val predicate =  new NINOPredicate(dummyURI)
+      val authContext = TestUserBuilder.userWithNINO
+
+      val result = predicate(authContext, FakeRequest())
+      val pageVisibility = await(result)
+
+      pageVisibility.isVisible shouldBe true
     }
   }
 }

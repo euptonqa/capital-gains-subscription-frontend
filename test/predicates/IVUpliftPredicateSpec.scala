@@ -18,34 +18,34 @@ package predicates
 
 import java.net.URI
 
-import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import builders.TestUserBuilder
+import play.api.test.FakeRequest
+import uk.gov.hmrc.play.test.UnitSpec
 
-class LoginPredicateSpec extends UnitSpec {
+class IVUpliftPredicateSpec extends UnitSpec {
 
-  val dummyUri = new URI("http://example.com")
+  val dummyURI = new URI("http://example.com")
 
-  "Instantiating LoginPredicate" when {
+  "Calling the IVUpliftPredicate" should {
 
-    "supplied with an authContext with a weak credential should return false for page visibility" in {
-      val predicate = new LoginPredicate(dummyUri)
-      val authContext = TestUserBuilder.weakUserAuthContext
-
-      val result = predicate(authContext, FakeRequest())
-      val pageVisibility = await(result)
-
-      pageVisibility.isVisible shouldBe true
-    }
-
-    "supplied with an authContext with no credential should return false for page visibility" in {
-      val predicate = new LoginPredicate(dummyUri)
-      val authContext = TestUserBuilder.noCredUserAuthContext
+    "return a false for page visibility with CL100" in {
+      val predicate =  new IVUpliftPredicate(dummyURI)
+      val authContext = TestUserBuilder.create100ConfidenceUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
       val pageVisibility = await(result)
 
       pageVisibility.isVisible shouldBe false
+    }
+
+    "return a true for page visibility with CL200" in {
+      val predicate =  new IVUpliftPredicate(dummyURI)
+      val authContext = TestUserBuilder.create200ConfidenceUserAuthContext
+
+      val result = predicate(authContext, FakeRequest())
+      val pageVisibility = await(result)
+
+      pageVisibility.isVisible shouldBe true
     }
   }
 }
