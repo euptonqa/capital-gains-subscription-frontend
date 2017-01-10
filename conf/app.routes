@@ -3,3 +3,5 @@
 GET        /hello-world                             @controllers.HelloWorld.helloWorld
 
 GET        /subscribe/individual/invalid-user       @controllers.IncorrectAffinityGroupController.incorrectAffinityGroup
+
+GET        /subscribe/resident/individual           @controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
