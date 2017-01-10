@@ -22,30 +22,40 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import builders.TestUserBuilder
 
-class LoginPredicateSpec extends UnitSpec with WithFakeApplication with {
+class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with {
 
   val dummyUri = new URI("http://example.com")
 
-  "Instantiating LoginPredicate" when {
+  "Instantiating AffinityGroupPredicate" when {
 
-    "supplied with an authContext with a weak credential should return true for page visibility" in {
-      val predicate = new LoginPredicate(dummyUri)
+    "supplied with an authContext with an agent credential should return false for page visibility" in {
+      val predicate = new AffinityGroupPredicate(dummyUri)
       val authContext = TestUserBuilder.weakUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
       val pageVisibility = await(result)
 
-      pageVisibility.isVisible shouldBe true
+      pageVisibility.isVisible shouldBe false
     }
 
-    "supplied with an authContext with no credential should return false for page visibility" in {
-      val predicate = new LoginPredicate(dummyUri)
-      val authContext = TestUserBuilder.noCredUserAuthContext
+    "supplied with an authContext with a company credential should return false for page visibility" in {
+      val predicate = new AffinityGroupPredicate(dummyUri)
+      val authContext = TestUserBuilder.weakUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
       val pageVisibility = await(result)
 
       pageVisibility.isVisible shouldBe false
+    }
+
+    "supplied with an authContext with an individual credential should return false for page visibility" in {
+      val predicate = new AffinityGroupPredicate(dummyUri)
+      val authContext = TestUserBuilder.noCredUserAuthContext
+
+      val result = predicate(authContext, FakeRequest())
+      val pageVisibility = await(result)
+
+      pageVisibility.isVisible shouldBe true
     }
   }
 }
