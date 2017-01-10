@@ -16,21 +16,21 @@
 
 package services
 
+import connectors.AuthConnector
 import models.AuthDataModel
-import play.api.libs.json.JsValue
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, CredentialStrength}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
+import scala.concurrent.Future
 
-object AuthService {
+object AuthService extends AuthService {
+  val authConnector = AuthConnector
+}
 
-  def getAuthDataModel(authData: JsValue): AuthDataModel = {
-    val confidenceLevel = (authData \ "confidenceLevel").as[ConfidenceLevel]
-    val uri = (authData \ "uri").as[String]
-    val credStrength = (authData \ "credentialStrength").as[CredentialStrength]
-    val affinityGroup = (authData \ "affinityGroup").as[String]
-    val nino = (authData \ "accounts" \ "paye" \ "nino").asOpt[String]
+trait AuthService {
 
-    AuthDataModel(credStrength, affinityGroup, confidenceLevel, uri, nino)
+  val authConnector: AuthConnector
 
+  def getAuthDataModel(implicit hc: HeaderCarrier): Future[Option[AuthDataModel]] = {
+    authConnector.getAuthResponse()(hc)
   }
 }

@@ -22,4 +22,4 @@ case class AuthDataModel(credStrength: CredentialStrength,
                          affinityGroup: String,
                          confidenceLevel: ConfidenceLevel,
                          uri: String,
-                         nino: Option[String])
+                         nino: String)

@@ -17,13 +17,16 @@
 package connectors
 
 import builders.TestUserBuilder
+import common.Constants
+import models.AuthDataModel
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.play.http.{HttpGet, HttpPost, HttpResponse}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status._
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, CredentialStrength}
 
 import scala.concurrent.Future
 
@@ -39,70 +42,59 @@ class AuthConnectorSpec extends UnitSpec with MockitoSugar with WithFakeApplicat
   }
 
   val nino = TestUserBuilder.createRandomNino
+  implicit val hc = HeaderCarrier()
 
-  def affinityResponse = (key: String, nino: String) => Json.parse(
-    s"""{
-        "uri":"/auth/oid/57e915480f00000f006d915b",
-        "confidenceLevel":"200",
-        "credentialStrength":"Strong",
-        "userDetailsLink":"http://localhost:9978/user-details/id/57e915482200005f00b0b55e",
-        "legacyOid":"57e915480f00000f006d915b",
-        "new-session":"/auth/oid/57e915480f00000f006d915b/session",
-        "ids":"/auth/oid/57e915480f00000f006d915b/ids",
-        "credentials":
-          {"gatewayId":"872334723473244"},
-        "accounts":
-          {"paye":
-            {"nino": "$nino"}
-          },
-        "lastUpdated":"2016-09-26T12:32:08.734Z",
-        "loggedInAt":"2016-09-26T12:32:08.734Z",
-        "levelOfAssurance":"1",
-        "enrolments":"/auth/oid/57e915480f00000f006d915b/enrolments",
-        "affinityGroup":"$key",
-        "correlationId":"9da194b9490024bae213f18d5b34fedf41f2c3236b434975333a7bdb0fe548ec",
-        "credId":"872334723473244"
-        }"""
-  )
+  def affinityResponse(key: String, nino: String): JsValue = Json.parse(
+    s"""{"uri":"/auth/oid/57e915480f00000f006d915b","confidenceLevel":200,"credentialStrength":"strong",
+       |"userDetailsLink":"http://localhost:9978/user-details/id/000000000000000000000000","legacyOid":"00000000000000000000000",
+       |"new-session":"/auth/oid/57e915480f00000f006d915b/session","ids":"/auth/oid/57e915480f00000f006d915b/ids",
+       |"credentials":{"gatewayId":"000000000000000"},"accounts":{"paye":{"nino":"$nino"}},"lastUpdated":"2016-09-26T12:32:08.734Z",
+       |"loggedInAt":"2016-09-26T12:32:08.734Z","levelOfAssurance":"1","enrolments":"/auth/oid/00000000000000000000000/enrolments",
+       |"affinityGroup":"$key","correlationId":"0000000000000000000000000000000000000000000000000000000000000000","credId":"000000000000000"}""".stripMargin
+    )
 
   "AuthConnector .getAuthResponse" should {
 
-    "return a JSON result with a valid request" in {
+    "with a valid request" should {
+
       when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(affinityResponse("Individual", nino)))))
-        await(TestAuthConnector.getAuthResponse()).get shouldBe a[JsValue]
+      val result = await(TestAuthConnector.getAuthResponse()(hc)).get
+
+      "return a valid AuthDataModel type" in {
+        result shouldBe a[AuthDataModel]
+      }
+
+      "return an AuthDataModel" in {
+        result shouldBe a[AuthDataModel]
+      }
+
+      "return an AuthDataModel containing a confidence level of 200" in {
+        result.confidenceLevel shouldBe ConfidenceLevel.L200
+      }
+
+      "return an AuthDataModel containing a credential strength of Strong" in {
+        result.credStrength shouldBe CredentialStrength.Strong
+      }
+
+      s"return an AuthDataModel containing a nino of $nino" in {
+        result.nino shouldBe nino
+      }
+
+      "return an AuthDataModel containing a uri of /auth/oid/57e915480f00000f006d915b" in {
+        result.uri shouldBe "/auth/oid/57e915480f00000f006d915b"
+      }
+
+      "return an AuthDataModel containing an Affinity Group of Individual" in {
+        result.affinityGroup shouldBe Constants.AffinityGroup.Individual
+      }
+
     }
 
     "return a None with an invalid request" in {
       when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(affinityResponse("Individual", nino)))))
-      await(TestAuthConnector.getAuthResponse()) shouldBe None
+      await(TestAuthConnector.getAuthResponse()(hc)) shouldBe None
     }
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  "AuthService .getConfidenceLevel" should {
-
-  }
-
-  "AuthService. getCredentialStrength" should {
-
   }
 }

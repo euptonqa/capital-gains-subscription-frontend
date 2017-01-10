@@ -17,12 +17,13 @@
 package connectors
 
 import config.WSHttp
+import models.AuthDataModel
 import play.api.http.Status._
-import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
-
 import scala.concurrent.ExecutionContext.Implicits.global
+
 import scala.concurrent.Future
 
 trait AuthConnector extends ServicesConfig {
@@ -31,12 +32,18 @@ trait AuthConnector extends ServicesConfig {
   def authorityUri: String
   def http: HttpGet with HttpPost
 
-  def getAuthResponse()(implicit hc: HeaderCarrier): Future[Option[JsValue]] = {
+  def getAuthResponse()(implicit hc: HeaderCarrier): Future[Option[AuthDataModel]] = {
     val getUrl = s"""$serviceUrl/$authorityUri"""
     http.GET[HttpResponse](getUrl).map {
       response => response.status match {
         case OK => {
-          Some(response.json)
+          val confidenceLevel = (response.json \ "confidenceLevel").as[ConfidenceLevel]
+          val uri = (response.json \ "uri").as[String]
+          val credStrength = (response.json \ "credentialStrength").as[CredentialStrength]
+          val affinityGroup = (response.json \ "affinityGroup").as[String]
+          val nino = (response.json \ "accounts" \ "paye" \ "nino").as[String]
+
+          Some(AuthDataModel(credStrength, affinityGroup, confidenceLevel, uri, nino))
         }
         case _ => None
       }

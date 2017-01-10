@@ -16,67 +16,45 @@
 
 package services
 
-import builders.TestUserBuilder
-import common.Constants
+import connectors.AuthConnector
 import models.AuthDataModel
-import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel
+import org.mockito.Mockito.when
+import org.scalatest.mock.MockitoSugar
+import org.mockito.ArgumentMatchers
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, CredentialStrength}
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 
-class AuthServiceSpec extends UnitSpec {
+import scala.concurrent.Future
 
-  def affinityResponse(key:String, nino: String): JsValue = Json.parse(
-    s"""{
-        "uri":"/auth/oid/57e915480f00000f006d915b",
-        "confidenceLevel":"200",
-        "credentialStrength":"Strong",
-        "userDetailsLink":"http://localhost:9978/user-details/id/57e915482200005f00b0b55e",
-        "legacyOid":"57e915480f00000f006d915b",
-        "new-session":"/auth/oid/57e915480f00000f006d915b/session",
-        "ids":"/auth/oid/57e915480f00000f006d915b/ids",
-        "credentials":
-          {"gatewayId":"872334723473244"},
-        "accounts":
-          {"paye":
-            {"nino": "$nino"}
-          },
-        "lastUpdated":"2016-09-26T12:32:08.734Z",
-        "loggedInAt":"2016-09-26T12:32:08.734Z",
-        "levelOfAssurance":"1",
-        "enrolments":"/auth/oid/57e915480f00000f006d915b/enrolments",
-        "affinityGroup":"$key",
-        "correlationId":"9da194b9490024bae213f18d5b34fedf41f2c3236b434975333a7bdb0fe548ec",
-        "credId":"872334723473244"
-        }"""
-  )
+class AuthServiceSpec extends UnitSpec with MockitoSugar {
+
+  implicit val hc = mock[HeaderCarrier]
+
+  def mockedService(response: Option[AuthDataModel]): AuthService = {
+
+    val mockConnector = mock[AuthConnector]
+
+    when(mockConnector.getAuthResponse()(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(response))
+
+    new AuthService {
+      override val authConnector: AuthConnector = mockConnector
+    }
+  }
 
   "Calling AuthServiceSpec .getAuthData" should {
 
-    val nino = TestUserBuilder.createRandomNino
-    val result = AuthService.getAuthDataModel(affinityResponse("Individual", nino))
-
-    "return an AuthDataModel" in {
-      result shouldBe a[AuthDataModel]
+    "return an AuthDataModel with a valid request" in {
+      val service = mockedService(Some(AuthDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", "")))
+      val result = service.getAuthDataModel(hc)
+      await(result) shouldBe Some(AuthDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", ""))
     }
 
-    "return an AuthDataModel containing a confidence level of 200" in {
-      result.confidenceLevel shouldBe ConfidenceLevel.L200
-    }
-
-    "return an AuthDataModel containing a credential strength of Strong" in {
-      result.credStrength shouldBe "Strong"
-    }
-
-    s"return an AuthDataModel containing a nino of $nino" in {
-      result.nino shouldBe nino
-    }
-
-    "return an AuthDataModel containing a uri of /auth/oid/57e915480f00000f006d915b" in {
-      result.uri shouldBe "/auth/oid/57e915480f00000f006d915b"
-    }
-
-    "return an AuthDataModel containing an Affinity Group of Individual" in {
-      result.affinityGroup shouldBe Constants.AffinityGroup.Individual
+    "return a None with an invalid request" in {
+      val service = mockedService(None)
+      val result = service.getAuthDataModel(hc)
+      await(result) shouldBe None
     }
   }
 }
