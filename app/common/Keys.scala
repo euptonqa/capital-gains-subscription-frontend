@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package helpers
+package common
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+object Keys {
 
-object AffinityGroupCheck extends AffinityGroupCheck
+  val cGTEnrolmentKey: String = "HMRC-CGTS-INDV"
 
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
 }

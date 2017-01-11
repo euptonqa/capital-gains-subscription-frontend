@@ -16,11 +16,13 @@
 
 package helpers
 
+import common.Keys
+import models.Enrolment
+
 import scala.concurrent.Future
-import common.Constants.AffinityGroup._
 
-object AffinityGroupCheck extends AffinityGroupCheck
+object EnrolmentToCGTCheck extends EnrolmentToCGTCheck
 
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+trait EnrolmentToCGTCheck {
+  def checkEnrolments(enrolments: Seq[Enrolment]): Future[Boolean] = Future.successful(enrolments.exists(_.key == Keys.cGTEnrolmentKey))
 }
