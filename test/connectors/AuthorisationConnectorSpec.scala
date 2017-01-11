@@ -17,28 +17,29 @@
 package connectors
 
 import builders.TestUserBuilder
-import common.Constants
-import models.AuthDataModel
+import common.Constants.AffinityGroup
+import models.AuthorisationDataModel
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status._
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, CredentialStrength}
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 
 import scala.concurrent.Future
 
 
-class AuthConnectorSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
+class AuthorisationConnectorSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
 
-  lazy val mockHttp = mock[HttpGet with HttpPost]
+  lazy val mockHttp = mock[HttpGet]
 
-  object TestAuthConnector extends AuthConnector {
-    override def serviceUrl: String = "localhost"
-    override def authorityUri: String = "auth/authority"
-    override def http: HttpGet with HttpPost = mockHttp
+  object TestAuthConnector extends AuthorisationConnector {
+    override lazy val serviceUrl: String = "localhost"
+    override val authorityUri: String = "auth/authority"
+    override val http: HttpGet = mockHttp
   }
 
   val nino = TestUserBuilder.createRandomNino
@@ -48,12 +49,12 @@ class AuthConnectorSpec extends UnitSpec with MockitoSugar with WithFakeApplicat
     s"""{"uri":"/auth/oid/57e915480f00000f006d915b","confidenceLevel":200,"credentialStrength":"strong",
        |"userDetailsLink":"http://localhost:9978/user-details/id/000000000000000000000000","legacyOid":"00000000000000000000000",
        |"new-session":"/auth/oid/57e915480f00000f006d915b/session","ids":"/auth/oid/57e915480f00000f006d915b/ids",
-       |"credentials":{"gatewayId":"000000000000000"},"accounts":{"paye":{"nino":"$nino"}},"lastUpdated":"2016-09-26T12:32:08.734Z",
+       |"credentials":{"gatewayId":"000000000000000"},"accounts":{"paye":{"link":"test","nino":"$nino"}},"lastUpdated":"2016-09-26T12:32:08.734Z",
        |"loggedInAt":"2016-09-26T12:32:08.734Z","levelOfAssurance":"1","enrolments":"/auth/oid/00000000000000000000000/enrolments",
        |"affinityGroup":"$key","correlationId":"0000000000000000000000000000000000000000000000000000000000000000","credId":"000000000000000"}""".stripMargin
     )
 
-  "AuthConnector .getAuthResponse" should {
+  "AuthorisationConnector .getAuthResponse" should {
 
     "with a valid request" should {
 
@@ -61,40 +62,49 @@ class AuthConnectorSpec extends UnitSpec with MockitoSugar with WithFakeApplicat
         .thenReturn(Future.successful(HttpResponse(OK, Some(affinityResponse("Individual", nino)))))
       val result = await(TestAuthConnector.getAuthResponse()(hc)).get
 
-      "return a valid AuthDataModel type" in {
-        result shouldBe a[AuthDataModel]
+      "return a valid AuthorisationDataModel type" in {
+        result shouldBe a[AuthorisationDataModel]
       }
 
-      "return an AuthDataModel" in {
-        result shouldBe a[AuthDataModel]
-      }
-
-      "return an AuthDataModel containing a confidence level of 200" in {
+      "return an AuthorisationDataModel containing a confidence level of 200" in {
         result.confidenceLevel shouldBe ConfidenceLevel.L200
       }
 
-      "return an AuthDataModel containing a credential strength of Strong" in {
-        result.credStrength shouldBe CredentialStrength.Strong
+      "return an AuthorisationDataModel containing a credential strength of Strong" in {
+        result.credentialStrength shouldBe CredentialStrength.Strong
       }
 
-      s"return an AuthDataModel containing a nino of $nino" in {
-        result.nino shouldBe nino
-      }
-
-      "return an AuthDataModel containing a uri of /auth/oid/57e915480f00000f006d915b" in {
+      "return an AuthorisationDataModel containing a uri of /auth/oid/57e915480f00000f006d915b" in {
         result.uri shouldBe "/auth/oid/57e915480f00000f006d915b"
       }
 
-      "return an AuthDataModel containing an Affinity Group of Individual" in {
-        result.affinityGroup shouldBe Constants.AffinityGroup.Individual
+      "return an AuthorisationDataModel containing an Affinity Group of Individual" in {
+        result.affinityGroup shouldBe AffinityGroup.Individual
       }
-
     }
 
     "return a None with an invalid request" in {
       when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(affinityResponse("Individual", nino)))))
       await(TestAuthConnector.getAuthResponse()(hc)) shouldBe None
+    }
+  }
+
+  "AuthorisationConnector .getNino" should {
+
+    "return a NINO with an account with a PAYEAccount is passed in" in {
+
+      val testAccount = Accounts(Some(PayeAccount("", Nino(nino))))
+      val result = TestAuthConnector.getNino(testAccount)
+
+      result shouldBe Some(Nino(nino))
+    }
+
+    "Return None with an account with no PAYEAccount is passed in" in {
+      val testAccount = Accounts()
+      val result = TestAuthConnector.getNino(testAccount)
+
+      result shouldBe None
     }
   }
 }

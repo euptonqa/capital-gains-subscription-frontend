@@ -16,23 +16,28 @@
 
 package connectors
 
+import com.google.inject.{Inject, Singleton}
 import config.WSHttp
-import models.AuthDataModel
+import models.AuthorisationDataModel
 import play.api.http.Status._
+import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, CredentialStrength}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.play.frontend.auth.connectors.domain._
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait AuthConnector extends ServicesConfig {
+@Singleton
+class AuthorisationConnector @Inject()() extends ServicesConfig {
 
-  def serviceUrl: String
-  def authorityUri: String
-  def http: HttpGet with HttpPost
+  lazy val serviceUrl: String = baseUrl("auth")
+  val authorityUri: String = "auth/authority"
+  val http: HttpGet = WSHttp
 
-  def getAuthResponse()(implicit hc: HeaderCarrier): Future[Option[AuthDataModel]] = {
+  Authority
+
+  def getAuthResponse()(implicit hc: HeaderCarrier): Future[Option[AuthorisationDataModel]] = {
     val getUrl = s"""$serviceUrl/$authorityUri"""
     http.GET[HttpResponse](getUrl).map {
       response => response.status match {
@@ -41,18 +46,17 @@ trait AuthConnector extends ServicesConfig {
           val uri = (response.json \ "uri").as[String]
           val credStrength = (response.json \ "credentialStrength").as[CredentialStrength]
           val affinityGroup = (response.json \ "affinityGroup").as[String]
-          val nino = (response.json \ "accounts" \ "paye" \ "nino").as[String]
+          val accounts = (response.json \ "accounts").as[Accounts]
 
-          Some(AuthDataModel(credStrength, affinityGroup, confidenceLevel, uri, nino))
+          Some(AuthorisationDataModel(credStrength, affinityGroup, confidenceLevel, uri, accounts))
         }
         case _ => None
       }
     }
   }
-}
 
-object AuthConnector extends AuthConnector{
-  lazy val serviceUrl = baseUrl("auth")
-  val authorityUri = "auth/authority"
-  val http: HttpGet with HttpPost = WSHttp
+  def getNino(accounts: Accounts): Option[Nino] = {
+    if(accounts.paye.isDefined) Some(accounts.paye.get.nino)
+    else None
+  }
 }

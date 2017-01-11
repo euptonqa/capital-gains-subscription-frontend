@@ -16,21 +16,24 @@
 
 package services
 
-import connectors.AuthConnector
-import models.AuthDataModel
+import com.google.inject.{Inject, Singleton}
+import connectors.AuthorisationConnector
+import models.AuthorisationDataModel
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-object AuthService extends AuthService {
-  val authConnector = AuthConnector
-}
+@Singleton
+class AuthorisationService @Inject()(authConnector: AuthorisationConnector) {
 
-trait AuthService {
-
-  val authConnector: AuthConnector
-
-  def getAuthDataModel(implicit hc: HeaderCarrier): Future[Option[AuthDataModel]] = {
+  def getAuthDataModel(implicit hc: HeaderCarrier): Future[Option[AuthorisationDataModel]] = {
     authConnector.getAuthResponse()(hc)
   }
+
+  def getNino(accounts:Accounts): Option[Nino] = {
+    authConnector.getNino(accounts)
+  }
+
 }

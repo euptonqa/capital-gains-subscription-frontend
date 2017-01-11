@@ -16,10 +16,10 @@
 
 package models
 
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ConfidenceLevel, CredentialStrength}
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 
-case class AuthDataModel(credStrength: CredentialStrength,
-                         affinityGroup: String,
-                         confidenceLevel: ConfidenceLevel,
-                         uri: String,
-                         nino: String)
+case class AuthorisationDataModel(credentialStrength: CredentialStrength,
+                                  affinityGroup: String,
+                                  confidenceLevel: ConfidenceLevel,
+                                  uri: String,
+                                  accounts: Accounts)
