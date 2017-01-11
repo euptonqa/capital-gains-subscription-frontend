@@ -21,6 +21,7 @@ import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import common.Constants._
 
 import scala.concurrent.Future
 
@@ -28,6 +29,9 @@ import scala.concurrent.Future
 class IncorrectAffinityGroupController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   def incorrectAffinityGroup(userType: String): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.errors.errorInvalidUser(userType, appConfig)))
+    if (InvalidUserTypes.validUsers.contains(userType))
+      Future.successful(Ok(views.html.errors.errorInvalidUser(userType, appConfig)))
+      //TODO redirect to new user type selection page
+    else Future.successful(Redirect(""))
   }
 }

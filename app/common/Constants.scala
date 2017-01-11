@@ -23,4 +23,15 @@ object Constants {
     val Individual = "Individual"
     val Organisation = "Organisation"
   }
+
+  object InvalidUserTypes {
+    val agent = "agent"
+    val company = "company"
+    val charity = "charity"
+    val partnership = "partnership"
+    val trust = "trust"
+    val pensionTrust = "pensionTrust"
+
+    val validUsers = Seq(agent, company, charity, partnership, trust, pensionTrust)
+  }
 }

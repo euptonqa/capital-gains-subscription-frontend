@@ -23,6 +23,7 @@ import org.scalatest.mock.MockitoSugar
 import play.api.i18n.MessagesApi
 import play.api.inject.Injector
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.test.Helpers._
 
 class IncorrectAffinityGroupControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
 
@@ -45,6 +46,18 @@ class IncorrectAffinityGroupControllerSpec extends UnitSpec with MockitoSugar wi
 
       "load the invalid affinity type page" in {
         Jsoup.parse(bodyOf(result)).title() shouldBe MessageLookup.InvalidAffinityGroup.title
+      }
+    }
+
+    "provided with an invalid userType" should {
+      lazy val result = controller.incorrectAffinityGroup("")(fakeRequest)
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "should redirect to the select a user type page" in {
+        redirectLocation(result) shouldBe Some("")
       }
     }
   }
