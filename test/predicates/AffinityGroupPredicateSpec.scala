@@ -21,15 +21,41 @@ import java.net.URI
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import builders.TestUserBuilder
+import connectors.AuthorisationConnector
+import models.AuthorisationDataModel
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
+import org.scalatest.mock.MockitoSugar
+import services.AuthorisationService
+import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
+import common.Constants.AffinityGroup._
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with {
+import scala.concurrent.Future
+
+class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+
+  def mockedService(response: Option[AuthorisationDataModel], nino: Option[Nino]): AuthorisationService = {
+
+    val mockConnector = mock[AuthorisationConnector]
+
+    when(mockConnector.getAuthResponse()(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(response))
+
+    new AuthorisationService(mockConnector)
+  }
 
   val dummyUri = new URI("http://example.com")
+  implicit val hc = mock[HeaderCarrier]
 
   "Instantiating AffinityGroupPredicate" when {
 
     "supplied with an authContext with an agent credential should return false for page visibility" in {
-      val predicate = new AffinityGroupPredicate(dummyUri)
+
+      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Agent, ConfidenceLevel.L200, "", Accounts())), None)
+
+      val predicate = new AffinityGroupPredicate(service)(dummyUri)(hc)
       val authContext = TestUserBuilder.weakUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
@@ -38,8 +64,11 @@ class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with 
       pageVisibility.isVisible shouldBe false
     }
 
-    "supplied with an authContext with a company credential should return false for page visibility" in {
-      val predicate = new AffinityGroupPredicate(dummyUri)
+    "supplied with an authContext with a organisation credential should return false for page visibility" in {
+
+      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Organisation, ConfidenceLevel.L200, "", Accounts())), None)
+
+      val predicate = new AffinityGroupPredicate(service)(dummyUri)(hc)
       val authContext = TestUserBuilder.weakUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
@@ -49,7 +78,10 @@ class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with 
     }
 
     "supplied with an authContext with an individual credential should return false for page visibility" in {
-      val predicate = new AffinityGroupPredicate(dummyUri)
+
+      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Individual, ConfidenceLevel.L200, "", Accounts())), None)
+
+      val predicate = new AffinityGroupPredicate(service)(dummyUri)(hc)
       val authContext = TestUserBuilder.noCredUserAuthContext
 
       val result = predicate(authContext, FakeRequest())

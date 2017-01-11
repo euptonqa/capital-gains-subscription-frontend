@@ -18,25 +18,46 @@ package predicates
 
 import java.net.URI
 
+import com.google.inject.Inject
 import play.api.mvc.Results._
-import play.api.mvc.{Request, AnyContent}
+import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth._
 import helpers._
+import services.AuthorisationService
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AffinityGroupPredicate(errorPageUri: URI) /* inject an Authority Service here */ extends PageVisibilityPredicate {
+class AffinityGroupPredicate @Inject()(authorisationService: AuthorisationService) (errorPageUri: URI) (implicit hc: HeaderCarrier)
+  extends PageVisibilityPredicate {
 
   private val errorPage = Future.successful(Redirect(errorPageUri.toString))
 
+  private def pageVisibility(check: Boolean): PageVisibilityResult = {
+    if (check) PageIsVisible
+    else PageBlocked(errorPage)
+  }
+
+  private def affinityGroupSupplied(group: String): Future[PageVisibilityResult] = {
+    val check = AffinityGroupCheck.affinityGroupCheck(group)
+    for {
+      affinityGroupCheck <- check
+    } yield pageVisibility(affinityGroupCheck)
+  }
+
+  private def affinityGroupRouting(group: Option[String]): Future[PageVisibilityResult] = group match {
+    case Some(data) => affinityGroupSupplied(data)
+    case _ => Future.successful(PageBlocked(errorPage))
+  }
+
   override def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
 
-    val authorityAffinityGroup: String = authorityAffinityService.getAffinityGroup(hc)
+    val authorityAffinityGroup: Future[Option[String]] = authorisationService.getAffinityGroup(hc)
 
-    AffinityGroupCheck.affinityGroupCheck(authorityAffinityGroup).map {
-      case true => PageIsVisible
-      case false => PageBlocked(errorPage)
-    }
+    for {
+      affinityGroup <- authorityAffinityGroup
+      visibility <- affinityGroupRouting(affinityGroup)
+    } yield visibility
   }
 }

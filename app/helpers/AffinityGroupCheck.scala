@@ -22,6 +22,5 @@ import common.Constants.AffinityGroup._
 object AffinityGroupCheck extends AffinityGroupCheck
 
 trait AffinityGroupCheck {
-
   def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
 }
