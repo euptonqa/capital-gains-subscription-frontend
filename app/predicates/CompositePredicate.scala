@@ -19,20 +19,24 @@ package predicates
 import java.net.URI
 
 import com.google.inject.{Inject, Singleton}
-import config.{AppConfig}
+import config.AppConfig
+import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, PageVisibilityPredicate}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 @Singleton
-class CompositePredicate @Inject()(applicationConfig: AppConfig)(postSignInRedirectUrl: String,
+class CompositePredicate @Inject()(applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
                              notAuthorisedRedirectUrl: String,
                              ivUpliftUrl: String,
-                             twoFactorUrl: String
-                            ) extends CompositePageVisibilityPredicate  {
+                             twoFactorUrl: String,
+                             affinityGroup: String
+                            ) (implicit hc: HeaderCarrier) extends CompositePageVisibilityPredicate  {
   override def children: Seq[PageVisibilityPredicate] = Seq (
     new IVUpliftPredicate(new URI(ivUpliftUrl)),
     new LoginPredicate(new URI(applicationConfig.governmentGateway)),
     new TwoFAPredicate(new URI(twoFactorUrl)),
-    new NINOPredicate(new URI(ivUpliftUrl))
+    new NINOPredicate(new URI(ivUpliftUrl)),
+    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))(hc)
   )
 
   private val ivUpliftURI: URI =
