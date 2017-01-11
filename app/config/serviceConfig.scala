@@ -16,7 +16,8 @@
 
 package config
 
-import play.api.Play.{configuration, current}
+import com.google.inject.{Inject, Singleton}
+import play.api.Configuration
 import uk.gov.hmrc.play.config.ServicesConfig
 
 trait AppConfig {
@@ -31,7 +32,8 @@ trait AppConfig {
   val twoFactorUrl: String
 }
 
-object FrontendAppConfig extends AppConfig with ServicesConfig {
+@Singleton
+class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfig with ServicesConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 

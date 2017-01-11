@@ -16,16 +16,18 @@
 
 package controllers
 
+import com.google.inject.{Inject, Singleton}
+import config.AppConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import scala.concurrent.Future
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
+import play.api.i18n.{I18nSupport, MessagesApi}
 
-object HelloWorld extends HelloWorld
+@Singleton
+class HelloWorld @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi)
+  extends FrontendController with I18nSupport {
 
-trait HelloWorld extends FrontendController {
-  val helloWorld = Action.async { implicit request =>
-		Future.successful(Ok(views.html.helloworld.hello_world()))
+  val helloWorld: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(views.html.helloworld.hello_world(appConfig)))
   }
 }
