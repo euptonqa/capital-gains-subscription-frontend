@@ -16,7 +16,13 @@
 
 package predicates
 
+import uk.gov.hmrc.play.test.UnitSpec
 
-class CompositePredicateSpec {
+
+class CompositePredicateSpec extends UnitSpec {
+
+  "Calling the CompositePredicate" should {
+    "return a false for page visibility "
+  }
 
 }
