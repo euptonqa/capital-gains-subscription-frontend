@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package controllers
+package services
 
-import play.api.mvc.{Action, AnyContent}
-import com.google.inject.{Inject, Singleton}
-import config.AppConfig
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import connectors.IdentityVerificationConnector
+import enums.IdentityVerificationResult._
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-@Singleton
-class IncorrectAffinityGroupController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+object IdentityVerificationService extends IdentityVerificationService {
 
-  val incorrectAffinityGroup: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.errors.errorInvalidUser("company", appConfig)))
+  val connector = IdentityVerificationConnector
+}
+
+trait IdentityVerificationService {
+
+  val connector: IdentityVerificationConnector
+
+  def getIdentityVerificationResult(journeyId: String)(implicit hc: HeaderCarrier): Future[IdentityVerificationResult] = {
+    connector.identityVerificationResponse(journeyId)
   }
 }

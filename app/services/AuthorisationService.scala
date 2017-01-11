@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package controllers
+package services
 
-import play.api.mvc.{Action, AnyContent}
 import com.google.inject.{Inject, Singleton}
-import config.AppConfig
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import connectors.AuthorisationConnector
+import models.AuthorisationDataModel
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 @Singleton
-class IncorrectAffinityGroupController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+class AuthorisationService @Inject()(authConnector: AuthorisationConnector) {
 
-  val incorrectAffinityGroup: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.errors.errorInvalidUser("company", appConfig)))
+  def getAuthDataModel(implicit hc: HeaderCarrier): Future[Option[AuthorisationDataModel]] = {
+    authConnector.getAuthResponse()(hc)
   }
 }

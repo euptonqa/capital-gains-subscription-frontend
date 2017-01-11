@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package helpers
+package models
 
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 
-import scala.concurrent.Future
-
-object ConfidenceLevelCheck extends ConfidenceLevelCheck
-
-trait ConfidenceLevelCheck {
-  def confidenceLevelCheck(authContext: AuthContext): Future[Boolean] = authContext.user.confidenceLevel match {
-    case ConfidenceLevel.L200 => Future.successful(true)
-    case ConfidenceLevel.L300 => Future.successful(true)
-    case ConfidenceLevel.L500 => Future.successful(true)
-    case _ => Future.successful(false)
-  }
-}
+case class AuthorisationDataModel(credentialStrength: CredentialStrength,
+                                  affinityGroup: String,
+                                  confidenceLevel: ConfidenceLevel,
+                                  uri: String,
+                                  accounts: Accounts)

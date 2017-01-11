@@ -36,6 +36,11 @@ object TestUserBuilder {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Strong, ConfidenceLevel.L50, None, Some("testEnrolmentUri"), None, ""))
   }
 
+  val create100ConfidenceUserAuthContext: AuthContext = {
+    AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Strong,
+      ConfidenceLevel.L100, None, Some("testEnrolmentUri"), None, ""))
+  }
+
   val create200ConfidenceUserAuthContext: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.Strong,
       ConfidenceLevel.L200, None, Some("testEnrolmentUri"), None, ""))

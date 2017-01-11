@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package config
 
-import play.api.mvc.{Action, AnyContent}
-import com.google.inject.{Inject, Singleton}
-import config.AppConfig
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import com.google.inject.AbstractModule
 
-import scala.concurrent.Future
-
-@Singleton
-class IncorrectAffinityGroupController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
-
-  val incorrectAffinityGroup: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.errors.errorInvalidUser("company", appConfig)))
+class DIModule extends AbstractModule {
+  protected override def configure(): Unit = {
+    bind(classOf[AppConfig]) to classOf[ApplicationConfig]
   }
 }

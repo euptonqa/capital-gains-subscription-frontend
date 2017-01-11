@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package helpers
 
-import play.api.mvc.{Action, AnyContent}
-import com.google.inject.{Inject, Singleton}
-import config.AppConfig
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import common.Keys
+import models.Enrolment
 
 import scala.concurrent.Future
 
-@Singleton
-class IncorrectAffinityGroupController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+object EnrolmentToCGTCheck extends EnrolmentToCGTCheck
 
-  val incorrectAffinityGroup: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.errors.errorInvalidUser("company", appConfig)))
-  }
+trait EnrolmentToCGTCheck {
+  def checkEnrolments(enrolments: Seq[Enrolment]): Future[Boolean] = Future.successful(enrolments.exists(_.key == Keys.cGTEnrolmentKey))
 }

@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-package helpers
+package predicates
 
-import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel
+import java.net.URI
+
+import helpers.NINOCheck
+import play.api.mvc.Results._
+import play.api.mvc.{AnyContent, Request}
+import uk.gov.hmrc.play.frontend.auth._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-object ConfidenceLevelCheck extends ConfidenceLevelCheck
-
-trait ConfidenceLevelCheck {
-  def confidenceLevelCheck(authContext: AuthContext): Future[Boolean] = authContext.user.confidenceLevel match {
-    case ConfidenceLevel.L200 => Future.successful(true)
-    case ConfidenceLevel.L300 => Future.successful(true)
-    case ConfidenceLevel.L500 => Future.successful(true)
-    case _ => Future.successful(false)
+class NINOPredicate(ninoURI: URI) extends PageVisibilityPredicate {
+  override def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
+    NINOCheck.checkNINO(authContext).map {
+      case true => PageIsVisible
+      case _ => PageBlocked(needsNINO)
+    }
   }
+
+  private val needsNINO = Future.successful(Redirect(ninoURI.toString))
 }

@@ -19,16 +19,26 @@ package views
 import assets.FakeRequestHelper
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import assets.MessageLookup.{InvalidAffinityGroup => messages}
+import config.AppConfig
 import org.jsoup._
+import org.scalatest.mock.MockitoSugar
 import views.html.errors.errorInvalidUser
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.MessagesApi
+import play.api.inject.Injector
 
-class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper {
+class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with MockitoSugar {
+
+  val injector: Injector = fakeApplication.injector
+
+  val appConfig: AppConfig = injector.instanceOf[AppConfig]
+
+  implicit val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
   "The invalid affinity group view for an agent" should {
 
-    lazy val view = errorInvalidUser("agent")
+    lazy val view = errorInvalidUser("agent", appConfig)
     lazy val doc = Jsoup.parse(view.body)
 
     s"display a title of ${messages.title}" in {
@@ -86,7 +96,7 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
 
   "The invalid affinity group view for a company" should {
 
-    lazy val view = errorInvalidUser("company")
+    lazy val view = errorInvalidUser("company", appConfig)
     lazy val doc = Jsoup.parse(view.body)
 
     "should have a third paragraph" which {
@@ -110,7 +120,7 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
 
   "The invalid affinity group view for a charity" should {
 
-    lazy val view = errorInvalidUser("charity")
+    lazy val view = errorInvalidUser("charity", appConfig)
     lazy val doc = Jsoup.parse(view.body)
 
     "should have a third paragraph" which {
@@ -134,7 +144,7 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
 
   "The invalid affinity group view for a partnership" should {
 
-    lazy val view = errorInvalidUser("partnership")
+    lazy val view = errorInvalidUser("partnership", appConfig)
     lazy val doc = Jsoup.parse(view.body)
 
     "should have a third paragraph" which {
@@ -160,7 +170,7 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
 
   "The invalid affinity group view for a trust" should {
 
-    lazy val view = errorInvalidUser("trust")
+    lazy val view = errorInvalidUser("trust", appConfig)
     lazy val doc = Jsoup.parse(view.body)
 
     "should have a third paragraph" which {
@@ -184,7 +194,7 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
 
   "The invalid affinity group view for a pension trust" should {
 
-    lazy val view = errorInvalidUser("pensionTrust")
+    lazy val view = errorInvalidUser("pensionTrust", appConfig)
     lazy val doc = Jsoup.parse(view.body)
 
     "should have a third paragraph" which {

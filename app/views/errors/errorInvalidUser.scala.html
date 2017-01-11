@@ -1,4 +1,4 @@
-@(userType: String)(implicit request: Request[_], messages: Messages)
+@(userType: String, appConfig: config.AppConfig)(implicit request: Request[_], messages: Messages)
 
 @textLink(question: String, linkText: String, link: String) = {
     <p>
@@ -7,7 +7,7 @@
     </p>
 }
 
-@views.html.main_template(title = Messages("invalidAffinityGroup.title"), bodyClasses = None) {
+@views.html.main_template(title = Messages("invalidAffinityGroup.title"), bodyClasses = None, appConfig = appConfig) {
 
     <h1>@Messages("invalidAffinityGroup.title")</h1>
 
