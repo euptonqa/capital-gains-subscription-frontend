@@ -105,21 +105,21 @@ class AuthorisationConnectorSpec extends UnitSpec with MockitoSugar with WithFak
 
     "return a None with a failed response" in {
       val connector = setupConnector("[]", 500)
-      val result = connector.getEnrolments("")
+      val result = connector.getEnrolmentsResponse("")
 
       await(result) shouldBe None
     }
 
     "return an empty sequence with an empty json response" in {
       val connector = setupConnector("[]", 200)
-      val result = connector.getEnrolments("")
+      val result = connector.getEnrolmentsResponse("")
 
       await(result) shouldBe Some(Seq())
     }
 
     "return a valid sequence with an single enrolment" in {
       val connector = setupConnector("""[{"key":"key","identifiers":[],"state":"state"}]""", 200)
-      val result = connector.getEnrolments("")
+      val result = connector.getEnrolmentsResponse("")
 
       await(result) shouldBe Some(Seq(new Enrolment("key", Seq(), "state")))
     }
@@ -127,7 +127,7 @@ class AuthorisationConnectorSpec extends UnitSpec with MockitoSugar with WithFak
     "return a valid sequence with multiple enrolments" in {
       val connector = setupConnector(
         """[{"key":"key","identifiers":[],"state":"state"},{"key":"key2","identifiers":[{"key":"key","value":"value"}],"state":"state2"}]""", 200)
-      val result = connector.getEnrolments("")
+      val result = connector.getEnrolmentsResponse("")
 
       await(result) shouldBe Some(Seq(new Enrolment("key", Seq(), "state"), new Enrolment("key2", Seq(new Identifier("key", "value")), "state2")))
     }

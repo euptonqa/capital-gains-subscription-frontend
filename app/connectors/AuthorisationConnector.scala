@@ -54,7 +54,7 @@ class AuthorisationConnector @Inject()() extends ServicesConfig {
     }
   }
 
-  def getEnrolments(uri: String)(implicit hc: HeaderCarrier): Future[Option[Seq[Enrolment]]] = {
+  def getEnrolmentsResponse(uri: String)(implicit hc: HeaderCarrier): Future[Option[Seq[Enrolment]]] = {
     val getUrl = s"$serviceUrl$uri/enrolments"
     http.GET[HttpResponse](getUrl).map {
       response =>
