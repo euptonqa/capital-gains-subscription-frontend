@@ -28,7 +28,7 @@ import play.api.inject.Injector
 @Singleton
 class CompositePredicateSpec extends UnitSpec with WithFakeApplication {
 
-  "Calling the CompositePredicate" should {
+  "Calling the CompositePredicate when supplied with appropriate URIs" should {
     val injector: Injector = fakeApplication.injector
     def appConfig: AppConfig = injector.instanceOf[AppConfig]
 
@@ -36,12 +36,15 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication {
     val notAuthorisedRedirectURI = "http://not-authorised-example.com"
     val ivUpliftURI = appConfig.ivUpliftUrl
     val twoFactorURI = appConfig.twoFactorUrl
+
     implicit val fakeRequest = FakeRequest()
+
+    val predicate = new CompositePredicate(appConfig)(postSignURI,
+      notAuthorisedRedirectURI,
+      ivUpliftURI,
+      twoFactorURI)
+
     "return true for page visibility when all supplied predicates are given an AuthContext that passes their associated checks" in {
-      val predicate = new CompositePredicate(appConfig)(postSignURI,
-        notAuthorisedRedirectURI,
-        ivUpliftURI,
-        twoFactorURI)
       val authContext = TestUserBuilder.compositePredicateUserPass
       val result = predicate(authContext, fakeRequest)
 
@@ -51,10 +54,6 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication {
     }
 
     "return false for page visibility when all supplied predicates are given an AuthContext that passes their associated checks" in {
-      val predicate = new CompositePredicate(appConfig)(postSignURI,
-        notAuthorisedRedirectURI,
-        ivUpliftURI,
-        twoFactorURI)
       val authContext = TestUserBuilder.compositePredicateUserFail
       val result = predicate(authContext, fakeRequest)
 
