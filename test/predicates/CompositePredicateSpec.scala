@@ -42,12 +42,25 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication {
         notAuthorisedRedirectURI,
         ivUpliftURI,
         twoFactorURI)
-      val authContext = TestUserBuilder.compositePredicateUserPasser
+      val authContext = TestUserBuilder.compositePredicateUserPass
       val result = predicate(authContext, fakeRequest)
 
       val pageVisibility = await(result)
 
       pageVisibility.isVisible shouldBe true
+    }
+
+    "return false for page visibility when all supplied predicates are given an AuthContext that passes their associated checks" in {
+      val predicate = new CompositePredicate(appConfig)(postSignURI,
+        notAuthorisedRedirectURI,
+        ivUpliftURI,
+        twoFactorURI)
+      val authContext = TestUserBuilder.compositePredicateUserFail
+      val result = predicate(authContext, fakeRequest)
+
+      val pageVisibility = await(result)
+
+      pageVisibility.isVisible shouldBe false
     }
   }
 
