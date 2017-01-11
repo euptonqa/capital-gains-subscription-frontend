@@ -77,7 +77,7 @@ class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with 
       pageVisibility.isVisible shouldBe false
     }
 
-    "supplied with an authContext with an individual credential should return false for page visibility" in {
+    "supplied with an authContext with an individual credential should return true for page visibility" in {
 
       val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Individual, ConfidenceLevel.L200, "", Accounts())), None)
 
