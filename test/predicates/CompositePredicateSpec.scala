@@ -16,13 +16,39 @@
 
 package predicates
 
-import uk.gov.hmrc.play.test.UnitSpec
+import java.net.URI
 
+import builders.TestUserBuilder
+import com.google.inject.{Inject, Singleton}
+import play.api.test.FakeRequest
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import config.AppConfig
+import play.api.inject.Injector
 
-class CompositePredicateSpec extends UnitSpec {
+@Singleton
+class CompositePredicateSpec extends UnitSpec with WithFakeApplication {
 
   "Calling the CompositePredicate" should {
-    "return a false for page visibility "
+    val injector: Injector = fakeApplication.injector
+    def appConfig: AppConfig = injector.instanceOf[AppConfig]
+
+    val postSignURI = "http://post-sigin-example.com"
+    val notAuthorisedRedirectURI = "http://not-authorised-example.com"
+    val ivUpliftURI = appConfig.ivUpliftUrl
+    val twoFactorURI = appConfig.twoFactorUrl
+    implicit val fakeRequest = FakeRequest()
+    "return true for page visibility when all supplied predicates are given an AuthContext that passes their associated checks" in {
+      val predicate = new CompositePredicate(appConfig)(postSignURI,
+        notAuthorisedRedirectURI,
+        ivUpliftURI,
+        twoFactorURI)
+      val authContext = TestUserBuilder.compositePredicateUserPasser
+      val result = predicate(authContext, fakeRequest)
+
+      val pageVisibility = await(result)
+
+      pageVisibility.isVisible shouldBe true
+    }
   }
 
 }

@@ -19,11 +19,11 @@ package predicates
 import java.net.URI
 
 import com.google.inject.{Inject, Singleton}
-import config.ApplicationConfig
+import config.{AppConfig}
 import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, PageVisibilityPredicate}
 
 @Singleton
-class CompositePredicate @Inject()(applicationConfig: ApplicationConfig)(postSignInRedirectUrl: String,
+class CompositePredicate @Inject()(applicationConfig: AppConfig)(postSignInRedirectUrl: String,
                              notAuthorisedRedirectUrl: String,
                              ivUpliftUrl: String,
                              twoFactorUrl: String
