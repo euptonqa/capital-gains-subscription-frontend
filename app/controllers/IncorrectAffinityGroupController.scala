@@ -27,7 +27,7 @@ import scala.concurrent.Future
 @Singleton
 class IncorrectAffinityGroupController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  val incorrectAffinityGroup: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.errors.errorInvalidUser("company", appConfig)))
+  def incorrectAffinityGroup(userType: String): Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(views.html.errors.errorInvalidUser(userType, appConfig)))
   }
 }
