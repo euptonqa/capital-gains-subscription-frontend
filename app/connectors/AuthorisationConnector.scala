@@ -20,7 +20,6 @@ import com.google.inject.{Inject, Singleton}
 import config.WSHttp
 import models.AuthorisationDataModel
 import play.api.http.Status._
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
@@ -53,10 +52,5 @@ class AuthorisationConnector @Inject()() extends ServicesConfig {
         case _ => None
       }
     }
-  }
-
-  def getNino(accounts: Accounts): Option[Nino] = {
-    if(accounts.paye.isDefined) Some(accounts.paye.get.nino)
-    else None
   }
 }

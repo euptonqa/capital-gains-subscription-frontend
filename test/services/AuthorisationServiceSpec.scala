@@ -16,7 +16,6 @@
 
 package services
 
-import builders.TestUserBuilder
 import connectors.AuthorisationConnector
 import models.AuthorisationDataModel
 import org.mockito.Mockito.when
@@ -40,9 +39,6 @@ class AuthorisationServiceSpec extends UnitSpec with MockitoSugar {
     when(mockConnector.getAuthResponse()(ArgumentMatchers.any()))
       .thenReturn(Future.successful(response))
 
-    when(mockConnector.getNino(ArgumentMatchers.any()))
-      .thenReturn(nino)
-
     new AuthorisationService(mockConnector)
   }
 
@@ -58,22 +54,6 @@ class AuthorisationServiceSpec extends UnitSpec with MockitoSugar {
       val service = mockedService(None, None)
       val result = service.getAuthDataModel(hc)
       await(result) shouldBe None
-    }
-  }
-
-  "Calling AuthorisationService .getNino" should {
-
-    "return a Nino with an account with a PAYE account" in {
-      val nino = Some(Nino(TestUserBuilder.createRandomNino))
-      val service = mockedService(None, nino)
-      val result = service.getNino(Accounts(Some(PayeAccount("", nino.get))))
-      result shouldBe nino
-    }
-
-    "return a None with an account with no PAYE account" in {
-      val service = mockedService(None, None)
-      val result = service.getNino(Accounts())
-      result shouldBe None
     }
   }
 }

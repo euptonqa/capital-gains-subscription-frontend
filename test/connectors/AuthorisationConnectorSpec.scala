@@ -26,7 +26,6 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import play.api.http.Status._
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 
 import scala.concurrent.Future
@@ -87,24 +86,6 @@ class AuthorisationConnectorSpec extends UnitSpec with MockitoSugar with WithFak
       when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(affinityResponse("Individual", nino)))))
       await(TestAuthConnector.getAuthResponse()(hc)) shouldBe None
-    }
-  }
-
-  "AuthorisationConnector .getNino" should {
-
-    "return a NINO with an account with a PAYEAccount is passed in" in {
-
-      val testAccount = Accounts(Some(PayeAccount("", Nino(nino))))
-      val result = TestAuthConnector.getNino(testAccount)
-
-      result shouldBe Some(Nino(nino))
-    }
-
-    "Return None with an account with no PAYEAccount is passed in" in {
-      val testAccount = Accounts()
-      val result = TestAuthConnector.getNino(testAccount)
-
-      result shouldBe None
     }
   }
 }

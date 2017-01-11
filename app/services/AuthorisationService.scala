@@ -19,8 +19,6 @@ package services
 import com.google.inject.{Inject, Singleton}
 import connectors.AuthorisationConnector
 import models.AuthorisationDataModel
-import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -31,9 +29,4 @@ class AuthorisationService @Inject()(authConnector: AuthorisationConnector) {
   def getAuthDataModel(implicit hc: HeaderCarrier): Future[Option[AuthorisationDataModel]] = {
     authConnector.getAuthResponse()(hc)
   }
-
-  def getNino(accounts:Accounts): Option[Nino] = {
-    authConnector.getNino(accounts)
-  }
-
 }
