@@ -17,7 +17,6 @@
 package predicates
 
 import builders.TestUserBuilder
-import com.google.inject.{Inject, Singleton}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import config.AppConfig
@@ -38,7 +37,6 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 
-@Singleton
 class CompositePredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
 
   def mockedService(response: Option[AuthorisationDataModel]): AuthorisationService = {
@@ -65,9 +63,9 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
 
     val ninoPass = TestUserBuilder.createRandomNino
 
-    val authorisationDataModelPass = new AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
+    val authorisationDataModelPass = AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
       ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$ninoPass", Nino(ninoPass)))))
-    val authorisationDataModelFail = new AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
+    val authorisationDataModelFail = AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
       ConfidenceLevel.L50, "example.com", Accounts())
 
     implicit val hc = HeaderCarrier()

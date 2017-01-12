@@ -47,6 +47,6 @@ class CompositePredicate @Inject()(applicationConfig: AppConfig, authorisationSe
 
   private val twoFactorURI: URI =
     new URI(s"$twoFactorURI?" +
-      s"continute=$postSignInRedirectUrl&" +
+      s"continue=$postSignInRedirectUrl&" +
     s"failureURL=$notAuthorisedRedirectUrl")
 }
