@@ -64,7 +64,6 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
     implicit val fakeRequest = FakeRequest()
 
     val ninoPass = TestUserBuilder.createRandomNino
-    val ninoFail = None
 
     val authorisationDataModelPass = new AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
       ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$ninoPass", Nino(ninoPass)))))
