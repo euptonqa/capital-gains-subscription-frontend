@@ -63,4 +63,14 @@ object TestUserBuilder {
     AuthContext.apply(Authority("testUserId", Accounts(paye = Some(PayeAccount(s"/paye/$testNINO", Nino(testNINO)))), None, None,
       CredentialStrength.None, ConfidenceLevel.L50, None, None, None, ""))
   }
+
+  val compositePredicateUserPass: AuthContext = {
+    AuthContext.apply(Authority("testUserId", Accounts(paye= Some(PayeAccount(s"/paye/$testNINO", Nino(testNINO)))), None, None,
+      CredentialStrength.Strong, ConfidenceLevel.L500, None, Some("testEnrolmentUri"), None, ""))
+  }
+
+  val compositePredicateUserFail: AuthContext = {
+    AuthContext.apply(Authority("testUserId", Accounts(), None, None,
+      CredentialStrength.Weak, ConfidenceLevel.L50, None, None, None, ""))
+  }
 }

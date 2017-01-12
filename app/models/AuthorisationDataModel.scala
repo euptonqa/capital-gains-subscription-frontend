@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package helpers
+package models
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 
-object AffinityGroupCheck extends AffinityGroupCheck
-
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
-}
+case class AuthorisationDataModel(credentialStrength: CredentialStrength,
+                                  affinityGroup: String,
+                                  confidenceLevel: ConfidenceLevel,
+                                  uri: String,
+                                  accounts: Accounts)

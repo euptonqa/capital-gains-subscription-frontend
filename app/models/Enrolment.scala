@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package helpers
+package models
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+import play.api.libs.json.{Json, OFormat}
 
-object AffinityGroupCheck extends AffinityGroupCheck
+case class Enrolment(key: String, identifiers: Seq[Identifier], state: String)
 
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+object Enrolment {
+  implicit val formats: OFormat[Enrolment] = Json.format[Enrolment]
 }
