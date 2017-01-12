@@ -67,7 +67,7 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
 
     val authorisationDataModelPass = new AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
       ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$ninoPass", Nino(ninoPass)))))
-    val authorisationDataModelFail = new AuthorisationDataModel(CredentialStrength.Weak, AffinityGroup.Individual,
+    val authorisationDataModelFail = new AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
       ConfidenceLevel.L50, "example.com", Accounts())
 
     implicit val hc = HeaderCarrier()
