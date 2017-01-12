@@ -66,12 +66,14 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
     val ninoPass = TestUserBuilder.createRandomNino
     val ninoFail = None
 
-    val authorisationDataModelPass = new AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual, ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$ninoPass", Nino(ninoPass)))))
-    val authorisationDataModelFail = new AuthorisationDataModel(CredentialStrength.Weak, AffinityGroup.Individual, ConfidenceLevel.L50, "example.com", Accounts())
+    val authorisationDataModelPass = new AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
+      ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$ninoPass", Nino(ninoPass)))))
+    val authorisationDataModelFail = new AuthorisationDataModel(CredentialStrength.Weak, AffinityGroup.Individual,
+      ConfidenceLevel.L50, "example.com", Accounts())
 
     implicit val hc = HeaderCarrier()
 
-    def predicate(dataModel: Option[AuthorisationDataModel]) = new CompositePredicate(appConfig, mockedService(dataModel))(postSignURI,
+    def predicate(dataModel: Option[AuthorisationDataModel]): CompositePredicate = new CompositePredicate(appConfig, mockedService(dataModel))(postSignURI,
       notAuthorisedRedirectURI,
       ivUpliftURI,
       twoFactorURI,
