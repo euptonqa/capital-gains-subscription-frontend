@@ -32,7 +32,7 @@ class AuthorisationServiceSpec extends UnitSpec with MockitoSugar {
 
   implicit val hc = mock[HeaderCarrier]
 
-  def mockedService(response: Option[AuthorisationDataModel], nino: Option[Nino]): AuthorisationService = {
+  def mockedService(response: Option[AuthorisationDataModel]): AuthorisationService = {
 
     val mockConnector = mock[AuthorisationConnector]
 
@@ -45,13 +45,13 @@ class AuthorisationServiceSpec extends UnitSpec with MockitoSugar {
   "Calling AuthorisationService .getAuthData" should {
 
     "return an AuthDataModel with a valid request" in {
-      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", Accounts())), None)
+      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", Accounts())))
       val result = service.getAuthDataModel(hc)
       await(result) shouldBe Some(AuthorisationDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", Accounts()))
     }
 
     "return a None with an invalid request" in {
-      val service = mockedService(None, None)
+      val service = mockedService(None)
       val result = service.getAuthDataModel(hc)
       await(result) shouldBe None
     }
@@ -60,13 +60,13 @@ class AuthorisationServiceSpec extends UnitSpec with MockitoSugar {
   "Calling .getAffinityGroup" should {
 
     "Return an affinity group when a valid request is sent" in {
-      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, "DummyAffinity", ConfidenceLevel.L200, "", Accounts())), None)
+      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, "DummyAffinity", ConfidenceLevel.L200, "", Accounts())))
       val result = service.getAffinityGroup(hc)
       await(result) shouldBe Some("DummyAffinity")
     }
 
     "return a None with an invalid request" in {
-      val service = mockedService(None, None)
+      val service = mockedService(None)
       val result = service.getAffinityGroup(hc)
       await(result) shouldBe None
     }

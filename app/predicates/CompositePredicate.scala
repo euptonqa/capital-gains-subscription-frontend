@@ -40,13 +40,13 @@ class CompositePredicate @Inject()(applicationConfig: AppConfig, authorisationSe
   )
 
   private val ivUpliftURI: URI =
-    new URI(s"${ivUpliftUrl}?origin=CGT&"  +
+    new URI(s"$ivUpliftURI?origin=CGT&"  +
       s"completionURL=$postSignInRedirectUrl&" +
       s"failureURL=$notAuthorisedRedirectUrl" +
       s"&confidenceLevel=200")
 
   private val twoFactorURI: URI =
-    new URI(s"${twoFactorUrl}?" +
+    new URI(s"$twoFactorURI?" +
       s"continute=$postSignInRedirectUrl&" +
     s"failureURL=$notAuthorisedRedirectUrl")
 }

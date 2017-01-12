@@ -16,8 +16,6 @@
 
 package predicates
 
-import java.net.URI
-
 import builders.TestUserBuilder
 import com.google.inject.{Inject, Singleton}
 import play.api.test.FakeRequest
@@ -34,7 +32,6 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength, PayeAccount}
-import common.Constants
 import common.Constants.AffinityGroup
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -44,7 +41,7 @@ import scala.concurrent.Future
 @Singleton
 class CompositePredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
 
-  def mockedService(response: Option[AuthorisationDataModel], nino: Option[Nino]): AuthorisationService = {
+  def mockedService(response: Option[AuthorisationDataModel]): AuthorisationService = {
 
     val mockConnector = mock[AuthorisationConnector]
 
@@ -74,24 +71,24 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
 
     implicit val hc = HeaderCarrier()
 
-    def predicate(dataModel: Option[AuthorisationDataModel], nino: Option[Nino]) = new CompositePredicate(appConfig, mockedService(dataModel, nino))(postSignURI,
+    def predicate(dataModel: Option[AuthorisationDataModel]) = new CompositePredicate(appConfig, mockedService(dataModel))(postSignURI,
       notAuthorisedRedirectURI,
       ivUpliftURI,
       twoFactorURI,
       authorisationURI)(hc)
 
-    "return true for page visibility when all supplied predicates are given an AuthContext that passes their associated checks" in {
+    "return true for page visibility when the relevant predicates are given an AuthContext that meets their respective conditions" in {
       val authContext = TestUserBuilder.compositePredicateUserPass
-      val result = predicate(Some(authorisationDataModelFail), ninoFail)(authContext, fakeRequest)
+      val result = predicate(Some(authorisationDataModelPass))(authContext, fakeRequest)
 
       val pageVisibility = await(result)
 
       pageVisibility.isVisible shouldBe true
     }
 
-    "return false for page visibility when all supplied predicates are given an AuthContext that passes their associated checks" in {
+    "return false for page visibility when the relevant predicates are given an AuthContext that fails to meet their respective conditions" in {
       val authContext = TestUserBuilder.compositePredicateUserFail
-      val result = predicate(Some(authorisationDataModelPass), Some(Nino(ninoPass)))(authContext, fakeRequest)
+      val result = predicate(Some(authorisationDataModelFail))(authContext, fakeRequest)
 
       val pageVisibility = await(result)
 
