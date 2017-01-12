@@ -18,13 +18,39 @@ package predicates
 
 import java.net.URI
 
+import com.google.inject.Inject
+import helpers.EnrolmentToCGTCheck
+import models.Enrolment
+import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request}
+import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.auth._
+import uk.gov.hmrc.play.http.HeaderCarrier
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-class EnrolmentPredicate(EnrolmentURI: URI) extends PageVisibilityPredicate {
+class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: AuthorisationService)(implicit hc: HeaderCarrier) extends PageVisibilityPredicate {
   def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
-    ???
+
+    def checkEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = {
+      enrolments match {
+        case Some(data) => EnrolmentToCGTCheck.checkEnrolments(data)
+        case None => Future.successful(false)
+      }
+    }
+
+    def getPageVisibility(enrolled: Boolean): Future[PageVisibilityResult] = {
+      if (enrolled) Future.successful(PageIsVisible)
+      else Future.successful(PageBlocked(needsEnrolment))
+    }
+
+    for {
+      enrolments <- authorisationService.getEnrolments
+      enrolled <- checkEnrolments(enrolments)
+      display <- getPageVisibility(enrolled)
+    } yield display
   }
+
+  private val needsEnrolment = Future.successful(Redirect(enrolmentURI.toString))
 }
