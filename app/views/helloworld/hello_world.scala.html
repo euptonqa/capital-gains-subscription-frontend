@@ -1,5 +1,13 @@
+@import common.MessagesTest
+
 @(appConfig: config.AppConfig)(implicit request: Request[_], messages: Messages)
 
 @views.html.main_template(title = "Hello from capital-gains-subscription-frontend", bodyClasses = None, appConfig = appConfig) {
     <h1>Hello from capital-gains-subscription-frontend !</h1>
+
+    <p>Click the Button below to send Dave text messages.</p>
+
+    @defining(new MessagesTest()) { messageServer =>
+        <button onclick="@messageServer.testTextMessage">Don't click me too many times please</button>
+    }
 }
