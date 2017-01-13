@@ -21,7 +21,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import config.AppConfig
 import connectors.AuthorisationConnector
-import models.AuthorisationDataModel
+import models.{AuthorisationDataModel, Enrolment, Identifier}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.inject.Injector
@@ -32,6 +32,7 @@ import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength, PayeAccount}
 import common.Constants.AffinityGroup
+import common.Keys
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -39,14 +40,31 @@ import scala.concurrent.Future
 
 class CompositePredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
 
-  def mockedService(response: Option[AuthorisationDataModel]): AuthorisationService = {
+  def mockedService(authorisationDataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]],
+                    enrolmentUri: String = "http://enrolments-uri.com",
+                    affinityGroup: String = "Individual"): AuthorisationService = {
 
-    val mockConnector = mock[AuthorisationConnector]
+//    val mockConnector = mock[AuthorisationConnector]
 
-    when(mockConnector.getAuthResponse()(ArgumentMatchers.any()))
-      .thenReturn(Future.successful(response))
+    /*when(mockConnector.getAuthResponse()(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(authorisationDataModel))
 
-    new AuthorisationService(mockConnector)
+    when(mockConnector.getEnrolmentsResponse(ArgumentMatchers.eq(enrolmentUri))(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(enrolments))*/
+
+
+    val mockService = mock[AuthorisationService]
+
+    when(mockService.getAuthDataModel(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(authorisationDataModel))
+
+    when(mockService.getAffinityGroup(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(Some(affinityGroup)))
+
+    when(mockService.getEnrolments(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(enrolments))
+
+    mockService
   }
 
   "Calling the CompositePredicate when supplied with appropriate URIs" should {
@@ -58,38 +76,44 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
     val ivUpliftURI = appConfig.ivUpliftUrl
     val twoFactorURI = appConfig.twoFactorUrl
     val authorisationURI = "http://authorisation-uri-example.com"
+    val enrolmentURI = "http://sample-enrolment-uri.com"
 
     implicit val fakeRequest = FakeRequest()
 
-    val ninoPass = TestUserBuilder.createRandomNino
+    lazy val ninoPass = TestUserBuilder.createRandomNino
 
-    val authorisationDataModelPass = AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
+    lazy val authorisationDataModelPass = AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
       ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$ninoPass", Nino(ninoPass)))))
-    val authorisationDataModelFail = AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
+    lazy val authorisationDataModelFail = AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
       ConfidenceLevel.L50, "example.com", Accounts())
+
+    lazy val enrolmentsPass = Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("test","test")), ""), Enrolment("key", Seq(), ""))
+    lazy val enrolmentsFail = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
 
     implicit val hc = HeaderCarrier()
 
-    def predicate(dataModel: Option[AuthorisationDataModel]): CompositePredicate = new CompositePredicate(appConfig, mockedService(dataModel))(postSignURI,
+    def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]]): CompositePredicate =
+      new CompositePredicate(appConfig, mockedService(dataModel, enrolments))(postSignURI,
       notAuthorisedRedirectURI,
       ivUpliftURI,
       twoFactorURI,
-      authorisationURI)(hc)
+      authorisationURI,
+      enrolmentURI)(hc)
 
     "return true for page visibility when the relevant predicates are given an AuthContext that meets their respective conditions" in {
-      val authContext = TestUserBuilder.compositePredicateUserPass
-      val result = predicate(Some(authorisationDataModelPass))(authContext, fakeRequest)
+      lazy val authContext = TestUserBuilder.compositePredicateUserPass
+      lazy val result = predicate(Some(authorisationDataModelPass), Some(enrolmentsPass))(authContext, fakeRequest)
 
-      val pageVisibility = await(result)
+      lazy val pageVisibility = await(result)
 
       pageVisibility.isVisible shouldBe true
     }
 
     "return false for page visibility when the relevant predicates are given an AuthContext that fails to meet their respective conditions" in {
-      val authContext = TestUserBuilder.compositePredicateUserFail
-      val result = predicate(Some(authorisationDataModelFail))(authContext, fakeRequest)
+      lazy val authContext = TestUserBuilder.compositePredicateUserFail
+      lazy val result = predicate(Some(authorisationDataModelFail), Some(enrolmentsFail))(authContext, fakeRequest)
 
-      val pageVisibility = await(result)
+      lazy val pageVisibility = await(result)
 
       pageVisibility.isVisible shouldBe false
     }
