@@ -29,14 +29,16 @@ class CompositePredicate @Inject()(applicationConfig: AppConfig, authorisationSe
                              notAuthorisedRedirectUrl: String,
                              ivUpliftUrl: String,
                              twoFactorUrl: String,
-                             affinityGroup: String
+                             affinityGroup: String,
+                             enrolmentUrl: String
                             ) (implicit hc: HeaderCarrier) extends CompositePageVisibilityPredicate  {
   override def children: Seq[PageVisibilityPredicate] = Seq (
     new IVUpliftPredicate(new URI(ivUpliftUrl)),
     new LoginPredicate(new URI(applicationConfig.governmentGateway)),
     new TwoFAPredicate(new URI(twoFactorUrl)),
     new NINOPredicate(new URI(ivUpliftUrl)),
-    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))(hc)
+    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))(hc),
+    new EnrolmentPredicate(new URI(enrolmentUrl), authorisationService)(hc)
   )
 
   private val ivUpliftURI: URI =
