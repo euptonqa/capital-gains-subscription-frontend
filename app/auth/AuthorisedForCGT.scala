@@ -16,29 +16,30 @@
 
 package auth
 
+import com.google.inject.Singleton
 import com.google.inject.Inject
 import config.ApplicationConfig
+import connectors.FrontendAuthorisationConnector
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import predicates.CompositePredicate
-import connectors.FrontendAuthorisationConnector
 import services.AuthorisationService
-import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, CompositePageVisibilityPredicate, PageVisibilityPredicate, TaxRegime}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 
 import scala.concurrent.Future
 
-class AuthorisedForCGT @Inject()(applicationConfig: ApplicationConfig, authorisationService: AuthorisationService)(implicit hc: HeaderCarrier) extends Actions {
+@Singleton
+class AuthorisedForCGT @Inject()(applicationConfig: ApplicationConfig, authorisationService: AuthorisationService) extends Actions {
 
   val authConnector = FrontendAuthorisationConnector
   val postSignInRedirectUrl: String = applicationConfig.individualResident
 
+  val visibilityPredicate = new CompositePredicate(applicationConfig,
+    authorisationService)(applicationConfig.individualResident, applicationConfig.notAuthorisedRedirectUrl,
+    applicationConfig.ivUpliftUrl, applicationConfig.twoFactorUrl, "")
+
   class AuthorisedBy(regime: TaxRegime) {
-    val authedBy: AuthenticatedBy = AuthorisedFor(regime, new CompositePageVisibilityPredicate {
-      override def children: Seq[PageVisibilityPredicate] = Seq(new CompositePredicate(applicationConfig,
-        authorisationService)(applicationConfig.individualResident, applicationConfig.notAuthorisedRedirectUrl,
-        applicationConfig.ivUpliftUrl, applicationConfig.twoFactorUrl, ""))
-    })
+    val authedBy: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
 
     def async(action: Request[AnyContent] => Future[Result]): Action[AnyContent] = {
       authedBy.async {
@@ -54,8 +55,10 @@ class AuthorisedForCGT @Inject()(applicationConfig: ApplicationConfig, authorisa
 
   trait CGTRegime extends TaxRegime {
     override def isAuthorised(accounts: Accounts): Boolean = true
+
     override def authenticationType: AuthenticationProvider = ggProvider
   }
 
   object CGTAnyRegime extends CGTRegime
+
 }

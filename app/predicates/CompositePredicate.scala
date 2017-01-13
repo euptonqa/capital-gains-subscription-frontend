@@ -24,18 +24,17 @@ import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, PageVisibilityPredicate}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-class CompositePredicate @Inject()(applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
+class CompositePredicate (applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
                              notAuthorisedRedirectUrl: String,
                              ivUpliftUrl: String,
                              twoFactorUrl: String,
                              affinityGroup: String
-                            )(implicit hc: HeaderCarrier) extends CompositePageVisibilityPredicate  {
+                            ) extends CompositePageVisibilityPredicate  {
   override def children: Seq[PageVisibilityPredicate] = Seq (
-    new IVUpliftPredicate(new URI(ivUpliftUrl)),
-    new LoginPredicate(new URI(applicationConfig.governmentGateway)),
     new TwoFAPredicate(new URI(twoFactorUrl)),
+    new IVUpliftPredicate(new URI(ivUpliftUrl)),
     new NINOPredicate(new URI(ivUpliftUrl)),
-    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))(hc)
+    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))
   )
 
   private val ivUpliftURI: URI =
