@@ -16,28 +16,28 @@
 
 package auth
 
-import java.net.URI
-import javax.inject.Singleton
-
 import com.google.inject.Inject
 import config.ApplicationConfig
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import predicates.LoginPredicate
+import predicates.CompositePredicate
 import connectors.FrontendAuthorisationConnector
-import uk.gov.hmrc.play.frontend.auth.{Actions, CompositePageVisibilityPredicate, PageVisibilityPredicate, TaxRegime, AuthContext, AuthenticationProvider}
+import services.AuthorisationService
+import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, CompositePageVisibilityPredicate, PageVisibilityPredicate, TaxRegime}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-@Singleton
-class AuthorisedForCGT @Inject()(applicationConfig: ApplicationConfig) extends Actions {
+class AuthorisedForCGT @Inject()(applicationConfig: ApplicationConfig, authorisationService: AuthorisationService)(implicit hc: HeaderCarrier) extends Actions {
 
   val authConnector = FrontendAuthorisationConnector
   val postSignInRedirectUrl: String = applicationConfig.individualResident
 
   class AuthorisedBy(regime: TaxRegime) {
     val authedBy: AuthenticatedBy = AuthorisedFor(regime, new CompositePageVisibilityPredicate {
-      override def children: Seq[PageVisibilityPredicate] = Seq(new LoginPredicate(new URI("")))
+      override def children: Seq[PageVisibilityPredicate] = Seq(new CompositePredicate(applicationConfig,
+        authorisationService)(applicationConfig.individualResident, applicationConfig.notAuthorisedRedirectUrl,
+        applicationConfig.ivUpliftUrl, applicationConfig.twoFactorUrl, ""))
     })
 
     def async(action: Request[AnyContent] => Future[Result]): Action[AnyContent] = {

@@ -24,13 +24,12 @@ import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, PageVisibilityPredicate}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-@Singleton
 class CompositePredicate @Inject()(applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
                              notAuthorisedRedirectUrl: String,
                              ivUpliftUrl: String,
                              twoFactorUrl: String,
                              affinityGroup: String
-                            ) (implicit hc: HeaderCarrier) extends CompositePageVisibilityPredicate  {
+                            )(implicit hc: HeaderCarrier) extends CompositePageVisibilityPredicate  {
   override def children: Seq[PageVisibilityPredicate] = Seq (
     new IVUpliftPredicate(new URI(ivUpliftUrl)),
     new LoginPredicate(new URI(applicationConfig.governmentGateway)),
