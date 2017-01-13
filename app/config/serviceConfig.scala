@@ -31,6 +31,7 @@ trait AppConfig {
   val notAuthorisedRedirectUrl: String
   val twoFactorUrl: String
   val governmentGateway: String
+  val individualResident: String
 }
 
 @Singleton
@@ -51,4 +52,5 @@ class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfi
   override lazy val notAuthorisedRedirectUrl = configuration.getString("not-authorised-callback.url").getOrElse("")
   override lazy val twoFactorUrl: String = configuration.getString(s"two-factor.host").getOrElse("")
   override lazy val governmentGateway: String = configuration.getString(s"government-gateway-sign-in.host").getOrElse("")
+  override lazy val individualResident: String = configuration.getString(s"resident-individual-sign-in.url").getOrElse("")
 }

@@ -22,13 +22,19 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import javax.inject.Singleton
 
 import auth.AuthorisedForCGT
+import config.WSHttp
+import connectors.AuthorisationConnector
+import services.AuthorisationService
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.http.HttpGet
 
 import scala.concurrent.Future
 
 @Singleton
-class ResidentIndividualSubscriptionController @Inject()() extends FrontendController with AuthorisedForCGT {
+class ResidentIndividualSubscriptionController @Inject()(authorisationService: AuthorisationService,
+                                                         authorisedForCGT: AuthorisedForCGT) extends FrontendController {
 
-  val residentIndividualSubscription = Action.async { implicit request =>
+  val residentIndividualSubscription = authorisedForCGT.Authorised.async { implicit request =>
     Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
   }
 }

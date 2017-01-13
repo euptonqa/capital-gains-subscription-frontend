@@ -16,19 +16,28 @@
 
 package controllers
 
+import org.scalatest.mock.MockitoSugar
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import play.api.test.Helpers._
+import services.AuthorisationService
 
-class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFakeApplication {
+class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+
+  def createMockService(): AuthorisationService = {
+    val mockService = mock[AuthorisationService]
+
+    mockService
+  }
 
   "Calling .residentIndividualSubscription" when {
 
     "provided with a valid user" should {
       val fakeRequest = FakeRequest("GET", "/")
+      lazy val service = createMockService()
 
-      val target = new ResidentIndividualSubscriptionController()
-      val result = target.residentIndividualSubscription(fakeRequest)
+      lazy val target = new ResidentIndividualSubscriptionController(service)
+      lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
         status(result) shouldBe 303

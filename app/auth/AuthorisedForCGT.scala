@@ -17,15 +17,23 @@
 package auth
 
 import java.net.URI
+import javax.inject.Singleton
 
+import com.google.inject.Inject
+import config.ApplicationConfig
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import predicates.LoginPredicate
-import uk.gov.hmrc.play.frontend.auth._
+import connectors.FrontendAuthorisationConnector
+import uk.gov.hmrc.play.frontend.auth.{Actions, CompositePageVisibilityPredicate, PageVisibilityPredicate, TaxRegime, AuthContext, AuthenticationProvider}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 
 import scala.concurrent.Future
 
-trait AuthorisedForCGT extends Actions {
+@Singleton
+class AuthorisedForCGT @Inject()(applicationConfig: ApplicationConfig) extends Actions {
+
+  val authConnector = FrontendAuthorisationConnector
+  val postSignInRedirectUrl: String = applicationConfig.individualResident
 
   class AuthorisedBy(regime: TaxRegime) {
     val authedBy: AuthenticatedBy = AuthorisedFor(regime, new CompositePageVisibilityPredicate {
@@ -40,7 +48,9 @@ trait AuthorisedForCGT extends Actions {
     }
   }
 
-  val ggProvider = new GovernmentGatewayProvider("test", "test")
+  object Authorised extends AuthorisedBy(CGTAnyRegime)
+
+  val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
 
   trait CGTRegime extends TaxRegime {
     override def isAuthorised(accounts: Accounts): Boolean = true

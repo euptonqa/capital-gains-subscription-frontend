@@ -21,6 +21,7 @@ import config.WSHttp
 import models.AuthorisationDataModel
 import play.api.http.Status._
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
 

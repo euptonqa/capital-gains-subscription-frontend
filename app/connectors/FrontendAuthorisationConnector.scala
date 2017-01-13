@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package auth
+package connectors
 
-import java.net.URLEncoder
+import config.WSHttp
+import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-import uk.gov.hmrc.play.frontend.auth.GovernmentGateway
-
-class GovernmentGatewayProvider(postSignInRedirectUrl: String, loginUrl: String) extends GovernmentGateway {
-  override def additionalLoginParameters = Map("accountType" -> Seq("individual"))
-
-  override def continueURL = postSignInRedirectUrl
-
-  override def loginURL: String = this.loginUrl
+object FrontendAuthorisationConnector extends AuthConnector with ServicesConfig {
+  val serviceUrl = baseUrl("auth")
+  lazy val http = WSHttp
 }
+
