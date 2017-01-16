@@ -32,5 +32,4 @@ class OrganisationTypeController @Inject()(appConfig: AppConfig, val messagesApi
   val organisationType: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Ok(views.html.errors.organisationType(appConfig, organisationForm)))
   }
-
 }

@@ -28,7 +28,15 @@ invalidAffinityGroup.paragraph.three.pensionTrust.link = Pension trustees: inves
 ## Organisation Type Messages ##
 organisationType.title = Awaiting content
 organisationType.question = Awaiting content
+organisationType.company = Limited Company
+organisationType.charity = Charity
+organisationType.partnership = Partnerships
+organisationType.trust = Trusts
+organisationType.pensionTrust = Pension trust administrator
 
 
 ## Error Messages ##
 errors.mandatory = Please select an option
+
+## Common Messages ##
+common.continue = Continue
