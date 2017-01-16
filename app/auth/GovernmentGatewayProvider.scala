@@ -21,9 +21,10 @@ import java.net.URLEncoder
 import uk.gov.hmrc.play.frontend.auth.GovernmentGateway
 
 class GovernmentGatewayProvider(postSignInRedirectUrl: String, loginUrl: String) extends GovernmentGateway {
-  override def additionalLoginParameters = Map("accountType" -> Seq("individual"))
 
   override def continueURL = postSignInRedirectUrl
 
   override def loginURL: String = this.loginUrl
+
+
 }

@@ -23,13 +23,11 @@ import services.AuthorisationService
 import predicates.CompositePredicate
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 trait AuthorisedForCGT extends Actions {
 
-  println("LOG: AuthorisedForCGT  Constructor")
 
   private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
   private type AsyncUserRequest = CGTUser => AsyncPlayRequest
@@ -48,7 +46,6 @@ trait AuthorisedForCGT extends Actions {
 
     def async(action: AsyncUserRequest): Action[AnyContent] = {
 
-      println("MAC: Here again")
       authenticatedBy.async {
         authContext: AuthContext => implicit request =>
           action(CGTUser(authContext))(request)
@@ -64,6 +61,8 @@ trait AuthorisedForCGT extends Actions {
     override def isAuthorised(accounts: Accounts): Boolean = true
 
     override def authenticationType: AuthenticationProvider = ggProvider
+
+    override def unauthorisedLandingPage: Option[String] = Some(applicationConfig.notAuthorisedRedirectUrl)
   }
 
   object CgtAnyRegime extends CgtRegime
