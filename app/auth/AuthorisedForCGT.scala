@@ -28,8 +28,8 @@ import scala.concurrent.Future
 
 trait AuthorisedForCGT extends Actions {
 
-  private type PlayRequest = Request[AnyContent] => Result
-  private type UserRequest = CGTUser => PlayRequest
+  println("LOG: AuthorisedForCGT  Constructor")
+
   private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
   private type AsyncUserRequest = CGTUser => AsyncPlayRequest
 
@@ -43,28 +43,27 @@ trait AuthorisedForCGT extends Actions {
     applicationConfig.ivUpliftUrl, applicationConfig.twoFactorUrl, "")
 
   class AuthorisedBy(regime: TaxRegime) {
-    lazy val authedBy: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
+    lazy val authenticatedBy: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
 
     def async(action: AsyncUserRequest): Action[AnyContent] = {
-      authedBy.async {
+      println("MAC: Here again")
+      authenticatedBy.async {
         authContext: AuthContext => implicit request =>
           action(CGTUser(authContext))(request)
       }
     }
-
-    def apply(action: UserRequest): Action[AnyContent] = async(user => request => Future.successful(action(user)(request)))
   }
 
-  object Authorised extends AuthorisedBy(CGTAnyRegime)
+  object Authorised extends AuthorisedBy(CgtAnyRegime)
 
   lazy val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
 
-  trait CGTRegime extends TaxRegime {
+  trait CgtRegime extends TaxRegime {
     override def isAuthorised(accounts: Accounts): Boolean = true
 
     override def authenticationType: AuthenticationProvider = ggProvider
   }
 
-  object CGTAnyRegime extends CGTRegime
+  object CgtAnyRegime extends CgtRegime
 
 }

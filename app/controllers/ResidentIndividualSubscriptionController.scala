@@ -16,23 +16,20 @@
 
 package controllers
 
-import com.google.inject.Inject
-import play.api.mvc.Action
-import uk.gov.hmrc.play.frontend.controller.FrontendController
 import javax.inject.Singleton
 
 import auth.AuthorisedForCGT
-import config.{ApplicationConfig, WSHttp}
-import connectors.AuthorisationConnector
+import com.google.inject.Inject
+import config.ApplicationConfig
 import services.AuthorisationService
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.HttpGet
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
 class ResidentIndividualSubscriptionController @Inject()(authService: AuthorisationService,
-                                                         appConfig: ApplicationConfig) extends FrontendController with AuthorisedForCGT{
+                                                         appConfig: ApplicationConfig)
+  extends FrontendController with AuthorisedForCGT {
 
   lazy val authorisationService = authService
   lazy val applicationConfig = appConfig

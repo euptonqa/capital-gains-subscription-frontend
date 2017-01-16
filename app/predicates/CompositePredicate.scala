@@ -31,20 +31,20 @@ class CompositePredicate (applicationConfig: AppConfig, authorisationService: Au
                              affinityGroup: String
                             ) extends CompositePageVisibilityPredicate  {
   override def children: Seq[PageVisibilityPredicate] = Seq (
-    new TwoFAPredicate(new URI(twoFactorUrl)),
-    new IVUpliftPredicate(new URI(ivUpliftUrl)),
-    new NINOPredicate(new URI(ivUpliftUrl)),
+    new TwoFAPredicate(twoFactorURI),
+//    new IVUpliftPredicate(ivUpliftURI),
+//    new NINOPredicate(ivUpliftURI),
     new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))
   )
 
-  private val ivUpliftURI: URI =
-    new URI(s"$ivUpliftURI?origin=CGT&"  +
-      s"completionURL=$postSignInRedirectUrl&" +
-      s"failureURL=$notAuthorisedRedirectUrl" +
-      s"&confidenceLevel=200")
+//  private val ivUpliftURI: URI =
+//    new URI(s"$ivUpliftUrl?origin=CGT&"  +
+//      s"completionURL=$postSignInRedirectUrl&" +
+//      s"failureURL=$notAuthorisedRedirectUrl" +
+//      s"&confidenceLevel=200")
 
   private val twoFactorURI: URI =
-    new URI(s"$twoFactorURI?" +
+    new URI(s"$twoFactorUrl?" +
       s"continue=$postSignInRedirectUrl&" +
     s"failureURL=$notAuthorisedRedirectUrl")
 }
