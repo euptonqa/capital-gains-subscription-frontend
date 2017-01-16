@@ -9,7 +9,7 @@
 
     <a class="heading-large">@Messages("organisationType.question")</a>
 
-    @form(action = ) {
+    @form(action = controllers.routes.OrganisationTypeController.organisationType) {
 
         @formInputRadioGroup(
             field = organisationForm("organisationType"),
