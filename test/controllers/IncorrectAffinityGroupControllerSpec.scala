@@ -50,7 +50,7 @@ class IncorrectAffinityGroupControllerSpec extends UnitSpec with MockitoSugar wi
     }
 
     "provided with an invalid userType" should {
-      lazy val result = controller.incorrectAffinityGroup("")(fakeRequest)
+      lazy val result = controller.incorrectAffinityGroup("afdytwe")(fakeRequest)
 
       "return a status of 303" in {
         status(result) shouldBe 303

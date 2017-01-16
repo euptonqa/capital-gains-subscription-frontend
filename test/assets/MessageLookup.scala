@@ -18,6 +18,18 @@ package assets
 
 object MessageLookup {
 
+  object Common {
+
+    val continue = "Continue"
+
+  }
+
+  object Errors {
+
+    val errorMandatory = "Please select an option"
+
+  }
+
   object InvalidAffinityGroup {
 
     val title = "You've signed in with the wrong type of account"
@@ -39,4 +51,16 @@ object MessageLookup {
 
   }
 
+  object OrganisationType {
+
+    val title = "Awaiting content"
+    val heading = "Awaiting content"
+    val question = "Awaiting content"
+    val company = "Limited Company"
+    val charity = "Charity"
+    val partnership = "Partnerships"
+    val trust = "Trusts"
+    val pensionTrust = "Pension trust administrator"
+
+  }
 }

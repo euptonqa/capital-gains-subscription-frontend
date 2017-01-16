@@ -29,7 +29,7 @@ import scala.concurrent.Future
 class IncorrectAffinityGroupController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   def incorrectAffinityGroup(userType: String): Action[AnyContent] = Action.async { implicit request =>
-    if (InvalidUserTypes.validUsers.contains(userType))
+    if (InvalidUserTypes.users.contains(userType))
       Future.successful(Ok(views.html.errors.errorInvalidUser(userType, appConfig)))
       //TODO redirect to new user type selection page
     else Future.successful(Redirect(""))

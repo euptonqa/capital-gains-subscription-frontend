@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package common
+package forms
 
-object Constants {
+import play.api.data.Form
+import play.api.data.Forms._
+import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
+import common.Constants.InvalidUserTypes
+import models.OrganisationModel
 
-  object AffinityGroup {
-    val Agent = "Agent"
-    val Individual = "Individual"
-    val Organisation = "Organisation"
-  }
+object OrganisationForm {
 
-  object InvalidUserTypes {
-    val agent = "agent"
-    val company = "company"
-    val charity = "charity"
-    val partnership = "partnership"
-    val trust = "trust"
-    val pensionTrust = "pensionTrust"
-
-    val users = Seq(agent, company, charity, partnership, trust, pensionTrust, "")
-  }
+  val organisationForm = Form(
+    mapping(
+      "organisationType" -> text
+        .verifying(Messages("errors.mandatory"), input => input.trim != "")
+        .verifying(Messages("errors.mandatory"), input => InvalidUserTypes.users.contains(input))
+    )(OrganisationModel.apply)(OrganisationModel.unapply)
+  )
 }
