@@ -29,4 +29,4 @@ class AppFilters @Inject()(metrics: MetricsFilter,
                            cacheControl: CacheControlFilter,
                            recovery: RecoveryFilter,
                            sessionId: SessionIdFilter)
-  extends DefaultHttpFilters(metrics, headers, sessionCookieCryapto, deviceId, logging, audit, csrfExceptions, cacheControl, recovery, sessionId)
+  extends DefaultHttpFilters(metrics, headers, sessionCookieCrypto, deviceId, logging, audit, csrfExceptions, cacheControl, recovery, sessionId)
