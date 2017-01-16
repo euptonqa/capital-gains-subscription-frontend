@@ -9,5 +9,23 @@
 
     <a class="heading-large">@Messages("organisationType.question")</a>
 
+    @form(action = ) {
 
+        @formInputRadioGroup(
+            field = organisationForm("organisationType"),
+            Seq(
+                "Yes"->Messages("calc.base.yes"),
+                "No"->Messages("calc.base.no")
+            ),
+            '_legend -> Messages("calc.resident.lossesBroughtForward.question"),
+            '_legendID -> "organisationType",
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_groupClass -> "inline form-group radio-list",
+            '_fieldsetAttributes -> "aria-details = help"
+        )
+
+        <button class="button yes-no-button" type="submit" id="continue-button">@Messages("calc.base.continue")</button>
+    }
 }
