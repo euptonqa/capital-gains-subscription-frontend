@@ -19,13 +19,14 @@ package filters
 import com.google.inject.Inject
 import play.api.http.DefaultHttpFilters
 
-class AppFilters @Inject()(logging: LoggingFilter,
-                           audit: AuditFilter,
-                           recovery: RecoveryFilter,
-                           cacheControl: CacheControlFilter,
-                           deviceId: DeviceIdCookieFilter,
-                           csrfExceptions: CsrfExceptionsFilter,
+class AppFilters @Inject()(metrics: MetricsFilter,
                            headers: HeadersFilter,
-                           metrics: MetricsFilter,
-                           sessionCookieCrypto: SessionCookieCryptoFilter)
-  extends DefaultHttpFilters(logging, audit, recovery, cacheControl, deviceId, csrfExceptions, headers, metrics)
+                           sessionCookieCrypto: SessionCookieCryptoFilter,
+                           deviceId: DeviceIdCookieFilter,
+                           logging: LoggingFilter,
+                           audit: AuditFilter,
+                           csrfExceptions: CsrfExceptionsFilter,
+                           cacheControl: CacheControlFilter,
+                           recovery: RecoveryFilter,
+                           sessionId: SessionIdFilter)
+  extends DefaultHttpFilters(metrics, headers, sessionCookieCrypto, deviceId, logging, audit, csrfExceptions, cacheControl, recovery, sessionId)
