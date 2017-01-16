@@ -37,12 +37,7 @@ class LoginPredicate(errorPageUri: URI) extends PageVisibilityPredicate {
     for {
       weakCred <- weak
     } yield weakCred match {
-      case true => {
-        println("################PASSED###############")
-        PageIsVisible}
-      case false => {
-        println("################FAILED###############")
-        PageBlocked(errorPage)}
-    }
+      case true => PageIsVisible
+      case false => PageBlocked(errorPage)}
   }
 }

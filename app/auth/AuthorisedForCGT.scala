@@ -16,42 +16,48 @@
 
 package auth
 
-import com.google.inject.Singleton
-import com.google.inject.Inject
 import config.ApplicationConfig
 import connectors.FrontendAuthorisationConnector
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import predicates.CompositePredicate
 import services.AuthorisationService
+import predicates.CompositePredicate
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 
 import scala.concurrent.Future
 
-@Singleton
-class AuthorisedForCGT @Inject()(applicationConfig: ApplicationConfig, authorisationService: AuthorisationService) extends Actions {
+trait AuthorisedForCGT extends Actions {
 
+  private type PlayRequest = Request[AnyContent] => Result
+  private type UserRequest = CGTUser => PlayRequest
+  private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
+  private type AsyncUserRequest = CGTUser => AsyncPlayRequest
+
+  val applicationConfig: ApplicationConfig
+  val authorisationService: AuthorisationService
   val authConnector = FrontendAuthorisationConnector
-  val postSignInRedirectUrl: String = applicationConfig.individualResident
+  lazy val postSignInRedirectUrl: String = applicationConfig.individualResident
 
-  val visibilityPredicate = new CompositePredicate(applicationConfig,
+  lazy val visibilityPredicate = new CompositePredicate(applicationConfig,
     authorisationService)(applicationConfig.individualResident, applicationConfig.notAuthorisedRedirectUrl,
     applicationConfig.ivUpliftUrl, applicationConfig.twoFactorUrl, "")
 
   class AuthorisedBy(regime: TaxRegime) {
-    val authedBy: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
+    lazy val authedBy: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
 
-    def async(action: Request[AnyContent] => Future[Result]): Action[AnyContent] = {
+    def async(action: AsyncUserRequest): Action[AnyContent] = {
       authedBy.async {
         authContext: AuthContext => implicit request =>
-          action(request)
+          action(CGTUser(authContext))(request)
       }
     }
+
+    def apply(action: UserRequest): Action[AnyContent] = async(user => request => Future.successful(action(user)(request)))
   }
 
   object Authorised extends AuthorisedBy(CGTAnyRegime)
 
-  val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
+  lazy val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
 
   trait CGTRegime extends TaxRegime {
     override def isAuthorised(accounts: Accounts): Boolean = true
