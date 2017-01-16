@@ -20,7 +20,6 @@ import builders.TestUserBuilder
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import config.AppConfig
-import connectors.AuthorisationConnector
 import models.{AuthorisationDataModel, Enrolment, Identifier}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -43,15 +42,6 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
   def mockedService(authorisationDataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]],
                     enrolmentUri: String = "http://enrolments-uri.com",
                     affinityGroup: String = "Individual"): AuthorisationService = {
-
-//    val mockConnector = mock[AuthorisationConnector]
-
-    /*when(mockConnector.getAuthResponse()(ArgumentMatchers.any()))
-      .thenReturn(Future.successful(authorisationDataModel))
-
-    when(mockConnector.getEnrolmentsResponse(ArgumentMatchers.eq(enrolmentUri))(ArgumentMatchers.any()))
-      .thenReturn(Future.successful(enrolments))*/
-
 
     val mockService = mock[AuthorisationService]
 
@@ -80,15 +70,15 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
 
     implicit val fakeRequest = FakeRequest()
 
-    lazy val ninoPass = TestUserBuilder.createRandomNino
+    val ninoPass = TestUserBuilder.createRandomNino
 
-    lazy val authorisationDataModelPass = AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
+    val authorisationDataModelPass = AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
       ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$ninoPass", Nino(ninoPass)))))
-    lazy val authorisationDataModelFail = AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
+    val authorisationDataModelFail = AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
       ConfidenceLevel.L50, "example.com", Accounts())
 
-    lazy val enrolmentsPass = Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("test","test")), ""), Enrolment("key", Seq(), ""))
-    lazy val enrolmentsFail = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
+    val enrolmentsPass = Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("test","test")), ""), Enrolment("key", Seq(), ""))
+    val enrolmentsFail = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
 
     implicit val hc = HeaderCarrier()
 
