@@ -27,5 +27,6 @@ class AppFilters @Inject()(logging: LoggingFilter,
                            csrfExceptions: CsrfExceptionsFilter,
                            headers: HeadersFilter,
                            metrics: MetricsFilter,
-                           sessionCookieCrypto: SessionCookieCryptoFilter)
-  extends DefaultHttpFilters(logging, audit, recovery, cacheControl, deviceId, csrfExceptions, headers, metrics)
+                           sessionCookieCrypto: SessionCookieCryptoFilter,
+                           sessionId: SessionIdFilter)
+  extends DefaultHttpFilters(logging, audit, recovery, cacheControl, deviceId, csrfExceptions, headers, metrics, sessionId)
