@@ -23,6 +23,7 @@ import services.AuthorisationService
 import predicates.CompositePredicate
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -40,12 +41,13 @@ trait AuthorisedForCGT extends Actions {
 
   lazy val visibilityPredicate = new CompositePredicate(applicationConfig,
     authorisationService)(applicationConfig.individualResident, applicationConfig.notAuthorisedRedirectUrl,
-    applicationConfig.ivUpliftUrl, applicationConfig.twoFactorUrl, "")
+    applicationConfig.ivUpliftUrl, applicationConfig.twoFactorUrl, "", "")
 
   class AuthorisedBy(regime: TaxRegime) {
     lazy val authenticatedBy: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
 
     def async(action: AsyncUserRequest): Action[AnyContent] = {
+
       println("MAC: Here again")
       authenticatedBy.async {
         authContext: AuthContext => implicit request =>

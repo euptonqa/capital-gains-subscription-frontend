@@ -18,7 +18,7 @@ package connectors
 
 import com.google.inject.{Inject, Singleton}
 import config.WSHttp
-import models.AuthorisationDataModel
+import models.{AuthorisationDataModel, Enrolment}
 import play.api.http.Status._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -52,6 +52,17 @@ class AuthorisationConnector @Inject()() extends ServicesConfig {
         }
         case _ => None
       }
+    }
+  }
+
+  def getEnrolmentsResponse(uri: String)(implicit hc: HeaderCarrier): Future[Option[Seq[Enrolment]]] = {
+    val getUrl = s"$serviceUrl$uri/enrolments"
+    http.GET[HttpResponse](getUrl).map {
+      response =>
+        response.status match {
+          case OK => Some(response.json.as[Seq[Enrolment]])
+          case _ => None
+        }
     }
   }
 }
