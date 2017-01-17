@@ -100,7 +100,9 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
       }
 
       "redirect to the mock gg-login page" in {
-        redirectLocation(result) shouldBe Some("gg-login?continue=test&origin=capital-gains-subscription-frontend")
+        redirectLocation(result) shouldBe Some("gg-login?" +
+          "continue=%2Fcapital-gains-subscription-frontend%2Fsubscribe%2Fresident%2Findividual" +
+          "&origin=capital-gains-subscription-frontend")
       }
     }
   }

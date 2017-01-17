@@ -35,11 +35,15 @@ class AuthorisedForCGT @Inject() (applicationConfig: ApplicationConfig, authoris
   private type AsyncUserRequest = CGTUser => AsyncPlayRequest
 
   val authConnector = frontendAuthorisationConnector
-  lazy val postSignInRedirectUrl: String = applicationConfig.individualResident
+  lazy val postSignInRedirectUrl: String = controllers.routes.ResidentIndividualSubscriptionController.residentIndividualSubscription().url
 
   lazy val visibilityPredicate = new CompositePredicate(applicationConfig,
-    authorisationService)(applicationConfig.individualResident, applicationConfig.notAuthorisedRedirectUrl,
-    applicationConfig.ivUpliftUrl, applicationConfig.twoFactorUrl, "", "")
+    authorisationService)(postSignInRedirectUrl,
+    applicationConfig.notAuthorisedRedirectUrl,
+    applicationConfig.ivUpliftUrl,
+    applicationConfig.twoFactorUrl,
+    "http://localhost:9771/subscribe/individual/organisation-type", //TODO replace with controller context route when created
+    "")
 
   class AuthorisedBy(regime: TaxRegime) {
     lazy val authenticatedBy: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
