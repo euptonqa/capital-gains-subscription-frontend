@@ -38,17 +38,18 @@ class OrganisationTypeController @Inject()(appConfig: AppConfig, authorisationSe
     controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup(input)))
 
   val organisationType: Action[AnyContent] = Action.async { implicit request =>
+
+    def routeRequest(affinityGroup: Option[String]): Future[Result] = affinityGroup match {
+      case Some(AffinityGroup.Agent) => Future.successful(Redirect(
+        controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup(InvalidUserTypes.agent)))
+      case Some(AffinityGroup.Organisation) => Future.successful(Ok(views.html.errors.organisationType(appConfig, organisationForm)))
+      case _ => throw AffinityGroupNotFoundException("Affinity group not retrieved")
+    }
+
     for {
       affinityGroup <- authorisationService.getAffinityGroup(hc)
       route <- routeRequest(affinityGroup)
     } yield route
-  }
-
-  private def routeRequest(affinityGroup: Option[String]): Future[Result] = affinityGroup match {
-    case Some(AffinityGroup.Agent) => Future.successful(Redirect(
-      controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup(InvalidUserTypes.agent)))
-    case Some(AffinityGroup.Organisation) => Future.successful(Ok(views.html.errors.organisationType(appConfig, organisationForm)))
-    case _ => throw AffinityGroupNotFoundException("Affinity group not retrieved")
   }
 
   val submitOrganisationType: Action[AnyContent] = Action.async { implicit request =>

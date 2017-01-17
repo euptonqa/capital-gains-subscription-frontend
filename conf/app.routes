@@ -3,8 +3,9 @@
 
 GET        /hello-world                                       @controllers.HelloWorld.helloWorld
 
-GET        /subscribe/individual/invalid-user                 @controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
+GET        /individual/invalid-user                           @controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
 
-GET        /subscribe/individual/organisation-type            @controllers.OrganisationTypeController.organisationType
+GET        /individual/organisation-type                      @controllers.OrganisationTypeController.organisationType
+POST       /individual/organisation-type                      @controllers.OrganisationTypeController.submitOrganisationType
 
 GET        /hello-world                                       @controllers.HelloWorld.helloWorld

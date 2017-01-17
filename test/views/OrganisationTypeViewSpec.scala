@@ -56,10 +56,6 @@ class OrganisationTypeViewSpec extends UnitSpec with WithFakeApplication with Fa
       s"has the text ${messages.question}" in {
         doc.select("p").get(1).text shouldEqual messages.question
       }
-
-      "has a bold font" in {
-        doc.select("p").get(1).hasClass("bold") shouldEqual true
-      }
     }
 
     "have a set of radio buttons" which {
@@ -89,8 +85,8 @@ class OrganisationTypeViewSpec extends UnitSpec with WithFakeApplication with Fa
 
     "has a form" which {
 
-      "has a action too /capital-gains-subscription-frontend/subscribe/individual/organisation-type" in {
-        doc.select("form").attr("action") shouldEqual "/capital-gains-subscription-frontend/subscribe/individual/organisation-type"
+      "has a action too /capital-gains-tax/subscription/individual/organisation-type" in {
+        doc.select("form").attr("action") shouldEqual "/capital-gains-tax/subscription/individual/organisation-type"
       }
 
       "has a action with type POST" in {
