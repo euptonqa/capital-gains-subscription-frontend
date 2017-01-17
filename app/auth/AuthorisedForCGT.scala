@@ -35,7 +35,7 @@ class AuthorisedForCGT @Inject() (applicationConfig: ApplicationConfig, authoris
   private type AsyncUserRequest = CGTUser => AsyncPlayRequest
 
   val authConnector = frontendAuthorisationConnector
-  lazy val postSignInRedirectUrl: String = controllers.routes.ResidentIndividualSubscriptionController.residentIndividualSubscription().url
+  lazy val postSignInRedirectUrl: String = applicationConfig.individualResident
 
   lazy val visibilityPredicate = new CompositePredicate(applicationConfig,
     authorisationService)(postSignInRedirectUrl,

@@ -101,7 +101,7 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
 
       "redirect to the mock gg-login page" in {
         redirectLocation(result) shouldBe Some("gg-login?" +
-          "continue=%2Fcapital-gains-tax%2Fsubscription%2Fresident%2Findividual" +
+          "continue=test" +
           "&origin=capital-gains-subscription-frontend")
       }
     }
