@@ -42,7 +42,7 @@ class AuthorisedForCGT @Inject() (applicationConfig: ApplicationConfig, authoris
     applicationConfig.notAuthorisedRedirectUrl,
     applicationConfig.ivUpliftUrl,
     applicationConfig.twoFactorUrl,
-    "http://localhost:9771/subscribe/individual/organisation-type", //TODO replace with controller context route when created
+    applicationConfig.individualBadAffinity,
     "")
 
   class AuthorisedBy(regime: TaxRegime) {
