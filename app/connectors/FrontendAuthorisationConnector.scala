@@ -16,11 +16,13 @@
 
 package connectors
 
+import com.google.inject.{Inject, Singleton}
 import config.WSHttp
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
-object FrontendAuthorisationConnector extends AuthConnector with ServicesConfig {
+@Singleton
+class FrontendAuthorisationConnector @Inject extends AuthConnector with ServicesConfig {
   val serviceUrl = baseUrl("auth")
   lazy val http = WSHttp
 }

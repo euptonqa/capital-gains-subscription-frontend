@@ -27,14 +27,11 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import scala.concurrent.Future
 
 @Singleton
-class ResidentIndividualSubscriptionController @Inject()(authService: AuthorisationService,
+class ResidentIndividualSubscriptionController @Inject()(authorisedForCGT: AuthorisedForCGT,
                                                          appConfig: ApplicationConfig)
-  extends FrontendController with AuthorisedForCGT {
+  extends FrontendController {
 
-  lazy val authorisationService = authService
-  lazy val applicationConfig = appConfig
-
-  val residentIndividualSubscription = Authorised.async { implicit user => implicit request =>
+  val residentIndividualSubscription = authorisedForCGT.authorised.async { implicit user => implicit request =>
     Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
   }
 }

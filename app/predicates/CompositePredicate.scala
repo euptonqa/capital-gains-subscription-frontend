@@ -32,9 +32,9 @@ class CompositePredicate (applicationConfig: AppConfig, authorisationService: Au
                              enrolmentUrl: String
                             ) extends CompositePageVisibilityPredicate  {
   override def children: Seq[PageVisibilityPredicate] = Seq (
-    new TwoFAPredicate(new URI(twoFactorUrl)),
-    new IVUpliftPredicate(new URI(ivUpliftUrl)),
-    new NINOPredicate(new URI(ivUpliftUrl)),
+    new TwoFAPredicate(twoFactorURI),
+    new IVUpliftPredicate(ivUpliftURI),
+    new NINOPredicate(ivUpliftURI),
     new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup)),
     new EnrolmentPredicate(new URI(enrolmentUrl), authorisationService)
   )

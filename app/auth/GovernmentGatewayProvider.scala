@@ -24,7 +24,7 @@ class GovernmentGatewayProvider(postSignInRedirectUrl: String, loginUrl: String)
 
   override def continueURL = postSignInRedirectUrl
 
-  override def loginURL: String = this.loginUrl
+  override def loginURL: String = loginUrl
 
 
 }

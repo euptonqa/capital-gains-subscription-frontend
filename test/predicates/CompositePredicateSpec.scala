@@ -88,7 +88,7 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
       ivUpliftURI,
       twoFactorURI,
       authorisationURI,
-      enrolmentURI)(hc)
+      enrolmentURI)
 
     "return true for page visibility when the relevant predicates are given an AuthContext that meets their respective conditions" in {
       lazy val authContext = TestUserBuilder.compositePredicateUserPass

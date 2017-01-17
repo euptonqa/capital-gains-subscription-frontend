@@ -16,6 +16,7 @@
 
 package auth
 
+import com.google.inject.Inject
 import config.ApplicationConfig
 import connectors.FrontendAuthorisationConnector
 import play.api.mvc.{Action, AnyContent, Request, Result}
@@ -26,15 +27,14 @@ import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvi
 
 import scala.concurrent.Future
 
-trait AuthorisedForCGT extends Actions {
+class AuthorisedForCGT @Inject() (applicationConfig: ApplicationConfig, authorisationService: AuthorisationService,
+                                  frontendAuthorisationConnector: FrontendAuthorisationConnector) extends Actions {
 
 
   private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
   private type AsyncUserRequest = CGTUser => AsyncPlayRequest
 
-  val applicationConfig: ApplicationConfig
-  val authorisationService: AuthorisationService
-  val authConnector = FrontendAuthorisationConnector
+  val authConnector = frontendAuthorisationConnector
   lazy val postSignInRedirectUrl: String = applicationConfig.individualResident
 
   lazy val visibilityPredicate = new CompositePredicate(applicationConfig,
@@ -53,7 +53,7 @@ trait AuthorisedForCGT extends Actions {
     }
   }
 
-  object Authorised extends AuthorisedBy(CgtAnyRegime)
+  val authorised = new AuthorisedBy(CgtAnyRegime)
 
   lazy val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
 

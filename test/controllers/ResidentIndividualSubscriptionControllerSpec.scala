@@ -16,27 +16,67 @@
 
 package controllers
 
+import auth.{AuthorisedForCGT, CGTUser}
+import config.ApplicationConfig
+import connectors.FrontendAuthorisationConnector
+import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
+import play.api.mvc._
 import play.api.test.FakeRequest
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import play.api.test.Helpers._
 import services.AuthorisationService
+import uk.gov.hmrc.play.frontend.auth._
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+
+import scala.concurrent.Future
 
 class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
-  def createMockService(): AuthorisationService = {
-    val mockService = mock[AuthorisationService]
+  private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
+  private type AsyncUserRequest = CGTUser => AsyncPlayRequest
 
-    mockService
+  def createMockAppConfig(): ApplicationConfig = {
+    val mockAppConfig = mock[ApplicationConfig]
+
+    when(mockAppConfig.governmentGateway)
+      .thenReturn("gg-login")
+
+    when(mockAppConfig.individualResident)
+      .thenReturn("test")
+
+    mockAppConfig
+  }
+
+  def createMockAuthority(valid: Boolean = false): AuthorisedForCGT = {
+
+    val mockConnector = mock[FrontendAuthorisationConnector]
+
+    val mockAuthorised = {
+      if (valid) {
+        new AuthorisedForCGT(createMockAppConfig(), mock[AuthorisationService], mockConnector) {
+
+          override val authorised = new AuthorisedBy(mock[TaxRegime]) {
+            override def async(action: AsyncUserRequest): Action[AnyContent] = {
+              Action.async(action(mock[CGTUser]))
+            }
+          }
+        }
+      }
+      else {
+        new AuthorisedForCGT(createMockAppConfig(), mock[AuthorisationService], mockConnector) {
+        }
+      }
+    }
+    mockAuthorised
   }
 
   "Calling .residentIndividualSubscription" when {
 
     "provided with a valid user" should {
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val service = createMockService()
+      lazy val service = createMockAuthority(true)
 
-      lazy val target = new ResidentIndividualSubscriptionController(service)
+      lazy val target = new ResidentIndividualSubscriptionController(service, createMockAppConfig())
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
@@ -49,7 +89,19 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
     }
 
     "provided with an invalid user" should {
+      val fakeRequest = FakeRequest("GET", "/")
+      lazy val service = createMockAuthority()
 
+      lazy val target = new ResidentIndividualSubscriptionController(service, createMockAppConfig())
+      lazy val result = target.residentIndividualSubscription(fakeRequest)
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the mock gg-login page" in {
+        redirectLocation(result) shouldBe Some("gg-login?continue=test&origin=capital-gains-subscription-frontend")
+      }
     }
   }
 }
