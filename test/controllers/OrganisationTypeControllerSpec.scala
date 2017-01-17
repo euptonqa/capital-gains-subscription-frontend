@@ -26,8 +26,9 @@ import play.api.i18n.MessagesApi
 import play.api.inject.Injector
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import common.Constants.AffinityGroup
+import common.Constants.{AffinityGroup, InvalidUserTypes}
 import exceptions.AffinityGroupNotFoundException
+import models.OrganisationModel
 import services.AuthorisationService
 
 class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
@@ -97,6 +98,108 @@ class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with Wit
         }
 
         await(result) shouldEqual true
+      }
+    }
+  }
+
+  "Calling .submitOrganisationType" when {
+
+    "provided with an valid company organisation type" should {
+
+      lazy val target = setupTarget(None)
+      lazy val result = target.submitOrganisationType(fakeRequestToPOSTWithSession(("organisationType", InvalidUserTypes.company)))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "load the invalid affinity group for company page" in {
+        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=company")
+      }
+    }
+  }
+
+  "Calling .submitOrganisationType" when {
+
+    "provided with an valid charity organisation type" should {
+
+      lazy val target = setupTarget(None)
+      lazy val result = target.submitOrganisationType(fakeRequestToPOSTWithSession(("organisationType", InvalidUserTypes.charity)))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "load the invalid affinity group for charity page" in {
+        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=charity")
+      }
+    }
+  }
+
+  "Calling .submitOrganisationType" when {
+
+    "provided with an valid partnership organisation type" should {
+
+      lazy val target = setupTarget(None)
+      lazy val result = target.submitOrganisationType(fakeRequestToPOSTWithSession(("organisationType", InvalidUserTypes.partnership)))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "load the invalid affinity group for partnership page" in {
+        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=partnership")
+      }
+    }
+  }
+
+  "Calling .submitOrganisationType" when {
+
+    "provided with an valid trust organisation type" should {
+
+      lazy val target = setupTarget(None)
+      lazy val result = target.submitOrganisationType(fakeRequestToPOSTWithSession(("organisationType", InvalidUserTypes.trust)))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "load the invalid affinity group for trust page" in {
+        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=trust")
+      }
+    }
+  }
+
+  "Calling .submitOrganisationType" when {
+
+    "provided with an valid pensionTrust organisation type" should {
+
+      lazy val target = setupTarget(None)
+      lazy val result = target.submitOrganisationType(fakeRequestToPOSTWithSession(("organisationType", InvalidUserTypes.pensionTrust)))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "load the invalid affinity group for pensionTrust page" in {
+        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=pensionTrust")
+      }
+    }
+  }
+
+  "Calling .submitOrganisationType" when {
+
+    "provided with an invalid organisation type" should {
+
+      lazy val target = setupTarget(None)
+      lazy val result = target.submitOrganisationType(fakeRequestToPOSTWithSession(("organisationType", "invalid type")))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+
+      "return the user to the organisation type page" in {
+        Jsoup.parse(bodyOf(result)).title shouldEqual MessageLookup.OrganisationType.title
       }
     }
   }
