@@ -27,9 +27,12 @@ import forms.OrganisationForm._
 import scala.concurrent.Future
 
 @Singleton
-class OrganisationTypeController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+class OrganisationTypeController @Inject()(appConfig: AppConfig,  val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   val organisationType: Action[AnyContent] = Action.async { implicit request =>
+
+
+
     Future.successful(Ok(views.html.errors.organisationType(appConfig, organisationForm)))
   }
 }
