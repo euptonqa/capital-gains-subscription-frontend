@@ -16,23 +16,52 @@
 
 package controllers
 
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import common.Constants._
+import exceptions.AffinityGroupNotFoundException
 import forms.OrganisationForm._
+import models.OrganisationModel
+import play.api.data.Form
+import services.AuthorisationService
 
 import scala.concurrent.Future
 
 @Singleton
-class OrganisationTypeController @Inject()(appConfig: AppConfig,  val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+class OrganisationTypeController @Inject()(appConfig: AppConfig, authorisationService: AuthorisationService, val messagesApi: MessagesApi)
+  extends FrontendController with I18nSupport {
+
+  private val incorrectAffinityGroupPage: String => Future[Result] = input => Future.successful(Redirect(
+    controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup(input)))
 
   val organisationType: Action[AnyContent] = Action.async { implicit request =>
+    for {
+      affinityGroup <- authorisationService.getAffinityGroup(hc)
+      route <- routeRequest(affinityGroup)
+    } yield route
+  }
 
+  private def routeRequest(affinityGroup: Option[String]): Future[Result] = affinityGroup match {
+    case Some(AffinityGroup.Agent) => Future.successful(Redirect(
+      controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup(InvalidUserTypes.agent)))
+    case Some(AffinityGroup.Organisation) => Future.successful(Ok(views.html.errors.organisationType(appConfig, organisationForm)))
+    case _ => throw AffinityGroupNotFoundException("Affinity group not retrieved")
+  }
 
+  val submitOrganisationType: Action[AnyContent] = Action.async { implicit request =>
 
-    Future.successful(Ok(views.html.errors.organisationType(appConfig, organisationForm)))
+    def errorAction(errors: Form[OrganisationModel]) = Future.successful(BadRequest(views.html.errors.organisationType(appConfig, errors)))
+
+    def successAction(model: OrganisationModel) = model.organisationType match {
+      case InvalidUserTypes.company => incorrectAffinityGroupPage(InvalidUserTypes.company)
+      case InvalidUserTypes.charity => incorrectAffinityGroupPage(InvalidUserTypes.charity)
+      case InvalidUserTypes.partnership => incorrectAffinityGroupPage(InvalidUserTypes.partnership)
+      case InvalidUserTypes.trust => incorrectAffinityGroupPage(InvalidUserTypes.trust)
+      case InvalidUserTypes.pensionTrust => incorrectAffinityGroupPage(InvalidUserTypes.pensionTrust)
+    }
+    organisationForm.bindFromRequest().fold(errorAction, successAction)
   }
 }
