@@ -16,13 +16,11 @@
 
 package predicates
 
-import java.net.URI
+import java.net.{URI, URLEncoder}
 
-import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, PageVisibilityPredicate}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 class CompositePredicate (applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
                              notAuthorisedRedirectUrl: String,
@@ -39,14 +37,14 @@ class CompositePredicate (applicationConfig: AppConfig, authorisationService: Au
     new EnrolmentPredicate(new URI(enrolmentUrl), authorisationService)
   )
 
-  private val ivUpliftURI: URI =
+  lazy private val ivUpliftURI: URI =
     new URI(s"$ivUpliftUrl?origin=CGT&"  +
       s"completionURL=$postSignInRedirectUrl&" +
       s"failureURL=$notAuthorisedRedirectUrl" +
       s"&confidenceLevel=200")
 
-  private val twoFactorURI: URI =
+  lazy private val twoFactorURI: URI =
     new URI(s"$twoFactorUrl?" +
-      s"continue=$postSignInRedirectUrl&" +
-    s"failureURL=$notAuthorisedRedirectUrl")
+      s"continue=${URLEncoder.encode(postSignInRedirectUrl, "UTF-8")}&" +
+    s"failure=${URLEncoder.encode(notAuthorisedRedirectUrl, "UTF-8")}")
 }
