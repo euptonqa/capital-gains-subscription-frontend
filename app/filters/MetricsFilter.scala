@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package helpers
+package filters
+
+import com.google.inject.Inject
+import akka.stream.Materializer
+import com.kenshoo.play.metrics.{MetricsFilter => HmrcMetricsFilter}
+import play.api.inject.Injector
+import play.api.mvc.{Filter, RequestHeader, Result}
 
 import scala.concurrent.Future
-import common.Constants.AffinityGroup._
 
-object AffinityGroupCheck extends AffinityGroupCheck
+class MetricsFilter @Inject()(injector: Injector)(implicit val mat: Materializer) extends Filter {
+  val filter: HmrcMetricsFilter = injector.instanceOf[HmrcMetricsFilter]
 
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+  override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = filter.apply(f)(rh)
 }

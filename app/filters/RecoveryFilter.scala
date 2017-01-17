@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package helpers
+package filters
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+import com.google.inject.Inject
+import akka.stream.Materializer
+import play.api.mvc.{EssentialAction, EssentialFilter}
+import uk.gov.hmrc.play.filters.{RecoveryFilter => HmrcRecoveryFilter}
 
-object AffinityGroupCheck extends AffinityGroupCheck
-
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+class RecoveryFilter @Inject()(implicit val mat: Materializer) extends EssentialFilter {
+  override def apply(next: EssentialAction): EssentialAction = HmrcRecoveryFilter(next)
 }

@@ -18,10 +18,10 @@ package connectors
 
 import builders.TestUserBuilder
 import common.Constants.AffinityGroup
-import models.AuthorisationDataModel
+import models.{AuthorisationDataModel, Enrolment, Identifier}
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -86,6 +86,50 @@ class AuthorisationConnectorSpec extends UnitSpec with MockitoSugar with WithFak
       when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(affinityResponse("Individual", nino)))))
       await(TestAuthConnector.getAuthResponse()(hc)) shouldBe None
+    }
+  }
+
+  def setupConnector(jsonString: String, status: Int): AuthorisationConnector = {
+
+    val mockHttp = mock[HttpGet with HttpPost]
+
+    when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(HttpResponse(status, Some(Json.parse(jsonString)))))
+
+    new AuthorisationConnector {
+      override val http = mockHttp
+    }
+  }
+
+  "Calling .getEnrolments" should {
+
+    "return a None with a failed response" in {
+      val connector = setupConnector("[]", 500)
+      val result = connector.getEnrolmentsResponse("")
+
+      await(result) shouldBe None
+    }
+
+    "return an empty sequence with an empty json response" in {
+      val connector = setupConnector("[]", 200)
+      val result = connector.getEnrolmentsResponse("")
+
+      await(result) shouldBe Some(Seq())
+    }
+
+    "return a valid sequence with an single enrolment" in {
+      val connector = setupConnector("""[{"key":"key","identifiers":[],"state":"state"}]""", 200)
+      val result = connector.getEnrolmentsResponse("")
+
+      await(result) shouldBe Some(Seq(new Enrolment("key", Seq(), "state")))
+    }
+
+    "return a valid sequence with multiple enrolments" in {
+      val connector = setupConnector(
+        """[{"key":"key","identifiers":[],"state":"state"},{"key":"key2","identifiers":[{"key":"key","value":"value"}],"state":"state2"}]""", 200)
+      val result = connector.getEnrolmentsResponse("")
+
+      await(result) shouldBe Some(Seq(new Enrolment("key", Seq(), "state"), new Enrolment("key2", Seq(new Identifier("key", "value")), "state2")))
     }
   }
 }

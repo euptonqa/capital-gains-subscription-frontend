@@ -17,7 +17,7 @@
 package services
 
 import connectors.AuthorisationConnector
-import models.AuthorisationDataModel
+import models.{AuthorisationDataModel, Enrolment}
 import org.mockito.Mockito.when
 import org.scalatest.mock.MockitoSugar
 import org.mockito.ArgumentMatchers
@@ -32,12 +32,15 @@ class AuthorisationServiceSpec extends UnitSpec with MockitoSugar {
 
   implicit val hc = mock[HeaderCarrier]
 
-  def mockedService(response: Option[AuthorisationDataModel], nino: Option[Nino]): AuthorisationService = {
+  def mockedService(response: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]] = None): AuthorisationService = {
 
     val mockConnector = mock[AuthorisationConnector]
 
     when(mockConnector.getAuthResponse()(ArgumentMatchers.any()))
       .thenReturn(Future.successful(response))
+
+    when(mockConnector.getEnrolmentsResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(enrolments))
 
     new AuthorisationService(mockConnector)
   }
@@ -45,15 +48,54 @@ class AuthorisationServiceSpec extends UnitSpec with MockitoSugar {
   "Calling AuthorisationService .getAuthData" should {
 
     "return an AuthDataModel with a valid request" in {
-      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", Accounts())), None)
-      val result = service.getAuthDataModel(hc)
+      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", Accounts())))
+      val result = service.getAuthDataModel
+
       await(result) shouldBe Some(AuthorisationDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", Accounts()))
     }
 
     "return a None with an invalid request" in {
-      val service = mockedService(None, None)
-      val result = service.getAuthDataModel(hc)
+      val service = mockedService(None)
+      val result = service.getAuthDataModel
+
       await(result) shouldBe None
+    }
+  }
+
+  "Calling .getAffinityGroup" should {
+
+    "Return an affinity group when a valid request is sent" in {
+      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, "DummyAffinity", ConfidenceLevel.L200, "", Accounts())))
+      val result = service.getAffinityGroup
+
+      await(result) shouldBe Some("DummyAffinity")
+    }
+
+    "return a None with an invalid request" in {
+      val service = mockedService(None)
+      val result = service.getAffinityGroup
+
+      await(result) shouldBe None
+    }
+  }
+
+  "Calling .getEnrolments" should {
+
+    "return a None if no auth model is found" in {
+      val service = mockedService(None, None)
+      val result = service.getEnrolments
+
+      await(result) shouldBe None
+    }
+
+    "return the enrolments if a uri is found" in {
+      val authModel = mock[AuthorisationDataModel]
+      when(authModel.uri).thenReturn("")
+      val mockEnrolments = Some(Seq(mock[Enrolment]))
+      val service = mockedService(Some(authModel), mockEnrolments)
+      val result = service.getEnrolments
+
+      await(result) shouldBe mockEnrolments
     }
   }
 }

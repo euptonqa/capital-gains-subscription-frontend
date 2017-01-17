@@ -18,9 +18,10 @@ package services
 
 import com.google.inject.{Inject, Singleton}
 import connectors.AuthorisationConnector
-import models.AuthorisationDataModel
+import models.{AuthorisationDataModel, Enrolment}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
@@ -28,5 +29,29 @@ class AuthorisationService @Inject()(authConnector: AuthorisationConnector) {
 
   def getAuthDataModel(implicit hc: HeaderCarrier): Future[Option[AuthorisationDataModel]] = {
     authConnector.getAuthResponse()(hc)
+  }
+
+  def getAffinityGroup(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    for {
+      authData <- getAuthDataModel
+    } yield authData match {
+      case Some(data) => Some(data.affinityGroup)
+      case _ => None
+    }
+  }
+
+  def getEnrolments(implicit hc: HeaderCarrier): Future[Option[Seq[Enrolment]]] = {
+
+    def getData(authData: Option[AuthorisationDataModel]): Future[Option[Seq[Enrolment]]] = {
+      authData match {
+        case Some(data) => authConnector.getEnrolmentsResponse(data.uri)
+        case _ => Future.successful(None)
+      }
+    }
+
+    for {
+      authData <- getAuthDataModel
+      result <- getData(authData)
+    } yield result
   }
 }

@@ -30,6 +30,7 @@ trait AppConfig {
   val ivUpliftUrl: String
   val notAuthorisedRedirectUrl: String
   val twoFactorUrl: String
+  val governmentGateway: String
 }
 
 @Singleton
@@ -49,4 +50,5 @@ class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfi
   override val ivUpliftUrl: String = configuration.getString(s"identity-verification-uplift.host").getOrElse("")
   override lazy val notAuthorisedRedirectUrl = configuration.getString("not-authorised-callback.url").getOrElse("")
   override lazy val twoFactorUrl: String = configuration.getString(s"two-factor.host").getOrElse("")
+  override lazy val governmentGateway: String = configuration.getString(s"government-gateway-sign-in.host").getOrElse("")
 }

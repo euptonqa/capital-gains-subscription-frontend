@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package helpers
+package connectors
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+import com.google.inject.{Inject, Singleton}
+import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.config.AppName
 
-object AffinityGroupCheck extends AffinityGroupCheck
-
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+@Singleton
+class FrontEndAuditConnector @Inject()() extends AuditConnector with AppName {
+  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
 }

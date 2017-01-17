@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package helpers
+package filters
 
+import com.google.inject.Inject
+import akka.stream.Materializer
+import play.api.mvc.{Filter, RequestHeader, Result}
+import uk.gov.hmrc.play.filters.{CacheControlFilter => HmrcCacheControlFilter}
 import scala.concurrent.Future
-import common.Constants.AffinityGroup._
 
-object AffinityGroupCheck extends AffinityGroupCheck
+class CacheControlFilter @Inject()(implicit val mat: Materializer) extends Filter {
+  val filter: HmrcCacheControlFilter = HmrcCacheControlFilter.fromConfig("caching.allowedContentTypes")
 
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+  override def apply(f: (RequestHeader) => Future[Result])(rh: RequestHeader): Future[Result] = filter(f)(rh)
 }

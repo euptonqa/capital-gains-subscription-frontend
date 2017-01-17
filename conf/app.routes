@@ -1,7 +1,10 @@
 # microservice specific routes
 
+
 GET        /hello-world                                       @controllers.HelloWorld.helloWorld
 
 GET        /subscribe/individual/invalid-user                 @controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
 
 GET        /subscribe/individual/organisation-type            @controllers.OrganisationTypeController.organisationType
+
+GET        /hello-world                                       @controllers.HelloWorld.helloWorld

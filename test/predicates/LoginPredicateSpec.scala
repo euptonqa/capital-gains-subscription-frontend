@@ -28,7 +28,7 @@ class LoginPredicateSpec extends UnitSpec {
 
   "Instantiating LoginPredicate" when {
 
-    "supplied with an authContext with a weak credential should return false for page visibility" in {
+    "supplied with an authContext with a weak credential should return true for page visibility" in {
       val predicate = new LoginPredicate(dummyUri)
       val authContext = TestUserBuilder.weakUserAuthContext
 

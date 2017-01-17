@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package helpers
+package filters
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+import javax.inject.Inject
+import akka.stream.Materializer
+import play.api.mvc.Filter
+import config.ControllerConfig
+import uk.gov.hmrc.play.http.logging.filters.FrontendLoggingFilter
 
-object AffinityGroupCheck extends AffinityGroupCheck
-
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+class LoggingFilter @Inject()(configuration: ControllerConfig)(implicit val mat: Materializer) extends Filter with FrontendLoggingFilter {
+  override def controllerNeedsLogging(controllerName: String): Boolean = configuration.paramsForController(controllerName).needsLogging
 }

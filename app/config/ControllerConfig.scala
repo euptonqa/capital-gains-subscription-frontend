@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package helpers
+package config
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+import com.google.inject.{Inject, Singleton}
+import com.typesafe.config.Config
+import play.api.Configuration
+import uk.gov.hmrc.play.config.{ControllerConfig => HmrcControllerConfig}
+import net.ceedubs.ficus.Ficus._
 
-object AffinityGroupCheck extends AffinityGroupCheck
-
-trait AffinityGroupCheck {
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+@Singleton
+class ControllerConfig @Inject()(configuration: Configuration) extends HmrcControllerConfig {
+  lazy val controllerConfigs: Config = configuration.underlying.as[Config]("controllers")
 }
