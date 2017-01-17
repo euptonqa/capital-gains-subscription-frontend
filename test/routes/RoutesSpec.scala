@@ -21,16 +21,16 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 class RoutesSpec extends UnitSpec with WithFakeApplication {
 
   "The URL for the incorrectAffinityGroup Action" should {
-    "be equal to /capital-gains-subscription-frontend/subscribe/individual/invalid-user" in {
+    "be equal to /capital-gains-tax/subscription/individual/invalid-user" in {
       val path = controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup().url
-      path shouldEqual "/capital-gains-subscription-frontend/subscribe/individual/invalid-user"
+      path shouldEqual "/capital-gains-tax/subscription/individual/invalid-user"
     }
   }
 
   "The URL for the residentIndividualSubscription action" should {
-    "be equal to /capital-gains-subscription-frontend/subscribe/resident/individual" in {
+    "be equal to /capital-gains-tax/subscription/resident/individual" in {
       val path = controllers.routes.ResidentIndividualSubscriptionController.residentIndividualSubscription().url
-      path shouldEqual "/capital-gains-subscription-frontend/subscribe/resident/individual"
+      path shouldEqual "/capital-gains-tax/subscription/resident/individual"
     }
   }
 
