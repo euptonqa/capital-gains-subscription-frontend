@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package config
+package components
 
-import com.google.inject.AbstractModule
-import components.{Global, Graphite}
+import com.google.inject.{Inject, Singleton}
+import org.slf4j.MDC
+import play.api.{Application, Configuration, Logger}
 
-class DIModule extends AbstractModule {
-  protected override def configure(): Unit = {
-    bind(classOf[Global]).to(classOf[Global]).asEagerSingleton()
-    bind(classOf[Graphite]).to(classOf[Graphite]).asEagerSingleton()
-    bind(classOf[AppConfig]) to classOf[ApplicationConfig]
-  }
+@Singleton
+class Global @Inject()(config: Configuration)(implicit app: Application) {
+
+  lazy val appName: String = config.getString("appName").getOrElse("APP NAME NOT SET")
+  lazy val loggerDateFormat: Option[String] = config.getString("logger.json.dateformat")
+
+  Logger.info(s"Starting frontend : $appName : in mode : ${app.mode}")
+  MDC.put("appName", appName)
+  loggerDateFormat.foreach(str => MDC.put("logger.json.dateformat", str))
 }

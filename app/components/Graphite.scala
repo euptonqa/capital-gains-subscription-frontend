@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package config
+package components
 
-import com.google.inject.AbstractModule
-import components.{Global, Graphite}
+import com.google.inject.{Inject, Singleton}
 
-class DIModule extends AbstractModule {
-  protected override def configure(): Unit = {
-    bind(classOf[Global]).to(classOf[Global]).asEagerSingleton()
-    bind(classOf[Graphite]).to(classOf[Graphite]).asEagerSingleton()
-    bind(classOf[AppConfig]) to classOf[ApplicationConfig]
+import play.api.inject.ApplicationLifecycle
+import play.api.{Application, Configuration}
+import uk.gov.hmrc.play.graphite.GraphiteConfig
+
+import scala.concurrent.Future
+
+@Singleton
+class Graphite @Inject()(app: Application, lifecycle: ApplicationLifecycle) extends GraphiteConfig {
+  override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig(s"microservice.metrics")
+
+  lifecycle.addStopHook {
+    () => Future.successful(onStop(app))
   }
+
+  onStart(app)
 }
