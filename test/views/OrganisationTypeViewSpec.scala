@@ -47,15 +47,8 @@ class OrganisationTypeViewSpec extends UnitSpec with WithFakeApplication with Fa
       doc.title shouldEqual messages.title
     }
 
-    s"have a heading of ${messages.heading}" in {
-      doc.select("h1").text shouldEqual messages.heading
-    }
-
-    "has a question that" should {
-
-      s"has the text ${messages.question}" in {
-        doc.select("p").get(1).text shouldEqual messages.question
-      }
+    s"have a heading of ${messages.question}" in {
+      doc.select("h1").text shouldEqual messages.question
     }
 
     "have a set of radio buttons" which {
