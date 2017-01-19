@@ -53,9 +53,8 @@ object MessageLookup {
 
   object OrganisationType {
 
-    val title = "Awaiting content"
-    val heading = "Awaiting content"
-    val question = "Awaiting content"
+    val title = "What type of organisation are you?"
+    val question = "What type of organisation are you?"
     val company = "Limited Company"
     val charity = "Charity"
     val partnership = "Partnerships"

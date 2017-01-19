@@ -5,9 +5,7 @@
 
 @views.html.main_template(title = Messages("organisationType.title"), bodyClasses = None, appConfig = appConfig) {
 
-    <h1>@Messages("organisationType.title")</h1>
-
-    <p class="heading-large">@Messages("organisationType.question")</p>
+    <h1>@Messages("organisationType.question")</h1>
 
     @form(action = controllers.routes.OrganisationTypeController.submitOrganisationType) {
 
