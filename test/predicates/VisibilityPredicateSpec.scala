@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 
-class CompositePredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class VisibilityPredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
 
   def mockedService(authorisationDataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]],
                     enrolmentUri: String = "http://enrolments-uri.com",
@@ -57,7 +57,7 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
     mockService
   }
 
-  "Calling the CompositePredicate when supplied with appropriate URIs" should {
+  "Calling the VisibilityPredicate when supplied with appropriate URIs" should {
     val injector: Injector = fakeApplication.injector
     def appConfig: AppConfig = injector.instanceOf[AppConfig]
 
@@ -82,16 +82,16 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
 
     implicit val hc = HeaderCarrier()
 
-    def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]]): CompositePredicate =
-      new CompositePredicate(appConfig, mockedService(dataModel, enrolments))(postSignURI,
+    def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]]): VisibilityPredicate =
+      new VisibilityPredicate(appConfig, mockedService(dataModel, enrolments))(postSignURI,
       notAuthorisedRedirectURI,
       ivUpliftURI,
       twoFactorURI,
       authorisationURI,
-      enrolmentURI)(hc)
+      enrolmentURI)
 
     "return true for page visibility when the relevant predicates are given an AuthContext that meets their respective conditions" in {
-      lazy val authContext = TestUserBuilder.compositePredicateUserPass
+      lazy val authContext = TestUserBuilder.visibilityPredicateUserPass
       lazy val result = predicate(Some(authorisationDataModelPass), Some(enrolmentsPass))(authContext, fakeRequest)
 
       lazy val pageVisibility = await(result)
@@ -100,7 +100,7 @@ class CompositePredicateSpec extends UnitSpec with WithFakeApplication with Mock
     }
 
     "return false for page visibility when the relevant predicates are given an AuthContext that fails to meet their respective conditions" in {
-      lazy val authContext = TestUserBuilder.compositePredicateUserFail
+      lazy val authContext = TestUserBuilder.visibilityPredicateUserFail
       lazy val result = predicate(Some(authorisationDataModelFail), Some(enrolmentsFail))(authContext, fakeRequest)
 
       lazy val pageVisibility = await(result)

@@ -55,7 +55,7 @@ class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with 
 
       val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Agent, ConfidenceLevel.L200, "", Accounts())), None)
 
-      val predicate = new AffinityGroupPredicate(service)(dummyUri)(hc)
+      val predicate = new AffinityGroupPredicate(service)(dummyUri)
       val authContext = TestUserBuilder.weakUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
@@ -68,7 +68,7 @@ class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with 
 
       val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Organisation, ConfidenceLevel.L200, "", Accounts())), None)
 
-      val predicate = new AffinityGroupPredicate(service)(dummyUri)(hc)
+      val predicate = new AffinityGroupPredicate(service)(dummyUri)
       val authContext = TestUserBuilder.weakUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
@@ -81,7 +81,7 @@ class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with 
 
       val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Individual, ConfidenceLevel.L200, "", Accounts())), None)
 
-      val predicate = new AffinityGroupPredicate(service)(dummyUri)(hc)
+      val predicate = new AffinityGroupPredicate(service)(dummyUri)
       val authContext = TestUserBuilder.noCredUserAuthContext
 
       val result = predicate(authContext, FakeRequest())

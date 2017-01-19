@@ -16,39 +16,35 @@
 
 package predicates
 
-import java.net.URI
+import java.net.{URI, URLEncoder}
 
-import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, PageVisibilityPredicate}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-@Singleton
-class CompositePredicate @Inject()(applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
+class VisibilityPredicate (applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
                              notAuthorisedRedirectUrl: String,
                              ivUpliftUrl: String,
                              twoFactorUrl: String,
                              affinityGroup: String,
                              enrolmentUrl: String
-                            ) (implicit hc: HeaderCarrier) extends CompositePageVisibilityPredicate  {
+                            ) extends CompositePageVisibilityPredicate  {
   override def children: Seq[PageVisibilityPredicate] = Seq (
-    new IVUpliftPredicate(new URI(ivUpliftUrl)),
-    new LoginPredicate(new URI(applicationConfig.governmentGateway)),
-    new TwoFAPredicate(new URI(twoFactorUrl)),
-    new NINOPredicate(new URI(ivUpliftUrl)),
-    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))(hc),
-    new EnrolmentPredicate(new URI(enrolmentUrl), authorisationService)(hc)
+    new TwoFAPredicate(twoFactorURI),
+    new IVUpliftPredicate(ivUpliftURI),
+    new NINOPredicate(ivUpliftURI),
+    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup)),
+    new EnrolmentPredicate(new URI(enrolmentUrl), authorisationService)
   )
 
-  private val ivUpliftURI: URI =
-    new URI(s"$ivUpliftURI?origin=CGT&"  +
+  lazy private val ivUpliftURI: URI =
+    new URI(s"$ivUpliftUrl?origin=CGT&"  +
       s"completionURL=$postSignInRedirectUrl&" +
       s"failureURL=$notAuthorisedRedirectUrl" +
       s"&confidenceLevel=200")
 
-  private val twoFactorURI: URI =
-    new URI(s"$twoFactorURI?" +
-      s"continue=$postSignInRedirectUrl&" +
-    s"failureURL=$notAuthorisedRedirectUrl")
+  lazy private val twoFactorURI: URI =
+    new URI(s"$twoFactorUrl?" +
+      s"continue=${URLEncoder.encode(postSignInRedirectUrl, "UTF-8")}&" +
+    s"failure=${URLEncoder.encode(notAuthorisedRedirectUrl, "UTF-8")}")
 }

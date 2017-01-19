@@ -30,8 +30,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: AuthorisationService)(implicit hc: HeaderCarrier) extends PageVisibilityPredicate {
+class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: AuthorisationService) extends PageVisibilityPredicate {
   def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
+
+    implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
 
     def checkEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = {
       enrolments match {
@@ -46,7 +48,7 @@ class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: Auth
     }
 
     for {
-      enrolments <- authorisationService.getEnrolments
+      enrolments <- authorisationService.getEnrolments(hc(request))
       enrolled <- checkEnrolments(enrolments)
       display <- getPageVisibility(enrolled)
     } yield display
