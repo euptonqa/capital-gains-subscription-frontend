@@ -18,20 +18,22 @@ package controllers
 
 import javax.inject.Singleton
 
-import auth.AuthorisedForCGT
+import auth.AuthorisedActions
 import com.google.inject.Inject
-import config.ApplicationConfig
-import services.AuthorisationService
+import config.AppConfig
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
-class ResidentIndividualSubscriptionController @Inject()(authorisedForCGT: AuthorisedForCGT,
-                                                         appConfig: ApplicationConfig)
+class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
+                                                         appConfig: AppConfig)
   extends FrontendController {
 
-  val residentIndividualSubscription = authorisedForCGT.authorised.async { implicit user => implicit request =>
-    Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+  val residentIndividualSubscription: Action[AnyContent] = actions.authorisedResidentIndividualAction {
+    implicit user =>
+      implicit request =>
+        Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
   }
 }

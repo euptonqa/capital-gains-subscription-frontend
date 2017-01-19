@@ -16,67 +16,53 @@
 
 package controllers
 
-import auth.{AuthorisedForCGT, CGTUser}
-import config.ApplicationConfig
-import connectors.FrontendAuthorisationConnector
+import auth.{AuthorisedActions, CgtIndividual}
+import config.AppConfig
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.AuthorisationService
-import uk.gov.hmrc.play.frontend.auth._
+import types.AuthenticatedIndividualAction
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-
-import scala.concurrent.Future
 
 class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
-  private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
-  private type AsyncUserRequest = CGTUser => AsyncPlayRequest
+  val unauthorisedLoginUri = "some-url"
+  val mockConfig: AppConfig = mock[AppConfig]
 
-  def createMockAppConfig(): ApplicationConfig = {
-    val mockAppConfig = mock[ApplicationConfig]
+  def createMockActions(valid: Boolean = false): AuthorisedActions = {
 
-    when(mockAppConfig.governmentGateway)
-      .thenReturn("gg-login")
+    val mockActions = mock[AuthorisedActions]
 
-    when(mockAppConfig.individualResident)
-      .thenReturn("test")
+    if (valid) {
+      when(mockActions.authorisedResidentIndividualAction(ArgumentMatchers.any()))
+        .thenAnswer(new Answer[Action[AnyContent]] {
 
-    mockAppConfig
-  }
-
-  def createMockAuthority(valid: Boolean = false): AuthorisedForCGT = {
-
-    val mockConnector = mock[FrontendAuthorisationConnector]
-
-    val mockAuthorised = {
-      if (valid) {
-        new AuthorisedForCGT(createMockAppConfig(), mock[AuthorisationService], mockConnector) {
-
-          override val authorised = new AuthorisedBy(mock[TaxRegime]) {
-            override def async(action: AsyncUserRequest): Action[AnyContent] = {
-              Action.async(action(mock[CGTUser]))
-            }
+          override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
+            val action = invocation.getArgument[AuthenticatedIndividualAction](0)
+            Action.async(action(mock[CgtIndividual]))
           }
-        }
-      }
-      else {
-        new AuthorisedForCGT(createMockAppConfig(), mock[AuthorisationService], mockConnector) {
-        }
-      }
+        })
     }
-    mockAuthorised
+    else {
+      when(mockActions.authorisedResidentIndividualAction(ArgumentMatchers.any()))
+        .thenReturn(Action.async(Results.Redirect(unauthorisedLoginUri)))
+    }
+
+    mockActions
   }
 
   "Calling .residentIndividualSubscription" when {
 
     "provided with a valid user" should {
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val service = createMockAuthority(true)
+      lazy val actions = createMockActions(true)
 
-      lazy val target = new ResidentIndividualSubscriptionController(service, createMockAppConfig())
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
@@ -90,9 +76,9 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
 
     "provided with an invalid user" should {
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val service = createMockAuthority()
+      lazy val actions = createMockActions()
 
-      lazy val target = new ResidentIndividualSubscriptionController(service, createMockAppConfig())
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
@@ -100,9 +86,7 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
       }
 
       "redirect to the mock gg-login page" in {
-        redirectLocation(result) shouldBe Some("gg-login?" +
-          "continue=test" +
-          "&origin=capital-gains-subscription-frontend")
+        redirectLocation(result) shouldBe Some(unauthorisedLoginUri)
       }
     }
   }

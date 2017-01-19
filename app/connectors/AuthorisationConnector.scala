@@ -21,7 +21,6 @@ import config.WSHttp
 import models.{AuthorisationDataModel, Enrolment}
 import play.api.http.Status._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
 
@@ -35,23 +34,24 @@ class AuthorisationConnector @Inject()() extends ServicesConfig {
   val authorityUri: String = "auth/authority"
   val http: HttpGet = WSHttp
 
-  Authority
+  //  Authority
 
   def getAuthResponse()(implicit hc: HeaderCarrier): Future[Option[AuthorisationDataModel]] = {
     val getUrl = s"""$serviceUrl/$authorityUri"""
     http.GET[HttpResponse](getUrl).map {
-      response => response.status match {
-        case OK => {
-          val confidenceLevel = (response.json \ "confidenceLevel").as[ConfidenceLevel]
-          val uri = (response.json \ "uri").as[String]
-          val credStrength = (response.json \ "credentialStrength").as[CredentialStrength]
-          val affinityGroup = (response.json \ "affinityGroup").as[String]
-          val accounts = (response.json \ "accounts").as[Accounts]
+      response =>
+        response.status match {
+          case OK => {
+            val confidenceLevel = (response.json \ "confidenceLevel").as[ConfidenceLevel]
+            val uri = (response.json \ "uri").as[String]
+            val credStrength = (response.json \ "credentialStrength").as[CredentialStrength]
+            val affinityGroup = (response.json \ "affinityGroup").as[String]
+            val accounts = (response.json \ "accounts").as[Accounts]
 
-          Some(AuthorisationDataModel(credStrength, affinityGroup, confidenceLevel, uri, accounts))
+            Some(AuthorisationDataModel(credStrength, affinityGroup, confidenceLevel, uri, accounts))
+          }
+          case _ => None
         }
-        case _ => None
-      }
     }
   }
 

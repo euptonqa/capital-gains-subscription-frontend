@@ -22,7 +22,7 @@ import config.AppConfig
 import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, PageVisibilityPredicate}
 
-class CompositePredicate (applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
+class VisibilityPredicate (applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
                              notAuthorisedRedirectUrl: String,
                              ivUpliftUrl: String,
                              twoFactorUrl: String,

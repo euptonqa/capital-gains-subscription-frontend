@@ -2,6 +2,6 @@
 
 GET        /hello-world                         @controllers.HelloWorld.helloWorld
 
-GET        /resident/individual           @controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
+GET        /resident/individual                 @controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
 
 GET        /individual/invalid-user             @controllers.IncorrectAffinityGroupController.incorrectAffinityGroup

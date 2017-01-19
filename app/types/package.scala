@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package auth
+import auth.CgtIndividual
+import play.api.mvc.{AnyContent, Request, Result}
 
-import org.joda.time.DateTime
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import scala.concurrent.Future
 
-case class CGTUser(authContext: AuthContext) {
-  def nino: Option[String] = authContext.principal.accounts.paye.map(_.nino.nino)
-  def previouslyLoggedInAt: Option[DateTime] = authContext.user.previouslyLoggedInAt
+package object types {
+  type AuthenticatedIndividualAction = CgtIndividual => Request[AnyContent] => Future[Result]
 }

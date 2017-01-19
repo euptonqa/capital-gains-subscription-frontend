@@ -16,12 +16,10 @@
 
 package auth
 
-import uk.gov.hmrc.play.frontend.auth.GovernmentGateway
+import org.joda.time.DateTime
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 
-class GovernmentGatewayProvider(postSignInRedirectUrl: String, loginUrl: String) extends GovernmentGateway {
-
-  override def continueURL: String = postSignInRedirectUrl
-
-  override def loginURL: String = loginUrl
-
+case class CgtIndividual(authContext: AuthContext) {
+  def nino: Option[String] = authContext.principal.accounts.paye.map(_.nino.nino)
+  def previouslyLoggedInAt: Option[DateTime] = authContext.user.previouslyLoggedInAt
 }
