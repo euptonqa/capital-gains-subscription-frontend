@@ -1,0 +1,22 @@
+@(appConfig: config.AppConfig, cgtReferenceNumber: String)(implicit request: Request[_], messages: Messages)
+
+@views.html.main_template(title = Messages("confirmation.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <h1 class="visuallyhidden">@Messages("confirmation.yourReference")</h1>
+
+    <div class="transaction-banner--complete">
+        <p class="bold-large">@Messages("confirmation.yourReference")</p>
+
+        <p class="heading-medium">
+            <strong class="heading-medium">@cgtReferenceNumber</strong>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <p class="lede">@Messages("confirmation.writeThisDown")</p>
+        <p>@Messages("confirmation.writeThisDown.reasonToWriteDown")</p>
+        <p class="heading-medium">@Messages("confirmation.whatNext")</p>
+        <p>@Messages("confirmation.continue")</p>
+        <p class="indent indent-width-thin">@Messages("confirmation.whatNext.informationForForm")</p>
+    </div>
+}

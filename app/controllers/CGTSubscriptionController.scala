@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package views.confirmation
+package controllers
 
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import com.google.inject.Inject
+import config.AppConfig
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-class CGTSubscriptionConfirmationViewSpec extends UnitSpec with WithFakeApplication {
+import scala.concurrent.Future
 
+class CGTSubscriptionController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-
+  val residentIndividualSubscription: Action[AnyContent] = Action.async { implicit request =>
+      Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, "Reference number")))
+  }
 }

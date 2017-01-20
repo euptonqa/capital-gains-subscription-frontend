@@ -4,7 +4,8 @@ GET        /hello-world                                       controllers.HelloW
 
 GET        /individual/invalid-user                           controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
 
+GET        /resident/individual                               controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
+GET        /resident/individual/confirmation                  controllers.CGTSubscriptionController.residentIndividualSubscription
+
 GET        /individual/organisation-type                      controllers.OrganisationTypeController.organisationType
 POST       /individual/organisation-type                      controllers.OrganisationTypeController.submitOrganisationType
-
-GET        /resident/individual                               controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
