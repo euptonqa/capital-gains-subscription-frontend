@@ -16,25 +16,20 @@
 
 package connectors
 
+import com.google.inject.{Inject, Singleton}
 import config.WSHttp
 import enums.IdentityVerificationResult.IdentityVerificationResult
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object IdentityVerificationConnector extends IdentityVerificationConnector with ServicesConfig {
-  override val serviceUrl = baseUrl("identity-verification")
-  override def http: HttpGet = WSHttp
-}
+@Singleton
+class IdentityVerificationConnector @Inject()(http: WSHttp) extends ServicesConfig {
 
-trait IdentityVerificationConnector {
-
-  val serviceUrl: String
-
-  def http: HttpGet
+  lazy val serviceUrl: String = baseUrl("identity-verification")
 
   private def url(journeyId: String) = s"$serviceUrl/mdtp/journey/journeyId/$journeyId"
 

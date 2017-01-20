@@ -16,21 +16,15 @@
 
 package services
 
+import com.google.inject.{Inject, Singleton}
 import connectors.IdentityVerificationConnector
 import enums.IdentityVerificationResult._
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-object IdentityVerificationService extends IdentityVerificationService {
-
-  val connector = IdentityVerificationConnector
-}
-
-trait IdentityVerificationService {
-
-  val connector: IdentityVerificationConnector
-
+@Singleton
+class IdentityVerificationService @Inject()(connector: IdentityVerificationConnector) {
   def getIdentityVerificationResult(journeyId: String)(implicit hc: HeaderCarrier): Future[IdentityVerificationResult] = {
     connector.identityVerificationResponse(journeyId)
   }

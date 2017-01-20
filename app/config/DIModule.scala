@@ -17,12 +17,13 @@
 package config
 
 import com.google.inject.AbstractModule
-import components.{Global, Graphite}
+//import components.{Global, Graphite}
 
 class DIModule extends AbstractModule {
-  protected override def configure(): Unit = {
-    bind(classOf[Global]).to(classOf[Global]).asEagerSingleton()
-    bind(classOf[Graphite]).to(classOf[Graphite]).asEagerSingleton()
-    bind(classOf[AppConfig]) to classOf[ApplicationConfig]
+  def configure(): Unit = {
+//    bind(classOf[Global]).to(classOf[Global]).asEagerSingleton()
+//    bind(classOf[Graphite]).to(classOf[Graphite]).asEagerSingleton()
+   bind(classOf[AppConfig]) to classOf[ApplicationConfig]
   }
 }
+

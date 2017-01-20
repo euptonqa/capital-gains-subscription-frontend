@@ -18,6 +18,7 @@ package connectors
 
 import builders.TestUserBuilder
 import common.Constants.AffinityGroup
+import config.WSHttp
 import models.{AuthorisationDataModel, Enrolment, Identifier}
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
@@ -33,14 +34,6 @@ import scala.concurrent.Future
 
 class AuthorisationConnectorSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
 
-  lazy val mockHttp = mock[HttpGet]
-
-  object TestAuthConnector extends AuthorisationConnector {
-    override lazy val serviceUrl: String = "localhost"
-    override val authorityUri: String = "auth/authority"
-    override val http: HttpGet = mockHttp
-  }
-
   val nino = TestUserBuilder.createRandomNino
   implicit val hc = HeaderCarrier()
 
@@ -55,11 +48,19 @@ class AuthorisationConnectorSpec extends UnitSpec with MockitoSugar with WithFak
 
   "AuthorisationConnector .getAuthResponse" should {
 
+    lazy val mockHttp = mock[WSHttp]
+
+    lazy val target = new AuthorisationConnector(mockHttp) {
+      override lazy val serviceUrl: String = "localhost"
+      override val authorityUri: String = "auth/authority"
+    }
+
     "with a valid request" should {
 
       when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(affinityResponse("Individual", nino)))))
-      val result = await(TestAuthConnector.getAuthResponse()(hc)).get
+
+      val result = await(target.getAuthResponse()(hc)).get
 
       "return a valid AuthorisationDataModel type" in {
         result shouldBe a[AuthorisationDataModel]
@@ -85,49 +86,47 @@ class AuthorisationConnectorSpec extends UnitSpec with MockitoSugar with WithFak
     "return a None with an invalid request" in {
       when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(affinityResponse("Individual", nino)))))
-      await(TestAuthConnector.getAuthResponse()(hc)) shouldBe None
+      await(target.getAuthResponse()(hc)) shouldBe None
     }
   }
 
   def setupConnector(jsonString: String, status: Int): AuthorisationConnector = {
 
-    val mockHttp = mock[HttpGet with HttpPost]
+    val mockHttp = mock[WSHttp]
 
     when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(status, Some(Json.parse(jsonString)))))
 
-    new AuthorisationConnector {
-      override val http = mockHttp
-    }
+    new AuthorisationConnector(mockHttp)
   }
 
   "Calling .getEnrolments" should {
 
     "return a None with a failed response" in {
-      val connector = setupConnector("[]", 500)
-      val result = connector.getEnrolmentsResponse("")
+      val target = setupConnector("[]", 500)
+      val result = target.getEnrolmentsResponse("")
 
       await(result) shouldBe None
     }
 
     "return an empty sequence with an empty json response" in {
-      val connector = setupConnector("[]", 200)
-      val result = connector.getEnrolmentsResponse("")
+      val target = setupConnector("[]", 200)
+      val result = target.getEnrolmentsResponse("")
 
       await(result) shouldBe Some(Seq())
     }
 
     "return a valid sequence with an single enrolment" in {
-      val connector = setupConnector("""[{"key":"key","identifiers":[],"state":"state"}]""", 200)
-      val result = connector.getEnrolmentsResponse("")
+      val target = setupConnector("""[{"key":"key","identifiers":[],"state":"state"}]""", 200)
+      val result = target.getEnrolmentsResponse("")
 
       await(result) shouldBe Some(Seq(new Enrolment("key", Seq(), "state")))
     }
 
     "return a valid sequence with multiple enrolments" in {
-      val connector = setupConnector(
+      val target = setupConnector(
         """[{"key":"key","identifiers":[],"state":"state"},{"key":"key2","identifiers":[{"key":"key","value":"value"}],"state":"state2"}]""", 200)
-      val result = connector.getEnrolmentsResponse("")
+      val result = target.getEnrolmentsResponse("")
 
       await(result) shouldBe Some(Seq(new Enrolment("key", Seq(), "state"), new Enrolment("key2", Seq(new Identifier("key", "value")), "state2")))
     }
