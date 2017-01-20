@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package config
+package components
 
 import com.google.inject.{Inject, Singleton}
-import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import org.slf4j.MDC
+import play.api.{Application, Configuration, Logger}
 
 @Singleton
-class FrontendAuditConnector @Inject()() extends Auditing with AppName {
-  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
-}
+class Global @Inject()(config: Configuration)(implicit app: Application) {
 
-@Singleton
-class FrontendAuthConnector @Inject()(override val http: WSHttp) extends AuthConnector with ServicesConfig {
-  val serviceUrl: String = baseUrl("auth")
+  lazy val appName: String = config.getString("appName").getOrElse("APP NAME NOT SET")
+  lazy val loggerDateFormat: Option[String] = config.getString("logger.json.dateformat")
+
+  Logger.info(s"Starting frontend : $appName : in mode : ${app.mode}")
+  MDC.put("appName", appName)
+  loggerDateFormat.foreach(str => MDC.put("logger.json.dateformat", str))
 }

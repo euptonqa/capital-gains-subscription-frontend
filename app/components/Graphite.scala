@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package config
+package components
 
 import com.google.inject.{Inject, Singleton}
-import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
-import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+
+import play.api.inject.ApplicationLifecycle
+import play.api.{Application, Configuration}
+import uk.gov.hmrc.play.graphite.GraphiteConfig
+
+import scala.concurrent.Future
 
 @Singleton
-class FrontendAuditConnector @Inject()() extends Auditing with AppName {
-  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
-}
+class Graphite @Inject()(app: Application, lifecycle: ApplicationLifecycle) extends GraphiteConfig {
+  override def microserviceMetricsConfig(implicit app: Application): Option[Configuration] = app.configuration.getConfig(s"microservice.metrics")
 
-@Singleton
-class FrontendAuthConnector @Inject()(override val http: WSHttp) extends AuthConnector with ServicesConfig {
-  val serviceUrl: String = baseUrl("auth")
+  lifecycle.addStopHook {
+    () => Future.successful(onStop(app))
+  }
+
+  onStart(app)
 }

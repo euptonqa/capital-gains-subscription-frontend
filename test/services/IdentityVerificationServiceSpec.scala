@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class IdentityVerificationServiceSpec extends UnitSpec with MockitoSugar{
 
-  implicit val hc = mock[HeaderCarrier]
+  implicit val hc: HeaderCarrier = mock[HeaderCarrier]
 
   def mockedService(response: IdentityVerificationResult): IdentityVerificationService = {
 
@@ -38,23 +38,21 @@ class IdentityVerificationServiceSpec extends UnitSpec with MockitoSugar{
     when(mockConnector.identityVerificationResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(response))
 
-    new IdentityVerificationService {
-      override val connector: IdentityVerificationConnector = mockConnector
-    }
+    new IdentityVerificationService(mockConnector)
   }
 
   "Calling the getIdentityVerificationResult" should {
 
     "return a Success when Success is given" in {
-      val service = mockedService(IdentityVerificationResult.Success)
-      val result = service.getIdentityVerificationResult("")
+      val target = mockedService(IdentityVerificationResult.Success)
+      val result = target.getIdentityVerificationResult("")
 
       await(result) shouldBe IdentityVerificationResult.Success
     }
 
     "return a Unknown Response when one is given" in {
-      val service = mockedService(IdentityVerificationResult.UnknownOutcome)
-      val result = service.getIdentityVerificationResult("")
+      val target = mockedService(IdentityVerificationResult.UnknownOutcome)
+      val result = target.getIdentityVerificationResult("")
 
       await(result) shouldBe IdentityVerificationResult.UnknownOutcome
     }

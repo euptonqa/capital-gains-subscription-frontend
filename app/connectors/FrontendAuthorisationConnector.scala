@@ -22,8 +22,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 
 @Singleton
-class FrontendAuthorisationConnector @Inject extends AuthConnector with ServicesConfig {
-  val serviceUrl: String = baseUrl("auth")
-  lazy val http = WSHttp
+class FrontendAuthorisationConnector @Inject()(override val http: WSHttp) extends AuthConnector with ServicesConfig {
+  lazy val serviceUrl: String = baseUrl("auth")
 }
 
