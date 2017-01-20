@@ -9,3 +9,5 @@ GET        /individual/organisation-type                      @controllers.Organ
 POST       /individual/organisation-type                      @controllers.OrganisationTypeController.submitOrganisationType
 
 GET        /hello-world                                       @controllers.HelloWorld.helloWorld
+
+GET        /resident/individual                               @controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription

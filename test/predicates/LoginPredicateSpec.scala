@@ -22,7 +22,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import builders.TestUserBuilder
 
-class LoginPredicateSpec extends UnitSpec {
+class LoginPredicateSpec extends UnitSpec with WithFakeApplication {
 
   val dummyUri = new URI("http://example.com")
 

@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AffinityGroupPredicate @Inject()(authorisationService: AuthorisationService) (errorPageUri: URI) (implicit hc: HeaderCarrier)
+class AffinityGroupPredicate @Inject()(authorisationService: AuthorisationService) (errorPageUri: URI)
   extends PageVisibilityPredicate {
 
   private val errorPage = Future.successful(Redirect(errorPageUri.toString))
@@ -53,7 +53,9 @@ class AffinityGroupPredicate @Inject()(authorisationService: AuthorisationServic
 
   override def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
 
-    val authorityAffinityGroup: Future[Option[String]] = authorisationService.getAffinityGroup(hc)
+    implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
+
+    val authorityAffinityGroup: Future[Option[String]] = authorisationService.getAffinityGroup(hc(request))
 
     for {
       affinityGroup <- authorityAffinityGroup
