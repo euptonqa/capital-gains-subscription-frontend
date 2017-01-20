@@ -17,9 +17,13 @@
 package config
 
 import com.google.inject.AbstractModule
+//import components.{Global, Graphite} // TODO: remove entirely if not required
 
 class DIModule extends AbstractModule {
-  protected override def configure(): Unit = {
+  def configure(): Unit = {
+//    bind(classOf[Global]).to(classOf[Global]).asEagerSingleton()      // TODO: remove entirely if not required
+//    bind(classOf[Graphite]).to(classOf[Graphite]).asEagerSingleton()  // TODO: remove entirely if not required
     bind(classOf[AppConfig]) to classOf[ApplicationConfig]
   }
 }
+

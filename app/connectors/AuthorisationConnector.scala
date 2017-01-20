@@ -22,17 +22,16 @@ import models.{AuthorisationDataModel, Enrolment}
 import play.api.http.Status._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpResponse}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
-class AuthorisationConnector @Inject()() extends ServicesConfig {
+class AuthorisationConnector @Inject()(http: WSHttp) extends ServicesConfig {
 
   lazy val serviceUrl: String = baseUrl("auth")
   val authorityUri: String = "auth/authority"
-  val http: HttpGet = WSHttp
 
   //  Authority
 
