@@ -55,7 +55,7 @@ object MessageLookup {
     val pensionTrust = "Pension trust administrator"
   }
 
-  object CGTSubscriptionConfirmation {
+  object CGTSubscriptionConfirm {
     val title = "Your Capital Gains Tax ID"
     val writeDown = "You must write this down."
     val forgetGGID = "If you forget your Government Gateway account details we can use this ID to help you retrieve them."
@@ -63,6 +63,4 @@ object MessageLookup {
     val whatNextContent = "Continue to report your Capital Gains Tax using our online form."
     val figuresReady = "You should have already done your Capital Gains Tax calculation and have your figures ready."
   }
-
->>>>>>> fixing merge conflicts.
 }

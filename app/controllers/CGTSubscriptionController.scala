@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.google.inject.Inject
+import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -24,10 +24,11 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
+@Singleton
 class CGTSubscriptionController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  def confirmationOfSubscription(cgtReference: String): Action[AnyContent] = Action.async { implicit request =>
-      Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, "Reference number")))
+  val confirmationOfSubscription: String => Action[AnyContent] = cgtReference => Action.async { implicit request =>
+      Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference)))
   }
 
   val submitConfirmationOfSubscription: Action[AnyContent] = Action.async { implicit request =>

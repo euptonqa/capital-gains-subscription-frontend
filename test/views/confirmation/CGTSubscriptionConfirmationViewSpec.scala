@@ -18,7 +18,7 @@ package views.confirmation
 
 
 import assets.FakeRequestHelper
-import assets.MessageLookup.{CGTSubscriptionConfirmation => messages}
+import assets.MessageLookup.{CGTSubscriptionConfirm => messages}
 import assets.MessageLookup.{Common => commonMessages}
 import config.AppConfig
 import org.jsoup._
