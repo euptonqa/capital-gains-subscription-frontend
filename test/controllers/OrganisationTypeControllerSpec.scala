@@ -66,9 +66,6 @@ class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with Wit
         Jsoup.parse(bodyOf(result)).title() shouldBe MessageLookup.OrganisationType.title
       }
     }
-  }
-
-  "Calling .organisationType" when {
 
     "provided with an valid Agent affinityGroup" should {
 
@@ -83,9 +80,6 @@ class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with Wit
         redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=agent")
       }
     }
-  }
-
-  "Calling .organisationType" when {
 
     "provided with an invalid affinityGroup" should {
 
@@ -120,9 +114,6 @@ class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with Wit
         redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=company")
       }
     }
-  }
-
-  "Calling .submitOrganisationType" when {
 
     "provided with an valid charity organisation type" should {
 
@@ -137,9 +128,6 @@ class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with Wit
         redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=charity")
       }
     }
-  }
-
-  "Calling .submitOrganisationType" when {
 
     "provided with an valid partnership organisation type" should {
 
@@ -154,9 +142,6 @@ class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with Wit
         redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=partnership")
       }
     }
-  }
-
-  "Calling .submitOrganisationType" when {
 
     "provided with an valid trust organisation type" should {
 
@@ -171,9 +156,6 @@ class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with Wit
         redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=trust")
       }
     }
-  }
-
-  "Calling .submitOrganisationType" when {
 
     "provided with an valid pensionTrust organisation type" should {
 
@@ -188,9 +170,6 @@ class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with Wit
         redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/invalid-user?userType=pensionTrust")
       }
     }
-  }
-
-  "Calling .submitOrganisationType" when {
 
     "provided with an invalid organisation type" should {
 
