@@ -31,7 +31,6 @@ class IncorrectAffinityGroupController @Inject()(appConfig: AppConfig, val messa
   def incorrectAffinityGroup(userType: String): Action[AnyContent] = Action.async { implicit request =>
     if (InvalidUserTypes.users.contains(userType))
       Future.successful(Ok(views.html.errors.errorInvalidUser(userType, appConfig)))
-      //TODO redirect to new user type selection page
     else Future.successful(Redirect(""))
   }
 }
