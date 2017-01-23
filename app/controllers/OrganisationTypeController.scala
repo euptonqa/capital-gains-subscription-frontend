@@ -23,7 +23,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import common.Constants._
 import exceptions.AffinityGroupNotFoundException
-import forms.OrganisationForm._
+import forms.OrganisationForm
 import models.OrganisationModel
 import play.api.data.Form
 import services.AuthorisationService
@@ -31,7 +31,10 @@ import services.AuthorisationService
 import scala.concurrent.Future
 
 @Singleton
-class OrganisationTypeController @Inject()(appConfig: AppConfig, authorisationService: AuthorisationService, val messagesApi: MessagesApi)
+class OrganisationTypeController @Inject()(appConfig: AppConfig,
+                                           authorisationService: AuthorisationService,
+                                           form: OrganisationForm,
+                                           val messagesApi: MessagesApi)
   extends FrontendController with I18nSupport {
 
   private val incorrectAffinityGroupPage: String => Future[Result] = input => Future.successful(Redirect(
@@ -42,7 +45,7 @@ class OrganisationTypeController @Inject()(appConfig: AppConfig, authorisationSe
     def routeRequest(affinityGroup: Option[String]): Future[Result] = affinityGroup match {
       case Some(AffinityGroup.Agent) => Future.successful(Redirect(
         controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup(InvalidUserTypes.agent)))
-      case Some(AffinityGroup.Organisation) => Future.successful(Ok(views.html.errors.organisationType(appConfig, organisationForm)))
+      case Some(AffinityGroup.Organisation) => Future.successful(Ok(views.html.errors.organisationType(appConfig, form.organisationForm)))
       case _ => throw AffinityGroupNotFoundException("Affinity group not retrieved")
     }
 
@@ -63,6 +66,6 @@ class OrganisationTypeController @Inject()(appConfig: AppConfig, authorisationSe
       case InvalidUserTypes.trust => incorrectAffinityGroupPage(InvalidUserTypes.trust)
       case InvalidUserTypes.pensionTrust => incorrectAffinityGroupPage(InvalidUserTypes.pensionTrust)
     }
-    organisationForm.bindFromRequest().fold(errorAction, successAction)
+    form.organisationForm.bindFromRequest().fold(errorAction, successAction)
   }
 }

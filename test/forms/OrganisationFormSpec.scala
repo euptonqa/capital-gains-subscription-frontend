@@ -17,53 +17,60 @@
 package forms
 
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import forms.OrganisationForm._
 import models.OrganisationModel
 import common.Constants.InvalidUserTypes._
 import assets.MessageLookup.{Errors => messages}
+import play.api.i18n.MessagesApi
+import play.api.inject.Injector
 
 class OrganisationFormSpec extends UnitSpec with WithFakeApplication {
+
+  def orgForm: OrganisationForm = {
+    val injector: Injector = fakeApplication.injector
+    val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
+    new OrganisationForm(messagesApi)
+  }
 
   "Creating the form from a model" should {
 
     "create an empty form when the model is empty" in {
-      val form = organisationForm
+      val form = orgForm.organisationForm
       form.data.isEmpty shouldBe true
     }
 
     "create a map with the option 'agent' when the model contains a 'agent'" in {
       val model = OrganisationModel(agent)
-      val form = organisationForm.fill(model)
+      val form = orgForm.organisationForm.fill(model)
       form.data.get("organisationType") shouldBe Some(agent)
     }
 
     "create a map with the option 'company' when the model contains a 'company'" in {
       val model = OrganisationModel(company)
-      val form = organisationForm.fill(model)
+      val form = orgForm.organisationForm.fill(model)
       form.data.get("organisationType") shouldBe Some(company)
     }
 
     "create a map with the option 'charity' when the model contains a 'charity'" in {
       val model = OrganisationModel(charity)
-      val form = organisationForm.fill(model)
+      val form = orgForm.organisationForm.fill(model)
       form.data.get("organisationType") shouldBe Some(charity)
     }
 
     "create a map with the option 'partnership' when the model contains a 'partnership'" in {
       val model = OrganisationModel(partnership)
-      val form = organisationForm.fill(model)
+      val form = orgForm.organisationForm.fill(model)
       form.data.get("organisationType") shouldBe Some(partnership)
     }
 
     "create a map with the option 'trust' when the model contains a 'trust'" in {
       val model = OrganisationModel(trust)
-      val form = organisationForm.fill(model)
+      val form = orgForm.organisationForm.fill(model)
       form.data.get("organisationType") shouldBe Some(trust)
     }
 
     "create a map with the option 'pensionTrust' when the model contains a 'pensionTrust'" in {
       val model = OrganisationModel(pensionTrust)
-      val form = organisationForm.fill(model)
+      val form = orgForm.organisationForm.fill(model)
       form.data.get("organisationType") shouldBe Some(pensionTrust)
     }
   }
@@ -72,7 +79,7 @@ class OrganisationFormSpec extends UnitSpec with WithFakeApplication {
 
     "create a model containing 'agent' when provided with a map containing 'agent'" in {
       val map = Map("organisationType" -> agent)
-      val form = organisationForm.bind(map)
+      val form = orgForm.organisationForm.bind(map)
       form.value shouldBe Some(OrganisationModel(agent))
     }
   }
@@ -81,7 +88,7 @@ class OrganisationFormSpec extends UnitSpec with WithFakeApplication {
 
     "no data is provided" should {
       lazy val map = Map("organisationType" -> "")
-      lazy val form = organisationForm.bind(map)
+      lazy val form = orgForm.organisationForm.bind(map)
 
       "produce a form with errors" in {
         form.hasErrors shouldBe true
@@ -98,7 +105,7 @@ class OrganisationFormSpec extends UnitSpec with WithFakeApplication {
 
     "incorrect data is provided" should {
       lazy val map = Map("organisationType" -> "badData")
-      lazy val form = organisationForm.bind(map)
+      lazy val form = orgForm.organisationForm.bind(map)
 
       "produce a form with errors" in {
         form.hasErrors shouldBe true

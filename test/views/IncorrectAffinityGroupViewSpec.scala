@@ -23,12 +23,10 @@ import config.AppConfig
 import org.jsoup._
 import org.scalatest.mock.MockitoSugar
 import views.html.errors.errorInvalidUser
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.i18n.MessagesApi
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 
-class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with MockitoSugar {
+class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with MockitoSugar with I18nSupport {
 
   val injector: Injector = fakeApplication.injector
 

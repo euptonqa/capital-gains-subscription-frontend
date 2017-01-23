@@ -28,6 +28,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import common.Constants.{AffinityGroup, InvalidUserTypes}
 import exceptions.AffinityGroupNotFoundException
+import forms.OrganisationForm
 import models.OrganisationModel
 import services.AuthorisationService
 
@@ -41,11 +42,13 @@ class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with Wit
 
     def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
+    def organisationForm: OrganisationForm = injector.instanceOf[OrganisationForm]
+
     val authService: AuthorisationService = mock[AuthorisationService]
 
     when(authService.getAffinityGroup(ArgumentMatchers.any())).thenReturn(affinityGroup)
 
-    new OrganisationTypeController(appConfig, authService, messagesApi)
+    new OrganisationTypeController(appConfig, authService, organisationForm, messagesApi)
   }
 
   "Calling .organisationType" when {

@@ -16,15 +16,14 @@
 
 package forms
 
+import com.google.inject.Inject
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import common.Constants.InvalidUserTypes
 import models.OrganisationModel
 
-object OrganisationForm {
+class OrganisationForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
 
   val organisationForm = Form(
     mapping(

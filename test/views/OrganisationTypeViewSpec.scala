@@ -22,25 +22,25 @@ import common.Constants.InvalidUserTypes
 import assets.MessageLookup.{OrganisationType => messages}
 import assets.MessageLookup.{Common => commonMessages}
 import config.AppConfig
+import forms.OrganisationForm
 import org.scalatest.mock.MockitoSugar
 import org.jsoup.Jsoup
-import forms.OrganisationForm._
-import play.api.i18n.MessagesApi
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 
-class OrganisationTypeViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with MockitoSugar {
+class OrganisationTypeViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with MockitoSugar with I18nSupport {
 
   val injector: Injector = fakeApplication.injector
 
   val appConfig: AppConfig = injector.instanceOf[AppConfig]
 
+  val orgForm: OrganisationForm = injector.instanceOf[OrganisationForm]
+
   implicit val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
   "The organisation type view" should {
 
-    lazy val view = views.html.errors.organisationType(appConfig, organisationForm)
+    lazy val view = views.html.errors.organisationType(appConfig, orgForm.organisationForm)
     lazy val doc = Jsoup.parse(view.body)
 
     s"have a title of ${messages.title}" in {
