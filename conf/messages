@@ -40,3 +40,13 @@ errors.mandatory = Please select an option
 
 ## Common Messages ##
 common.continue = Continue
+
+## Confirmation View Messages ##
+
+confirmation.title = Your Capital Gains Tax ID
+confirmation.yourReference = Your Capital Gains Tax ID
+confirmation.writeThisDown = You must write this down.
+confirmation.writeThisDown.reasonToWriteDown = If you forget your Government Gateway account details we can use this ID to help you retrieve them.
+confirmation.whatNext = What happens next?
+confirmation.continue = Continue to report your Capital Gains Tax using our online form.
+confirmation.whatNext.informationForForm = You should have already done your Capital Gains Tax calculation and have your figures ready.

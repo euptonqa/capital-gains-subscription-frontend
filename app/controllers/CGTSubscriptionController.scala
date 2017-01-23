@@ -26,7 +26,11 @@ import scala.concurrent.Future
 
 class CGTSubscriptionController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  val residentIndividualSubscription: Action[AnyContent] = Action.async { implicit request =>
+  def confirmationOfSubscription(cgtReference: String): Action[AnyContent] = Action.async { implicit request =>
       Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, "Reference number")))
+  }
+
+  val submitConfirmationOfSubscription: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Redirect(routes.HelloWorld.helloWorld()))
   }
 }

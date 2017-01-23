@@ -19,19 +19,14 @@ package assets
 object MessageLookup {
 
   object Common {
-
     val continue = "Continue"
-
   }
 
   object Errors {
-
     val errorMandatory = "Please select an option"
-
   }
 
   object InvalidAffinityGroup {
-
     val title = "You've signed in with the wrong type of account"
     val textOne = "This service only works with accounts set up for individuals."
     val textTwo = "If you want to continue as an individual, you'll need to sign out and log back in with an individual account."
@@ -48,11 +43,9 @@ object MessageLookup {
     val linkTextTrust = "Trusts and Capital Gains tax"
     val textThreePensionTrust = "For more information about how to report taxable gains for your pension trust, see Pension trustees: investments and tax."
     val linkTextPensionTrust = "Pension trustees: investments and tax"
-
   }
 
   object OrganisationType {
-
     val title = "What type of organisation are you?"
     val question = "What type of organisation are you?"
     val company = "Limited Company"
@@ -60,6 +53,16 @@ object MessageLookup {
     val partnership = "Partnerships"
     val trust = "Trusts"
     val pensionTrust = "Pension trust administrator"
-
   }
+
+  object CGTSubscriptionConfirmation {
+    val title = "Your Capital Gains Tax ID"
+    val writeDown = "You must write this down."
+    val forgetGGID = "If you forget your Government Gateway account details we can use this ID to help you retrieve them."
+    val whatNext = "What happens next?"
+    val whatNextContent = "Continue to report your Capital Gains Tax using our online form."
+    val figuresReady = "You should have already done your Capital Gains Tax calculation and have your figures ready."
+  }
+
+>>>>>>> fixing merge conflicts.
 }
