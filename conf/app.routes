@@ -1,13 +1,10 @@
 # microservice specific routes
 
+GET        /hello-world                                       controllers.HelloWorld.helloWorld
 
-GET        /hello-world                                       @controllers.HelloWorld.helloWorld
+GET        /individual/invalid-user                           controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
 
-GET        /individual/invalid-user                           @controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
+GET        /individual/organisation-type                      controllers.OrganisationTypeController.organisationType
+POST       /individual/organisation-type                      controllers.OrganisationTypeController.submitOrganisationType
 
-GET        /individual/organisation-type                      @controllers.OrganisationTypeController.organisationType
-POST       /individual/organisation-type                      @controllers.OrganisationTypeController.submitOrganisationType
-
-GET        /hello-world                                       @controllers.HelloWorld.helloWorld
-
-GET        /resident/individual                               @controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
+GET        /resident/individual                               controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
