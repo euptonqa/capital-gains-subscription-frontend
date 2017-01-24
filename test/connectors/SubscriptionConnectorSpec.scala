@@ -17,6 +17,7 @@
 package connectors
 
 import builders.TestUserBuilder
+import models.SubscriptionReference
 import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
@@ -25,6 +26,7 @@ import uk.gov.hmrc.play.http.ws.WSHttp
 import org.mockito.Mockito._
 import play.api.http.Status._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+
 import scala.concurrent.Future
 
 class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
@@ -32,9 +34,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
   val nino = TestUserBuilder.createRandomNino
   implicit val hc = HeaderCarrier()
 
-  def cgtSubscriptionResponse(cgtRef: String): JsValue = Json.parse(
-    s"""{"cgtRef":"$cgtRef"}""".stripMargin
-  )
+  def cgtSubscriptionResponse(cgtRef: String): JsValue = Json.toJson(SubscriptionReference(cgtRef))
 
   lazy val target = new SubscriptionConnector(mockHttp) {
     override lazy val serviceUrl: String = "test"
@@ -44,15 +44,32 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
   lazy val mockHttp = mock[WSHttp]
 
   "SubscriptionConnector .getSubscriptionResponse with a valid request" should {
-    when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse("CGT-2122")))))
 
-    val result = await(target.getSubscriptionResponse("fakeNino")(hc)).get
-    "return a valid String" in {
-      result shouldBe a[String]
+    val dummyRef = "CGT-2122"
+
+    when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse(dummyRef)))))
+
+    val result = await(target.getSubscriptionResponse("fakeNino")(hc))
+    "return a valid SubscriptionReference" in {
+      result.get shouldBe a[SubscriptionReference]
     }
 
-    "return a"
+    s"return a SubscriptionReference containing the reference ${dummyRef}" in {
+      result.get.cgtRef shouldBe dummyRef
+    }
+  }
+
+  "SubscriptionConnector .getSubscriptionResponse with an invalid request" should {
+
+    when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.toJson("invalid:n")))))
+
+    val result = await(target.getSubscriptionResponse("fakeNino")(hc))
+
+    "return None" in {
+        result shouldBe None
+    }
   }
 
 }

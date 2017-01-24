@@ -16,6 +16,10 @@
 
 package models
 
-class SubscriptionRefererence(reference: String) {
+import play.api.libs.json.{Json, OFormat}
 
+case class SubscriptionReference(cgtRef: String)
+
+object SubscriptionReference {
+  implicit val formats: OFormat[SubscriptionReference] = Json.format[SubscriptionReference]
 }
