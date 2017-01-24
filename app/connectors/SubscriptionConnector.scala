@@ -22,8 +22,6 @@ import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.http.ws.WSHttp
 import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json}
-
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
