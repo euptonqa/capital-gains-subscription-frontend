@@ -1,0 +1,38 @@
+@(userType: String, appConfig: config.AppConfig)(implicit request: Request[_], messages: Messages)
+
+@textLink(question: String, linkText: String, link: String) = {
+    <p>
+        @Messages("invalidAffinityGroup.paragraph.three.first") @question
+        <a href = @link>@linkText</a>.
+    </p>
+}
+
+@views.html.main_template(title = Messages("invalidAffinityGroup.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <h1>@Messages("invalidAffinityGroup.title")</h1>
+
+    <p>@Messages("invalidAffinityGroup.paragraph.one")</p>
+
+    <p>@Messages("invalidAffinityGroup.paragraph.two.first") <a href="https://www.tax.service.gov.uk/gg/sign-in?continue=/account">@Messages("invalidAffinityGroup.paragraph.two.link")</a> @Messages("invalidAffinityGroup.paragraph.two.last")</p>
+
+    @{userType match {
+        case "agent" => textLink(Messages("invalidAffinityGroup.paragraph.three.agent"),
+                                Messages("invalidAffinityGroup.paragraph.three.agent.link"),
+                                "https://www.gov.uk/guidance/self-assessment-for-agents-online-service")
+        case "company" => textLink(Messages("invalidAffinityGroup.paragraph.three.company"),
+                                    Messages("invalidAffinityGroup.paragraph.three.company.link"),
+                                    "https://www.gov.uk/tax-when-your-company-sells-assets")
+        case "charity" => textLink(Messages("invalidAffinityGroup.paragraph.three.charity"),
+                                    Messages("invalidAffinityGroup.paragraph.three.charity.link"),
+                                    "https://www.gov.uk/charities-and-tax/tax-reliefs")
+        case "partnership" => textLink(Messages("invalidAffinityGroup.paragraph.three.partnership"),
+                                        Messages("invalidAffinityGroup.paragraph.three.partnership.link"),
+                                        "https://www.gov.uk/government/publications/partnerships-and-capital-gains-tax-hs288-self-assessment-helpsheet/hs288-partnerships-and-capital-gains-tax-2016")
+        case "trust" => textLink(Messages("invalidAffinityGroup.paragraph.three.trust"),
+                                Messages("invalidAffinityGroup.paragraph.three.trust.link"),
+                                "https://www.gov.uk/guidance/trusts-and-capital-gains-tax")
+        case "pensionTrust" => textLink(Messages("invalidAffinityGroup.paragraph.three.pensionTrust"),
+                                Messages("invalidAffinityGroup.paragraph.three.pensionTrust.link"),
+                                "https://www.gov.uk/guidance/pension-trustees-investments-and-tax")
+    }}
+}

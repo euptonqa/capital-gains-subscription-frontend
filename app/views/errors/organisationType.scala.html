@@ -1,0 +1,32 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.formInputRadioGroup
+
+@(appConfig: config.AppConfig, organisationForm: Form[OrganisationModel])(implicit request: Request[_], messages: Messages)
+
+@views.html.main_template(title = Messages("organisationType.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <h1>@Messages("organisationType.question")</h1>
+
+    @form(action = controllers.routes.OrganisationTypeController.submitOrganisationType) {
+
+        @formInputRadioGroup(
+            field = organisationForm("organisationType"),
+            Seq(
+                "company" -> Messages("organisationType.company"),
+                "charity" -> Messages("organisationType.charity"),
+                "partnership" -> Messages("organisationType.partnership"),
+                "trust" -> Messages("organisationType.trust"),
+                "pensionTrust" -> Messages("organisationType.pensionTrust")
+            ),
+            '_legend -> Messages("organisationType.question"),
+            '_legendID -> "organisationType",
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_groupClass -> "form-group radio-list",
+            '_fieldsetAttributes -> "aria-details = help"
+        )
+
+        <button class="button yes-no-button" type="submit" id="continue-button">@Messages("common.continue")</button>
+    }
+}

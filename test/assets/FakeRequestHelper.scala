@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package common
+package assets
 
-object Constants {
+import play.api.mvc.AnyContentAsFormUrlEncoded
+import play.api.test.FakeRequest
+import uk.gov.hmrc.play.filters.MicroserviceFilterSupport
+import uk.gov.hmrc.play.http.SessionKeys
 
-  object AffinityGroup {
-    val Agent = "Agent"
-    val Individual = "Individual"
-    val Organisation = "Organisation"
-  }
+trait FakeRequestHelper extends MicroserviceFilterSupport {
+  lazy implicit val fakeRequest = FakeRequest()
+  lazy val fakeRequestWithSession = fakeRequest.withSession((SessionKeys.sessionId, ""))
 
-  object InvalidUserTypes {
-    val agent = "agent"
-    val company = "company"
-    val charity = "charity"
-    val partnership = "partnership"
-    val trust = "trust"
-    val pensionTrust = "pensionTrust"
-
-    val users = Seq(agent, company, charity, partnership, trust, pensionTrust, "")
-  }
+  def fakeRequestToPOSTWithSession (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] =
+    fakeRequestWithSession.withFormUrlEncodedBody(input: _*)
 }

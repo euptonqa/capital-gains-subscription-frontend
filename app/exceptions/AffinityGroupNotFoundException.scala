@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-package common
+package exceptions
 
-object Constants {
-
-  object AffinityGroup {
-    val Agent = "Agent"
-    val Individual = "Individual"
-    val Organisation = "Organisation"
-  }
-
-  object InvalidUserTypes {
-    val agent = "agent"
-    val company = "company"
-    val charity = "charity"
-    val partnership = "partnership"
-    val trust = "trust"
-    val pensionTrust = "pensionTrust"
-
-    val users = Seq(agent, company, charity, partnership, trust, pensionTrust, "")
-  }
-}
+case class AffinityGroupNotFoundException(string: String) extends Exception(string)

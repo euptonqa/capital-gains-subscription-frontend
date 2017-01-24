@@ -1,0 +1,42 @@
+## Invalid Affinity Group Messages ##
+invalidAffinityGroup.title = You''ve signed in with the wrong type of account
+invalidAffinityGroup.paragraph.one = This service only works with accounts set up for individuals.
+invalidAffinityGroup.paragraph.two.first = If you want to continue as an individual, you''ll need to
+invalidAffinityGroup.paragraph.two.link = sign out
+invalidAffinityGroup.paragraph.two.last = and log back in with an individual account.
+invalidAffinityGroup.paragraph.three.first = For more information about how to report taxable gains for your
+
+invalidAffinityGroup.paragraph.three.agent = agencies client, see
+invalidAffinityGroup.paragraph.three.agent.link = Self Assessment for Agents
+
+invalidAffinityGroup.paragraph.three.company = company, see
+invalidAffinityGroup.paragraph.three.company.link = Corporation Tax when you sell business assets
+
+invalidAffinityGroup.paragraph.three.charity = registered charity, see
+invalidAffinityGroup.paragraph.three.charity.link = Charities and tax
+
+invalidAffinityGroup.paragraph.three.partnership = partnership, see
+invalidAffinityGroup.paragraph.three.partnership.link = Partnerships and Capital Gains tax
+
+invalidAffinityGroup.paragraph.three.trust = trust, see
+invalidAffinityGroup.paragraph.three.trust.link = Trusts and Capital Gains tax
+
+invalidAffinityGroup.paragraph.three.pensionTrust = pension trust, see
+invalidAffinityGroup.paragraph.three.pensionTrust.link = Pension trustees: investments and tax
+
+
+## Organisation Type Messages ##
+organisationType.title = What type of organisation are you?
+organisationType.question = What type of organisation are you?
+organisationType.company = Limited Company
+organisationType.charity = Charity
+organisationType.partnership = Partnerships
+organisationType.trust = Trusts
+organisationType.pensionTrust = Pension trust administrator
+
+
+## Error Messages ##
+errors.mandatory = Please select an option
+
+## Common Messages ##
+common.continue = Continue

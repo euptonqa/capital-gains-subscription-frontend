@@ -14,24 +14,12 @@
  * limitations under the License.
  */
 
-package common
+package models
 
-object Constants {
+import play.api.libs.json.{Json, OFormat}
 
-  object AffinityGroup {
-    val Agent = "Agent"
-    val Individual = "Individual"
-    val Organisation = "Organisation"
-  }
+case class OrganisationModel(organisationType: String)
 
-  object InvalidUserTypes {
-    val agent = "agent"
-    val company = "company"
-    val charity = "charity"
-    val partnership = "partnership"
-    val trust = "trust"
-    val pensionTrust = "pensionTrust"
-
-    val users = Seq(agent, company, charity, partnership, trust, pensionTrust, "")
-  }
+object OrganisationModel {
+  implicit val format: OFormat[OrganisationModel] = Json.format[OrganisationModel]
 }

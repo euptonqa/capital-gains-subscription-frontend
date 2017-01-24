@@ -16,12 +16,21 @@
 
 package controllers
 
+import play.api.mvc.{Action, AnyContent}
 import com.google.inject.{Inject, Singleton}
+import config.AppConfig
+import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import common.Constants._
+
+import scala.concurrent.Future
 
 @Singleton
-class IncorrectAffinityGroupController @Inject()() extends FrontendController {
+class IncorrectAffinityGroupController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  val incorrectAffinityGroup = TODO
-
+  def incorrectAffinityGroup(userType: String): Action[AnyContent] = Action.async { implicit request =>
+    if (InvalidUserTypes.users.contains(userType))
+      Future.successful(Ok(views.html.errors.errorInvalidUser(userType, appConfig)))
+    else Future.successful(Redirect(""))
+  }
 }
