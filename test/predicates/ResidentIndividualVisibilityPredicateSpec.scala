@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 
-class VisibilityPredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class ResidentIndividualVisibilityPredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
 
   def mockedService(authorisationDataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]],
                     enrolmentUri: String = "http://enrolments-uri.com",
