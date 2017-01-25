@@ -20,7 +20,7 @@ import com.google.inject.Inject
 import config.ApplicationConfig
 import connectors.FrontendAuthorisationConnector
 import play.api.mvc.{Action, AnyContent}
-import predicates.VisibilityPredicate
+import predicates.{NonResidentIndividualVisibilityPredicate, ResidentIndividualVisibilityPredicate}
 import services.AuthorisationService
 import types.AuthenticatedIndividualAction
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
@@ -41,7 +41,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
       override def authenticationType: AuthenticationProvider = ggProvider
     }
 
-    lazy val visibilityPredicate = new VisibilityPredicate(
+    lazy val visibilityPredicate = new ResidentIndividualVisibilityPredicate(
       applicationConfig,
       authorisationService)(postSignInRedirectUrl,
       applicationConfig.notAuthorisedRedirectUrl,
@@ -64,7 +64,38 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     authenticatedAction
   }
 
+  private val createAuthorisedNonResidentIndividualAction: AuthenticatedIndividualAction => Action[AnyContent] = {
+    val postSignInRedirectUrl: String = "" //TODO set to controller action for non-resident individuals in config
+    val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
+    val regime = new CgtRegime {
+      override def authenticationType: AuthenticationProvider = ggProvider
+    }
+
+    lazy val visibilityPredicate = new NonResidentIndividualVisibilityPredicate(
+      applicationConfig,
+      authorisationService)(postSignInRedirectUrl,
+      applicationConfig.notAuthorisedRedirectUrl,
+      applicationConfig.twoFactorUrl,
+      applicationConfig.individualBadAffinity,
+      "")
+
+    lazy val guardedAction: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
+
+    val authenticatedAction: AuthenticatedIndividualAction => Action[AnyContent] = action => {
+
+      guardedAction.async {
+        authContext: AuthContext =>
+          implicit request =>
+            action(CgtIndividual(authContext))(request)
+      }
+    }
+
+    authenticatedAction
+  }
+
   def authorisedResidentIndividualAction(action: AuthenticatedIndividualAction): Action[AnyContent] = createAuthorisedResidentIndividualAction(action)
+
+  def authorisedNonResidentIndividualAction(action: AuthenticatedIndividualAction): Action[AnyContent] = createAuthorisedNonResidentIndividualAction(action)
 
   trait CgtRegime extends TaxRegime {
     override def isAuthorised(accounts: Accounts): Boolean = true

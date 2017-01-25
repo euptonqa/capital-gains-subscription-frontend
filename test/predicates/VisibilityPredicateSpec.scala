@@ -82,8 +82,8 @@ class VisibilityPredicateSpec extends UnitSpec with WithFakeApplication with Moc
 
     implicit val hc = HeaderCarrier()
 
-    def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]]): VisibilityPredicate =
-      new VisibilityPredicate(appConfig, mockedService(dataModel, enrolments))(postSignURI,
+    def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]]): ResidentIndividualVisibilityPredicate =
+      new ResidentIndividualVisibilityPredicate(appConfig, mockedService(dataModel, enrolments))(postSignURI,
       notAuthorisedRedirectURI,
       ivUpliftURI,
       twoFactorURI,
