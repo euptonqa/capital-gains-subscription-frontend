@@ -47,4 +47,18 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
       path shouldEqual "/capital-gains-tax/subscription/resident/individual"
     }
   }
+
+  "The URL for the CGTSubscriptionConfirmation action" should {
+    "be equal to /capital-gains-tax/subscription/resident/individual/confirmation" in {
+      val path = controllers.routes.CGTSubscriptionController.confirmationOfSubscription("cgtRef").url
+      path shouldEqual "/capital-gains-tax/subscription/resident/individual/confirmation?cgtReference=cgtRef"
+    }
+  }
+
+  "The URL for the submitCGTSubscriptionConfirmation action" should {
+    "be equal to /capital-gains-tax/subscription/resident/individual/confirmation" in {
+      val path = controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscription().url
+      path shouldEqual "/capital-gains-tax/subscription/resident/individual/confirmation"
+    }
+  }
 }

@@ -1,0 +1,28 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@(appConfig: config.AppConfig, cgtReferenceNumber: String)(implicit request: Request[_], messages: Messages)
+
+@views.html.main_template(title = Messages("confirmation.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <h1 class="visuallyhidden">@Messages("confirmation.yourReference")</h1>
+
+    <div id="confirmation-banner" class="transaction-banner--complete">
+        <p class="bold-large">@Messages("confirmation.yourReference")</p>
+
+        <p class="heading-medium">
+            <strong class="heading-medium">@cgtReferenceNumber</strong>
+        </p>
+    </div>
+
+    <div id="instruction-information" class="form-group">
+        <p class="lede">@Messages("confirmation.writeThisDown")</p>
+        <p>@Messages("confirmation.writeThisDown.reasonToWriteDown")</p>
+        <p class="heading-medium">@Messages("confirmation.whatNext")</p>
+        <p>@Messages("confirmation.continue")</p>
+        <p class="indent indent-width-thin">@Messages("confirmation.whatNext.informationForForm")</p>
+    </div>
+
+    @form(action = controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscription()) {
+        <button class="button yes-no-button" type="submit" id="continue-button">@Messages("common.continue")</button>
+    }
+}
