@@ -37,7 +37,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 
-class VisibilityPredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class ResidentIndividualVisibilityPredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
 
   def mockedService(authorisationDataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]],
                     enrolmentUri: String = "http://enrolments-uri.com",
@@ -82,8 +82,8 @@ class VisibilityPredicateSpec extends UnitSpec with WithFakeApplication with Moc
 
     implicit val hc = HeaderCarrier()
 
-    def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]]): VisibilityPredicate =
-      new VisibilityPredicate(appConfig, mockedService(dataModel, enrolments))(postSignURI,
+    def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]]): ResidentIndividualVisibilityPredicate =
+      new ResidentIndividualVisibilityPredicate(appConfig, mockedService(dataModel, enrolments))(postSignURI,
       notAuthorisedRedirectURI,
       ivUpliftURI,
       twoFactorURI,
