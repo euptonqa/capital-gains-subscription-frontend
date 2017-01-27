@@ -18,6 +18,8 @@ package controllers
 
 import auth.{AuthorisedActions, CgtIndividual}
 import config.AppConfig
+import connectors.SubscriptionConnector
+import models.SubscriptionReference
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
@@ -28,6 +30,10 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import types.AuthenticatedIndividualAction
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import services.SubscriptionService
+import uk.gov.hmrc.play.http.ws.WSHttp
+
+import scala.concurrent.Future
 
 class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
@@ -56,13 +62,28 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
     mockActions
   }
 
+  def createMockSubscriptionService(response: Option[SubscriptionReference]): SubscriptionService = {
+    implicit lazy val mockHttp = mock[WSHttp]
+
+    val mockConnector = mock[SubscriptionConnector]
+
+    when(mockConnector.getSubscriptionResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(response))
+
+    when(mockConnector.getSubscriptionResponseGhost(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(response))
+
+    new SubscriptionService(mockConnector)
+  }
+
   "Calling .residentIndividualSubscription" when {
 
     "provided with a valid user" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val actions = createMockActions(true)
+      val mockSubscriptionService = createMockSubscriptionService(Some(SubscriptionReference("eee")))
 
-      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig)
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
@@ -77,8 +98,9 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
     "provided with an invalid user" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val actions = createMockActions()
+      val mockSubscriptionService = createMockSubscriptionService(None)
 
-      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig)
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
