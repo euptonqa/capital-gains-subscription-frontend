@@ -22,18 +22,33 @@ import auth.AuthorisedActions
 import com.google.inject.Inject
 import config.AppConfig
 import play.api.mvc.{Action, AnyContent}
+import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
 class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
-                                                         appConfig: AppConfig)
+                                                         appConfig: AppConfig,
+                                                         subscriptionService: SubscriptionService)
   extends FrontendController {
 
   val residentIndividualSubscription: Action[AnyContent] = actions.authorisedResidentIndividualAction {
     implicit user =>
       implicit request =>
+        val nino = user.nino
+        nino match {
+          case Some(x) => {val cgtRef = subscriptionService.getSubscriptionResponse(x)
+            for{
+              cgtRef <- cgtRef
+            } yield cgtRef match {
+              case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef)))
+              case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+            }
+          }
+          case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+        }
+
         Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
   }
 }
