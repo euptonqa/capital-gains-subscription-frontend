@@ -22,6 +22,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.http.ws.WSHttp
 import play.api.http.Status._
+import play.api.libs.json.Json
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -43,7 +44,8 @@ class SubscriptionConnector @Inject()(http: WSHttp) extends ServicesConfig {
   }
 
   def getSubscriptionResponseGhost(fullDetails: FullDetails)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
-    val getUrl =s"""$serviceUrl/$subscriptionUrl/$fullDetails""".stripMargin
+    val stringOfJson = Json.toJson(fullDetails).toString()
+    val getUrl =s"""$serviceUrl/$subscriptionUrl/$stringOfJson""".stripMargin
     http.GET[HttpResponse](getUrl).map{
       response =>
         response.status match {
