@@ -19,14 +19,15 @@ package services
 import com.google.inject.Inject
 import connectors.SubscriptionConnector
 import models.FullDetails
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 class SubscriptionService @Inject()(connector: SubscriptionConnector) {
 
-  def getSubscriptionResponse(nino: String) = {
+  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier) = {
     connector.getSubscriptionResponse(nino)
   }
 
-  def getSubscriptionResponseGhost(fullDetails: FullDetails) = {
+  def getSubscriptionResponseGhost(fullDetails: FullDetails)(implicit hc: HeaderCarrier) = {
     connector.getSubscriptionResponseGhost(fullDetails)
   }
 }
