@@ -92,7 +92,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
     }
   }
 
-  "SubscriptionConnector .getSubscriptionResponse with an invalid request" should {
+  "SubscriptionConnector .getSubscriptionResponseGhost with an invalid request" should {
     val dummyRef = "CGT-2134"
 
     val model = FullDetails("name of an invalid character length", "smith", "addressLineOne",
