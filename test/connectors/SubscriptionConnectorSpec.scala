@@ -22,7 +22,7 @@ import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.http.ws.WSHttp
+import config.WSHttp
 import org.mockito.Mockito._
 import play.api.http.Status._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}

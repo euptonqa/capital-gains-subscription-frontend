@@ -21,6 +21,7 @@ import javax.inject.Singleton
 import auth.AuthorisedActions
 import com.google.inject.Inject
 import config.AppConfig
+import models.SubscriptionReference
 import play.api.mvc.{Action, AnyContent}
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -38,17 +39,21 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
       implicit request =>
         val nino = user.nino
         nino match {
-          case Some(x) => {val cgtRef = subscriptionService.getSubscriptionResponse(x)
+          case Some(x) => {
+            val cgtRef = subscriptionService.getSubscriptionResponse(x)
             for{
               cgtRef <- cgtRef
-            } yield cgtRef match {
-              case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef)))
-              case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
-            }
-          }
-          case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+              test <- matchCgtRef(cgtRef)
+            } yield test
         }
+          case _ =>  Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+    }
+  }
 
-        Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+  def matchCgtRef(cgtRef: Option[SubscriptionReference]) = {
+    cgtRef match {
+      case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef)))
+      case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+    }
   }
 }

@@ -16,18 +16,20 @@
 
 package connectors
 
-import com.google.inject.Inject
+import com.google.inject.{Inject, Singleton}
+import config.WSHttp
 import models.{FullDetails, SubscriptionReference}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.http.ws.WSHttp
 import play.api.http.Status._
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+@Singleton
 class SubscriptionConnector @Inject()(http: WSHttp) extends ServicesConfig {
+
   lazy val serviceUrl: String = "capital-gains-tax"
   val subscriptionUrl: String = "subscribe/resident/individual"
 

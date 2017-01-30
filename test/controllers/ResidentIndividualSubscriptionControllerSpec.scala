@@ -17,6 +17,7 @@
 package controllers
 
 import auth.{AuthorisedActions, CgtIndividual}
+import builders.TestUserBuilder
 import config.AppConfig
 import connectors.SubscriptionConnector
 import models.SubscriptionReference
@@ -31,7 +32,8 @@ import play.api.test.Helpers._
 import types.AuthenticatedIndividualAction
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import services.SubscriptionService
-import uk.gov.hmrc.play.http.ws.WSHttp
+import config.WSHttp
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 import scala.concurrent.Future
 
@@ -40,7 +42,7 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
   val unauthorisedLoginUri = "some-url"
   val mockConfig: AppConfig = mock[AppConfig]
 
-  def createMockActions(valid: Boolean = false): AuthorisedActions = {
+  def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithNINO): AuthorisedActions = {
 
     val mockActions = mock[AuthorisedActions]
 
@@ -50,7 +52,8 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
             val action = invocation.getArgument[AuthenticatedIndividualAction](0)
-            Action.async(action(mock[CgtIndividual]))
+            val individual = CgtIndividual(authContext)
+            Action.async(action(individual))
           }
         })
     }
@@ -63,7 +66,7 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
   }
 
   def createMockSubscriptionService(response: Option[SubscriptionReference]): SubscriptionService = {
-    implicit lazy val mockHttp = mock[WSHttp]
+    implicit val mockHttp = mock[WSHttp]
 
     val mockConnector = mock[SubscriptionConnector]
 
@@ -78,7 +81,7 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
 
   "Calling .residentIndividualSubscription" when {
 
-    "provided with a valid user" should {
+    "provided with a valid user who has a nino and a subscription service that has a CGT reference" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val actions = createMockActions(true)
       val mockSubscriptionService = createMockSubscriptionService(Some(SubscriptionReference("eee")))
@@ -90,8 +93,42 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
         status(result) shouldBe 303
       }
 
+      "redirect to the CGT confirmation screen" in {
+        redirectLocation(result).get.toString shouldBe Some(routes.CGTSubscriptionController.confirmationOfSubscription("eee")).get.url
+      }
+    }
+
+    "provided with a valid user but no CGT reference" should {
+      val fakeRequest = FakeRequest("GET", "/")
+      lazy val actions = createMockActions(true)
+      val mockSubscriptionService = createMockSubscriptionService(None)
+
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService)
+      lazy val result = target.residentIndividualSubscription(fakeRequest)
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
       "redirect to the hello world page" in {
-        redirectLocation(result) shouldBe Some(routes.HelloWorld.helloWorld().url)
+        redirectLocation(result).get.toString shouldBe Some(routes.HelloWorld.helloWorld()).get.url
+      }
+    }
+
+    "provided with no CGT reference or nino" should {
+      val fakeRequest = FakeRequest("GET", "/")
+      lazy val actions = createMockActions(true, TestUserBuilder.create300ConfidenceUserAuthContext)
+      val mockSubscriptionService = createMockSubscriptionService(None)
+
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService)
+      lazy val result = target.residentIndividualSubscription(fakeRequest)
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the hello world page" in {
+        redirectLocation(result).get.toString shouldBe Some(routes.HelloWorld.helloWorld()).get.url
       }
     }
 

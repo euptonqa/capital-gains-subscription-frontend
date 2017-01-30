@@ -16,7 +16,7 @@
 
 package services
 
-import com.google.inject.Inject
+import com.google.inject.{Inject, Singleton}
 import connectors.SubscriptionConnector
 import models.FullDetails
 import uk.gov.hmrc.play.http.HeaderCarrier
