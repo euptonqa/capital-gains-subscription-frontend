@@ -82,8 +82,7 @@ class NonResidentIndividualVisibilityPredicateSpec extends UnitSpec with Mockito
       new NonResidentIndividualVisibilityPredicate(appConfig, mockedService(dataModel, enrolments))(postSignURI,
         notAuthorisedRedirectURI,
         twoFactorURI,
-        authorisationURI,
-        enrolmentURI)
+        authorisationURI)
 
     "return true for page visibility when the relevant predicates are given an AuthContext that meets their respective conditions" in {
       lazy val authContext = TestUserBuilder.visibilityPredicateUserPass

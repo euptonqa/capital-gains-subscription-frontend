@@ -25,16 +25,14 @@ import uk.gov.hmrc.play.frontend.auth._
 class NonResidentIndividualVisibilityPredicate (applicationConfig: AppConfig, authorisationService: AuthorisationService)(postSignInRedirectUrl: String,
                                                                                                                           notAuthorisedRedirectUrl: String,
                                                                                                                           twoFactorUrl: String,
-                                                                                                                          affinityGroup: String,
-                                                                                                                          enrolmentUrl: String
+                                                                                                                          affinityGroup: String
 ) extends CompositePageVisibilityPredicate  {
 
   override def children: Seq[PageVisibilityPredicate] = Seq (
     new TwoFAPredicate(twoFactorURI),
     //TODO Update URI to reverse routing when made
     new NINOPredicate(new URI("http://localhost:9771/capital-gains-tax/subscription/non-resident/individual/address-details")),
-    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup)),
-    new EnrolmentPredicate(new URI(enrolmentUrl), authorisationService)
+    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))
   )
 
   lazy private val twoFactorURI: URI =

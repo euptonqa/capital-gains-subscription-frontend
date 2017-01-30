@@ -22,7 +22,7 @@ import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import config.WSHttp
+import config.{AppConfig, WSHttp}
 import org.mockito.Mockito._
 import play.api.http.Status._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
@@ -36,7 +36,9 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
 
   def cgtSubscriptionResponse(cgtRef: String): JsValue = Json.toJson(SubscriptionReference(cgtRef))
 
-  lazy val target = new SubscriptionConnector(mockHttp) {
+  val config = mock[AppConfig]
+
+  lazy val target = new SubscriptionConnector(mockHttp, config) {
     override lazy val serviceUrl: String = "test"
     override val subscriptionUrl: String  = "test"
   }

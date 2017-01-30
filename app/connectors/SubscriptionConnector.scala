@@ -17,7 +17,7 @@
 package connectors
 
 import com.google.inject.{Inject, Singleton}
-import config.WSHttp
+import config.{AppConfig, WSHttp}
 import models.{FullDetails, SubscriptionReference}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -28,9 +28,9 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Singleton
-class SubscriptionConnector @Inject()(http: WSHttp) extends ServicesConfig {
+class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extends ServicesConfig {
 
-  lazy val serviceUrl: String = "capital-gains-tax"
+  lazy val serviceUrl: String =  baseUrl("subscription")
   val subscriptionUrl: String = "subscribe/resident/individual"
 
   def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
