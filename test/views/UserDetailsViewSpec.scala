@@ -46,6 +46,18 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
         doc.select("h1").text() shouldBe UserDetails.title
       }
     }
+
+    "have a form" which {
+      lazy val form = doc.body().select("form")
+
+      "has a method of POST" in {
+        form.attr("method") shouldBe "POST"
+      }
+
+      s"has an action of '${controllers.routes.UserDetailsController.submitUserDetails().url}'" in {
+        form.attr("action") shouldBe controllers.routes.UserDetailsController.submitUserDetails().url
+      }
+    }
   }
 
 }

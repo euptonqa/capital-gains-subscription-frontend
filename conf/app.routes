@@ -11,3 +11,6 @@ GET        /resident/individual                               controllers.Reside
 
 GET        /individual/organisation-type                      controllers.OrganisationTypeController.organisationType
 POST       /individual/organisation-type                      controllers.OrganisationTypeController.submitOrganisationType
+
+GET        /non-resident/individual/user-details              controllers.UserDetailsController.userDetails()
+POST       /non-resident/individual/user-details              controllers.UserDetailsController.submitUserDetails()
