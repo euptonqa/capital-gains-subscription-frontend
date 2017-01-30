@@ -24,6 +24,7 @@ object MessageLookup {
 
   object Errors {
     val errorMandatory = "Please select an option"
+    val errorRequired = "This field is required"
   }
 
   object InvalidAffinityGroup {

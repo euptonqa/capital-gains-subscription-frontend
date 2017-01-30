@@ -26,16 +26,25 @@ class FullDetailsForm @Inject()(val messagesApi: MessagesApi) extends I18nSuppor
 
   val nonEmptyCheck: String => Boolean = input => !input.isEmpty
 
+  val textToOptional: String => Option[String] = input =>
+    if (input.isEmpty) None
+    else Some(input)
+
+  val optionalToText: Option[String] => String = {
+    case Some(data) => data
+    case _ => ""
+  }
+
   val fullDetailsForm = Form(
     mapping(
-      "firstName" -> text.verifying(Messages("errors.mandatory"), nonEmptyCheck),
-      "lastName" -> text.verifying(Messages("errors.mandatory"), nonEmptyCheck),
-      "addressLineOne" -> text.verifying(Messages("errors.mandatory"), nonEmptyCheck),
-      "addressLineTwo" -> optional(text),
-      "townOrCity" -> text.verifying(Messages("errors.mandatory"), nonEmptyCheck),
-      "county" -> optional(text),
-      "postCode" -> text.verifying(Messages("errors.mandatory"), nonEmptyCheck),
-      "country" -> text.verifying(Messages("errors.mandatory"), nonEmptyCheck)
+      "firstName" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
+      "lastName" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
+      "addressLineOne" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
+      "addressLineTwo" -> text.transform(textToOptional, optionalToText),
+      "townOrCity" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
+      "county" -> text.transform(textToOptional, optionalToText),
+      "postCode" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
+      "country" -> text.verifying(Messages("errors.required"), nonEmptyCheck)
     )(FullDetailsModel.apply)(FullDetailsModel.unapply)
   )
 }
