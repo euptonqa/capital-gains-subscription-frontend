@@ -48,6 +48,7 @@ object MessageLookup {
 
   object UserDetails {
     val title = "Enter your name and address"
+    val firstName = "First name"
   }
 
   object OrganisationType {

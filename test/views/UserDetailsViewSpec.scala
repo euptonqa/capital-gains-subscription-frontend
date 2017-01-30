@@ -19,7 +19,9 @@ package views
 import assets.FakeRequestHelper
 import assets.MessageLookup.UserDetails
 import config.AppConfig
+import forms.FullDetailsForm
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
@@ -28,12 +30,27 @@ import views.html.userDetails
 
 class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestHelper with I18nSupport {
 
-  val injector: Injector = app.injector
-  val appConfig: AppConfig = injector.instanceOf[AppConfig]
+  lazy val injector: Injector = app.injector
+  lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
   implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
+  def inputStyleCheck(element: Element, label: String) = {
+    "has a type of text" in {
+      element.attr("type") shouldBe "text"
+    }
+
+    "has a class of form-group input" in {
+      element.attr("class") shouldBe "form-group input"
+    }
+
+    s"has the text '$label'" in {
+      element.text() shouldBe label
+    }
+  }
+
   "The User Details view" should {
-    lazy val view = userDetails(appConfig)
+    lazy val form = new FullDetailsForm(messagesApi)
+    lazy val view = userDetails(appConfig, form.fullDetailsForm)
     lazy val doc = Jsoup.parse(view.body)
 
     "contain a header" which {
@@ -56,6 +73,22 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
 
       s"has an action of '${controllers.routes.UserDetailsController.submitUserDetails().url}'" in {
         form.attr("action") shouldBe controllers.routes.UserDetailsController.submitUserDetails().url
+      }
+    }
+
+    "has an input for first name" which {
+      lazy val input = doc.body().select("#firstName")
+
+      "has a type of text" in {
+        input.attr("type") shouldBe "text"
+      }
+
+      "has a class of form-group input" in {
+        input.attr("class") shouldBe "form-group input"
+      }
+
+      s"has the text ''" in {
+        input.text() shouldBe UserDetails.firstName
       }
     }
   }
