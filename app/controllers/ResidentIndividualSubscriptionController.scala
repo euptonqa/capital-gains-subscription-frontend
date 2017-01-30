@@ -18,12 +18,13 @@ package controllers
 
 import javax.inject.Singleton
 
-import auth.AuthorisedActions
+import auth.{AuthorisedActions, CgtIndividual}
 import com.google.inject.Inject
 import config.AppConfig
+import helpers.EnrolmentToCGTCheck
 import models.SubscriptionReference
-import play.api.mvc.{Action, AnyContent}
-import services.SubscriptionService
+import play.api.mvc.{Action, AnyContent, Result}
+import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
@@ -31,29 +32,46 @@ import scala.concurrent.Future
 @Singleton
 class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
                                                          appConfig: AppConfig,
-                                                         subscriptionService: SubscriptionService)
+                                                         subscriptionService: SubscriptionService,
+                                                         authService: AuthorisationService)
   extends FrontendController {
 
   val residentIndividualSubscription: Action[AnyContent] = actions.authorisedResidentIndividualAction {
     implicit user =>
       implicit request =>
-        val nino = user.nino
-        nino match {
-          case Some(x) => {
-            val cgtRef = subscriptionService.getSubscriptionResponse(x)
-            for{
-              cgtRef <- cgtRef
-              test <- matchCgtRef(cgtRef)
-            } yield test
-        }
-          case _ =>  Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+        for {
+          enrolments <- authService.getEnrolments
+          isEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments.get)
+          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
+        } yield redirect
+  }
+
+  def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual): Future[Result] = {
+
+    val nino = user.nino
+    val cgtRef = subscriptionService.getSubscriptionResponse(nino.get)
+    for {
+      cgtRef <- cgtRef
+      test <- matchCgtRef(cgtRef)
+    } yield test
+
+    def matchCgtRef(cgtReg: Option[SubscriptionReference]): Future[Result] = {
+      for {
+        cgtRef <- cgtRef
+      }  yield cgtRef match {
+        case Some(x) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef))
+        case _ => Redirect(controllers.routes.HelloWorld.helloWorld())
+      }
     }
   }
 
-  def matchCgtRef(cgtRef: Option[SubscriptionReference]) = {
-    cgtRef match {
-      case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef)))
-      case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+  def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual, isEnrolled: Boolean): Unit = {
+    for {
+      isEnrolled <- isEnrolled
+    } yield isEnrolled match {
+      case true => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+      //you're already enrolled to CGT!
+      case false => Future.successful(checkForCgtRefAndRedirectToConfirmation(user))
     }
   }
 }
