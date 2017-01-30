@@ -18,22 +18,65 @@ package controllers
 
 import javax.inject.Singleton
 
-import auth.AuthorisedActions
+import auth.{AuthorisedActions, CgtIndividual}
 import com.google.inject.Inject
 import config.AppConfig
-import play.api.mvc.{Action, AnyContent}
+import helpers.EnrolmentToCGTCheck
+import models.SubscriptionReference
+import play.api.mvc.{Action, AnyContent, Result}
+import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrier
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
 class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
-                                                         appConfig: AppConfig)
+                                                         appConfig: AppConfig,
+                                                         subscriptionService: SubscriptionService,
+                                                         authService: AuthorisationService)
   extends FrontendController {
 
   val residentIndividualSubscription: Action[AnyContent] = actions.authorisedResidentIndividualAction {
     implicit user =>
       implicit request =>
-        Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+        for {
+          enrolments <- authService.getEnrolments
+          isEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments.get)
+          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
+        } yield redirect
+  }
+
+  def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual)(implicit hc: HeaderCarrier): Future[Result] = {
+
+    val nino = user.nino
+    val cgtRef = subscriptionService.getSubscriptionResponse(nino.get)
+
+    def matchCgtRef(cgtRef: Option[SubscriptionReference]): Future[Result] = {
+      for {
+        redirect <- redirectToCGTConfirmationOrError(cgtRef)
+      } yield redirect
+    }
+
+    def redirectToCGTConfirmationOrError(cgtRef: Option[SubscriptionReference]): Future[Result] = {
+      cgtRef match {
+        case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef)))
+        case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+      }
+    }
+
+    for {
+      cgtRef <- cgtRef
+      test <- matchCgtRef(cgtRef)
+    } yield test
+  }
+
+  def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
+    isEnrolled match {
+      case true => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+      //TODO: you're already enrolled to CGT!
+      case false => checkForCgtRefAndRedirectToConfirmation(user)
+    }
   }
 }

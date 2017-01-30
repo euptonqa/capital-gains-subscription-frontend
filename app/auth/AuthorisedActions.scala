@@ -76,8 +76,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
       authorisationService)(postSignInRedirectUrl,
       applicationConfig.notAuthorisedRedirectUrl,
       applicationConfig.twoFactorUrl,
-      applicationConfig.individualBadAffinity,
-      "")
+      applicationConfig.individualBadAffinity)
 
     lazy val guardedAction: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
 

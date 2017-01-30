@@ -33,8 +33,6 @@ class AuthorisationConnector @Inject()(http: WSHttp) extends ServicesConfig {
   lazy val serviceUrl: String = baseUrl("auth")
   val authorityUri: String = "auth/authority"
 
-  //  Authority
-
   def getAuthResponse()(implicit hc: HeaderCarrier): Future[Option[AuthorisationDataModel]] = {
     val getUrl = s"""$serviceUrl/$authorityUri"""
     http.GET[HttpResponse](getUrl).map {
