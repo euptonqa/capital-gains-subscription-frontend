@@ -18,6 +18,7 @@ package services
 
 import javax.inject.{Inject, Singleton}
 import connectors.AuthorisationConnector
+import exceptions.AuthorisationNotFoundException
 import models.{AuthorisationDataModel, Enrolment}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -29,6 +30,32 @@ class AuthorisationService @Inject()(authConnector: AuthorisationConnector) {
 
   def getAuthDataModel(implicit hc: HeaderCarrier): Future[Option[AuthorisationDataModel]] = {
     authConnector.getAuthResponse()(hc)
+  }
+
+  def getNino(implicit hc: HeaderCarrier): Future[String] = {
+
+    def extractNino(model: Option[AuthorisationDataModel]): Future[String] = model match {
+      case Some(data) if data.accounts.paye.isDefined => Future.successful(data.accounts.paye.get.nino.toString())
+      case None => throw AuthorisationNotFoundException("Authorisation Connector returned nothing")
+    }
+
+    for {
+      authorisation <- authConnector.getAuthResponse()(hc)
+      result <- extractNino(authorisation)
+    } yield result
+  }
+
+  def hasANino(implicit hc: HeaderCarrier): Future[Boolean] = {
+
+    def extractNino(model: Option[AuthorisationDataModel]): Future[Boolean] = model match {
+      case Some(data) => Future.successful(data.accounts.paye.isDefined)
+      case None => throw AuthorisationNotFoundException("Authorisation Connector returned nothing")
+    }
+
+    for {
+      authorisation <- authConnector.getAuthResponse()(hc)
+      result <- extractNino(authorisation)
+    } yield result
   }
 
   def getAffinityGroup(implicit hc: HeaderCarrier): Future[Option[String]] = {

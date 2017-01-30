@@ -17,14 +17,12 @@
 package connectors
 
 import javax.inject.{Inject, Singleton}
-
 import config.{AppConfig, WSHttp}
 import models.{UserFactsModel, SubscriptionReference}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
