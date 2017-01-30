@@ -24,6 +24,8 @@ invalidAffinityGroup.paragraph.three.trust.link = Trusts and Capital Gains tax
 invalidAffinityGroup.paragraph.three.pensionTrust = pension trust, see
 invalidAffinityGroup.paragraph.three.pensionTrust.link = Pension trustees: investments and tax
 
+## User Details Messages ##
+userDetails.title = Enter your name and address
 
 ## Organisation Type Messages ##
 organisationType.title = What type of organisation are you?

@@ -46,6 +46,10 @@ object MessageLookup {
     val linkTextPensionTrust = "Pension trustees: investments and tax"
   }
 
+  object UserDetails {
+    val title = "Enter your name and address"
+  }
+
   object OrganisationType {
     val title = "What type of organisation are you?"
     val question = "What type of organisation are you?"
