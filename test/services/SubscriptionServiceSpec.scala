@@ -62,7 +62,7 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
     "return a SubscriptionReference model with a valid request" in {
 
       val fullDetailsModel = new FullDetails("john", "smith", "addressLineOne",
-        "addressLineTwo", "town", "county", "postcode", "country")
+        Some("addressLineTwo"), "town", Some("county"), "postcode", "country")
 
       val service = mockedService(Some(SubscriptionReference("CGT-2123")))
 
@@ -73,7 +73,7 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
 
     "return None when called with an invalid request" in {
       val invalidFullDetailsModel = new FullDetails("name of an invalid character length", "smith", "addressLineOne",
-        "addressLineTwo", "town", "county", "postcode", "country")
+        Some("addressLineTwo"), "town", Some("county"), "postcode", "country")
 
       val service = mockedService(None)
 

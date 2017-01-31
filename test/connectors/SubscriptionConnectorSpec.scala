@@ -78,7 +78,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
     val dummyRef = "CGT-2134"
 
     val model = FullDetails("john", "smith", "addressLineOne",
-      "addressLineTwo", "town", "county", "postcode", "country")
+      Some("addressLineTwo"), "town", Some("county"), "postcode", "country")
 
     when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse(dummyRef)))))
@@ -98,7 +98,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
     val dummyRef = "CGT-2134"
 
     val model = FullDetails("name of an invalid character length", "smith", "addressLineOne",
-      "addressLineTwo", "town", "county", "postcode", "country")
+      Some("addressLineTwo"), "town", Some("county"), "postcode", "country")
 
     when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.toJson("invalid:n")))))

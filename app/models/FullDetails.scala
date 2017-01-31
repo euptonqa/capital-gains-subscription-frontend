@@ -21,9 +21,9 @@ import play.api.libs.json.{Json, OFormat}
 case class FullDetails(firstName: String,
                        lastName: String,
                        addressLineOne: String,
-                       addressLineTwo: String,
+                       addressLineTwo: Option[String],
                        townOrCity: String,
-                       county: String,
+                       county: Option[String],
                        postCode: String,
                        Country: String)
 
