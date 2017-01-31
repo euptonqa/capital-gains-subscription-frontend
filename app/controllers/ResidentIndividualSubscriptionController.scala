@@ -38,7 +38,8 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
                                                          authService: AuthorisationService)
   extends FrontendController {
 
-  val residentIndividualSubscription: Action[AnyContent] = actions.authorisedResidentIndividualAction {
+  val residentIndividualSubscription: Action[AnyContent] =
+    actions.authorisedResidentIndividualAction {
     implicit user =>
       implicit request =>
         for {
@@ -53,15 +54,15 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
     val nino = user.nino
     val cgtRef = subscriptionService.getSubscriptionResponse(nino.get)
 
-    def matchCgtRef(cgtRef: Option[SubscriptionReference]): Future[Result] = {
+    def matchCgtRef(cgtRef: Option[String]): Future[Result] = {
       for {
         redirect <- redirectToCGTConfirmationOrError(cgtRef)
       } yield redirect
     }
 
-    def redirectToCGTConfirmationOrError(cgtRef: Option[SubscriptionReference]): Future[Result] = {
+    def redirectToCGTConfirmationOrError(cgtRef: Option[String]): Future[Result] = {
       cgtRef match {
-        case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef)))
+        case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x)))
         case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
       }
     }

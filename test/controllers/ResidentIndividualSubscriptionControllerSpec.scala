@@ -69,7 +69,7 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
     mockActions
   }
 
-  def createMockSubscriptionService(response: Option[SubscriptionReference]): SubscriptionService = {
+  def createMockSubscriptionService(response: Option[String]): SubscriptionService = {
     implicit val mockHttp = mock[WSHttp]
 
     val mockConnector = mock[SubscriptionConnector]
@@ -78,7 +78,7 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
       .thenReturn(Future.successful(response))
 
     when(mockConnector.getSubscriptionResponseGhost(ArgumentMatchers.any())(ArgumentMatchers.any()))
-      .thenReturn(Future.successful(response))
+      .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
 
     new SubscriptionService(mockConnector)
   }
@@ -110,7 +110,7 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
 
       val fakeRequest = FakeRequest("GET", "/")
       lazy val actions = createMockActions(true)
-      val mockSubscriptionService = createMockSubscriptionService(Some(SubscriptionReference("eee")))
+      val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
       val enrolments =  Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
@@ -130,7 +130,7 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
     "provided with a valid user who has a nino but a preexisting CGT enrolment" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val actions = createMockActions(true)
-      val mockSubscriptionService = createMockSubscriptionService(Some(SubscriptionReference("eee")))
+      val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
       val enrolments =  Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("test","test")), ""), Enrolment("key", Seq(), ""))
 
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))

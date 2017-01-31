@@ -22,7 +22,8 @@ import models.{FullDetails, SubscriptionReference}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import play.api.http.Status._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
+import uk.gov.hmrc.domain.Nino
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,16 +31,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Singleton
 class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extends ServicesConfig {
 
-  lazy val serviceUrl: String =  baseUrl("subscription")
+  lazy val serviceUrl: String =  appConfig.subscription
   val subscriptionUrl: String = "subscribe/resident/individual"
 
-  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
-    val getUrl = s"""$serviceUrl/$subscriptionUrl/$nino"""
+  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    val getUrl = s"""$serviceUrl/$subscriptionUrl/?nino=$nino"""
     http.GET[HttpResponse](getUrl).map{
       response =>
         response.status match {
           case OK =>
-            Some(response.json.as[SubscriptionReference])
+            Some(response.json.as[String])
           case _ => None
         }
     }

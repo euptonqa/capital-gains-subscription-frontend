@@ -24,5 +24,8 @@ import scala.concurrent.Future
 object EnrolmentToCGTCheck extends EnrolmentToCGTCheck
 
 trait EnrolmentToCGTCheck {
-  def checkEnrolments(enrolments: Seq[Enrolment]): Future[Boolean] = Future.successful(enrolments.exists(_.key == Keys.cGTEnrolmentKey))
+  def checkEnrolments(enrolments: Seq[Enrolment]): Future[Boolean] = {
+    println(s"#############Enrolment Check:${enrolments.exists(_.key == Keys.cGTEnrolmentKey)}###################")
+    Future.successful(enrolments.exists(_.key == Keys.cGTEnrolmentKey))
+  }
 }
