@@ -19,8 +19,9 @@ package config
 import com.google.inject.{Inject, Singleton}
 import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
-import uk.gov.hmrc.play.config.{AppName, ServicesConfig}
+import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut}
 
 @Singleton
 class FrontendAuditConnector @Inject()() extends Auditing with AppName {
@@ -29,5 +30,19 @@ class FrontendAuditConnector @Inject()() extends Auditing with AppName {
 
 @Singleton
 class FrontendAuthConnector @Inject()(override val http: WSHttp) extends AuthConnector with ServicesConfig {
-  val serviceUrl: String = baseUrl("auth")
+  lazy val serviceUrl: String = baseUrl("auth")
+}
+
+object FrontendAuditConnector extends Auditing with AppName {
+  override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
+}
+
+object FrontendAuthConnector extends AuthConnector with ServicesConfig {
+
+  lazy val http = WSHttp
+  override val serviceUrl: String = baseUrl("auth")
+
+  object WSHttp extends WSGet with WSPut with WSPost with WSDelete with AppName with RunMode {
+    override val hooks = NoneRequired
+  }
 }
