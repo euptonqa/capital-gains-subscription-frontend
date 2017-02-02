@@ -33,8 +33,7 @@ class ResidentIndividualVisibilityPredicate(applicationConfig: AppConfig, author
     new TwoFAPredicate(twoFactorURI),
     new IVUpliftPredicate(ivUpliftURI),
     new NINOPredicate(ivUpliftURI),
-    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup)),
-    new EnrolmentPredicate(new URI(enrolmentUrl), authorisationService)
+    new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))
   )
 
   lazy private val ivUpliftURI: URI =

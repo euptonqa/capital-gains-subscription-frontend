@@ -50,15 +50,15 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
     val dummyRef = "CGT-2122"
 
     when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse(dummyRef)))))
+      .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(dummyRef)))))
 
     val result = await(target.getSubscriptionResponse("fakeNino")(hc))
     "return a valid SubscriptionReference" in {
-      result.get shouldBe a[SubscriptionReference]
+      result.get shouldBe a[String]
     }
 
-    s"return a SubscriptionReference containing the reference ${dummyRef}" in {
-      result.get.cgtRef shouldBe dummyRef
+    s"return a SubscriptionReference containing the reference $dummyRef" in {
+      result.get shouldBe dummyRef
     }
   }
 
@@ -83,13 +83,13 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
     when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse(dummyRef)))))
 
-    val result = await(target.getSubscriptionResponseGhost((model)))
+    val result = await(target.getSubscriptionResponseGhost(model))
 
     "return a valid SubscriptionReference" in {
       result.get shouldBe a[SubscriptionReference]
     }
 
-    s"return a SubscriptionReference containing the reference ${dummyRef}" in {
+    s"return a SubscriptionReference containing the reference $dummyRef" in {
       result.get.cgtRef shouldBe dummyRef
     }
   }

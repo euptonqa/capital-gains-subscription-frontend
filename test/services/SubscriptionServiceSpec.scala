@@ -30,25 +30,25 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
 
   implicit val hc: HeaderCarrier = mock[HeaderCarrier]
 
-  def mockedService(response: Option[SubscriptionReference]): SubscriptionService = {
+  def mockedService(response: Option[String]): SubscriptionService = {
     val mockConnector = mock[SubscriptionConnector]
 
     when(mockConnector.getSubscriptionResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(response))
 
     when(mockConnector.getSubscriptionResponseGhost(ArgumentMatchers.any())(ArgumentMatchers.any()))
-      .thenReturn(Future.successful(response))
+      .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
 
     new SubscriptionService(mockConnector)
   }
 
   "Calling SubscriptionService .getSubscription response" should {
     "return a SubscriptionReference model with a valid request" in {
-      val service = mockedService(Some(SubscriptionReference("CGT-2121")))
+      val service = mockedService(Some("CGT-2121"))
 
       val result = service.getSubscriptionResponse("blah")
 
-      await(result) shouldBe Some(SubscriptionReference("CGT-2121"))
+      await(result) shouldBe Some("CGT-2121")
     }
     "return None with an invalid request" in {
       val service = mockedService(None)
@@ -64,7 +64,7 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
       val fullDetailsModel = new FullDetails("john", "smith", "addressLineOne",
         "addressLineTwo", "town", "county", "postcode", "country")
 
-      val service = mockedService(Some(SubscriptionReference("CGT-2123")))
+      val service = mockedService(Some("CGT-2123"))
 
       val result = service.getSubscriptionResponseGhost(fullDetailsModel)
 
