@@ -22,6 +22,7 @@ import uk.gov.hmrc.play.config.{AppName, RunMode}
 import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut}
 
 @Singleton
-class WSHttp @Inject()(override val auditConnector: FrontendAuditConnector) extends WSGet with WSPut with WSPost with WSDelete with AppName with RunMode with HttpAuditing {
+class WSHttp @Inject()(override val auditConnector: FrontendAuditConnector)
+  extends WSGet with WSPut with WSPost with WSDelete with AppName with RunMode with HttpAuditing {
   override val hooks = Seq(AuditingHook)
 }
