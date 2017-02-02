@@ -26,6 +26,15 @@ invalidAffinityGroup.paragraph.three.pensionTrust.link = Pension trustees: inves
 
 ## User Details Messages ##
 userDetails.title = Enter your name and address
+userDetails.secondaryHeading = Contact address
+userDetails.firstName = First name
+userDetails.lastName = Last name
+userDetails.addressLineOne = Building and street
+userDetails.addressLineTwo = Building and street line two
+userDetails.townOrCity = Town or city
+userDetails.county = County
+userDetails.postCode = Postcode
+userDetails.country = Country
 
 ## Organisation Type Messages ##
 organisationType.title = What type of organisation are you?

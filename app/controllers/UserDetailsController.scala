@@ -17,13 +17,22 @@
 package controllers
 
 import com.google.inject.{Inject, Singleton}
+import config.AppConfig
+import forms.FullDetailsForm
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+
+import scala.concurrent.Future
 
 
 @Singleton
-class UserDetailsController @Inject()() extends FrontendController{
+class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: FullDetailsForm, val messagesApi: MessagesApi)
+  extends FrontendController with I18nSupport {
 
-  val userDetails = TODO
+  val userDetails = Action.async { implicit request =>
+    Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.fullDetailsForm)))
+  }
 
   val submitUserDetails = TODO
 }

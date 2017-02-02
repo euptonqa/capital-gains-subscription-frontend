@@ -48,7 +48,15 @@ object MessageLookup {
 
   object UserDetails {
     val title = "Enter your name and address"
+    val secondHeader = "Contact address"
     val firstName = "First name"
+    val lastName = "Last name"
+    val addressLineOne = "Building and street"
+    val addressLineTwo = "Building and street line two"
+    val townOrCity = "Town or city"
+    val county = "County"
+    val postCode = "Postcode"
+    val country = "Country"
   }
 
   object OrganisationType {

@@ -3,13 +3,26 @@
 
 @(appConfig: config.AppConfig, userDetailsForm: Form[FullDetailsModel])(implicit request: Request[_], messages: Messages)
 
-@userInput(label: String, identifier: String) = {
-    @input(
-        userDetailsForm(identifier),
-        '_label -> label,
-        '_type -> "text",
-        '_inputClass -> "form-group input"
-    )
+@userInput(label: String, identifier: String, size: Int = 2, hiddenLabel: Boolean = false) = {
+
+    @{if(hiddenLabel){
+        input(
+            userDetailsForm(identifier),
+            '_label -> label,
+            '_type -> "text",
+            '_inputClass -> s"shim input grid-1-$size",
+            '_labelClass -> "form-group",
+            '_labelTextClass -> "visuallyhidden"
+        )
+    }else{
+        input(
+            userDetailsForm(identifier),
+            '_label -> label,
+            '_type -> "text",
+            '_inputClass -> s"shim input grid-1-$size",
+            '_labelClass -> "form-group"
+        )
+    }}
 }
 
 @views.html.main_template(title = Messages("userDetails.title"), bodyClasses = None, appConfig = appConfig) {
@@ -19,5 +32,23 @@
     @form(action = controllers.routes.UserDetailsController.submitUserDetails) {
 
         @userInput(Messages("userDetails.firstName"), "firstName")
+
+        @userInput(Messages("userDetails.lastName"), "lastName")
+
+        <h2 class="heading-medium">@Messages("userDetails.secondaryHeading")</h2>
+
+        @userInput(Messages("userDetails.addressLineOne"), "addressLine1")
+
+        @userInput(Messages("userDetails.addressLineTwo"), "addressLine2", hiddenLabel = true)
+
+        @userInput(Messages("userDetails.townOrCity"), "town")
+
+        @userInput(Messages("userDetails.county"), "county")
+
+        @userInput(Messages("userDetails.postCode"), "postCode", size = 4)
+
+        @userInput(Messages("userDetails.country"), "country")
+
+        <button class="button" type="submit" id="continue-button">@Messages("common.continue")</button>
     }
 }
