@@ -16,7 +16,7 @@
 
 package controllers
 
-import com.google.inject.{Inject, Singleton}
+import javax.inject.{Inject, Singleton}
 import config.AppConfig
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}

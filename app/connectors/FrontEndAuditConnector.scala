@@ -16,7 +16,7 @@
 
 package connectors
 
-import com.google.inject.{Inject, Singleton}
+import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.config.AppName

@@ -18,7 +18,7 @@ package predicates
 
 import java.net.URI
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import helpers.EnrolmentToCGTCheck
 import models.Enrolment
 import play.api.mvc.Results._

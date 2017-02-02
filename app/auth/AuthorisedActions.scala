@@ -16,7 +16,7 @@
 
 package auth
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import config.ApplicationConfig
 import connectors.FrontendAuthorisationConnector
 import play.api.mvc.{Action, AnyContent}

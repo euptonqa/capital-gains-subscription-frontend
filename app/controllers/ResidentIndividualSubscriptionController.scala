@@ -19,7 +19,7 @@ package controllers
 import javax.inject.Singleton
 
 import auth.{AuthorisedActions, CgtIndividual}
-import com.google.inject.Inject
+import javax.inject.Inject
 import config.AppConfig
 import helpers.EnrolmentToCGTCheck
 import models.SubscriptionReference
