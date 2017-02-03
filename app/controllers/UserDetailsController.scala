@@ -16,23 +16,49 @@
 
 package controllers
 
+import auth.AuthorisedActions
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import forms.FullDetailsForm
+import models.FullDetailsModel
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Action
+import play.api.libs.json.Json
+import play.api.mvc.Result
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
-
+import scala.util.{Failure, Success, Try}
 
 @Singleton
-class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: FullDetailsForm, val messagesApi: MessagesApi)
+class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: FullDetailsForm,
+                                      val messagesApi: MessagesApi, actions: AuthorisedActions)
   extends FrontendController with I18nSupport {
 
-  val userDetails = Action.async { implicit request =>
+  //TODO attach actual service method to the request
+  def subscribeUser(): Future[Try[String]] = Future.successful(Success("CGT123456"))
+
+  val userDetails = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
     Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.fullDetailsForm)))
   }
 
-  val submitUserDetails = TODO
+  val submitUserDetails = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
+
+    val successAction: FullDetailsModel => Future[Result] = model => {
+
+      def action(cgtRef: Try[String]) = {
+        cgtRef match {
+          case Success(ref) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(ref)))
+          case Failure(error) => Future.successful(InternalServerError(Json.toJson(error.getMessage)))
+        }
+      }
+
+      for {
+        ref <- subscribeUser()
+        action <- action(ref)
+      } yield action
+    }
+
+    fullDetailsForm.fullDetailsForm.bindFromRequest.fold(errors => Future.successful(BadRequest(views.html.userDetails(appConfig, errors))),
+      successAction)
+  }
 }

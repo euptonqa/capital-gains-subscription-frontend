@@ -132,8 +132,8 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
     }
 
     "has an input for the address line one" which {
-      lazy val label = doc.body().select("label[for=addressLine1]")
-      lazy val input = label.select("input#addressLine1")
+      lazy val label = doc.body().select("label[for=addressLineOne]")
+      lazy val input = label.select("input#addressLineOne")
 
       s"has the text '${UserDetails.addressLineOne}'" in {
         label.text() shouldBe UserDetails.addressLineOne
@@ -153,8 +153,8 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
     }
 
     "has an input for the address line two" which {
-      lazy val label = doc.body().select("label[for=addressLine2]")
-      lazy val input = label.select("input#addressLine2")
+      lazy val label = doc.body().select("label[for=addressLineTwo]")
+      lazy val input = label.select("input#addressLineTwo")
 
       s"has the text '${UserDetails.addressLineTwo}'" in {
         label.text() shouldBe UserDetails.addressLineTwo
@@ -178,8 +178,8 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
     }
 
     "has an input for town or city" which {
-      lazy val label = doc.body().select("label[for=town]")
-      lazy val input = label.select("input#town")
+      lazy val label = doc.body().select("label[for=townOrCity]")
+      lazy val input = label.select("input#townOrCity")
 
       s"has the text '${UserDetails.townOrCity}'" in {
         label.text() shouldBe UserDetails.townOrCity
