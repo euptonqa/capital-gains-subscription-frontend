@@ -17,26 +17,26 @@
 package connectors
 
 import javax.inject.{Inject, Singleton}
+
 import config.{AppConfig, WSHttp}
-import models.{FullDetails, SubscriptionReference}
+import models.{FullDetailsModel, SubscriptionReference}
+import play.api.http.Status._
+import play.api.libs.json.Json
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import play.api.http.Status._
-import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.domain.Nino
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extends ServicesConfig {
 
-  lazy val serviceUrl: String =  appConfig.subscription
+  lazy val serviceUrl: String = appConfig.subscription
   val subscriptionUrl: String = "subscribe/resident/individual"
 
   def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val getUrl = s"""$serviceUrl/$subscriptionUrl/?nino=$nino"""
-    http.GET[HttpResponse](getUrl).map{
+    http.GET[HttpResponse](getUrl).map {
       response =>
         response.status match {
           case OK =>
@@ -46,15 +46,15 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
     }
   }
 
-  def getSubscriptionResponseGhost(fullDetails: FullDetails)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+  def getSubscriptionResponseGhost(fullDetails: FullDetailsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
     val stringOfJson = Json.toJson(fullDetails).toString()
     val getUrl =s"""$serviceUrl/$subscriptionUrl/$stringOfJson""".stripMargin
-    http.GET[HttpResponse](getUrl).map{
+    http.GET[HttpResponse](getUrl).map {
       response =>
         response.status match {
           case OK =>
             Some(response.json.as[SubscriptionReference])
-          case _=> None
+          case _ => None
         }
     }
   }

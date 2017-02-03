@@ -16,9 +16,10 @@
 
 package services
 
-import javax.inject.{Inject, Singleton}
+import javax.inject.Inject
+
 import connectors.SubscriptionConnector
-import models.FullDetails
+import models.FullDetailsModel
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 class SubscriptionService @Inject()(connector: SubscriptionConnector) {
@@ -27,7 +28,7 @@ class SubscriptionService @Inject()(connector: SubscriptionConnector) {
     connector.getSubscriptionResponse(nino)
   }
 
-  def getSubscriptionResponseGhost(fullDetails: FullDetails)(implicit hc: HeaderCarrier) = {
+  def getSubscriptionResponseGhost(fullDetails: FullDetailsModel)(implicit hc: HeaderCarrier) = {
     connector.getSubscriptionResponseGhost(fullDetails)
   }
 }

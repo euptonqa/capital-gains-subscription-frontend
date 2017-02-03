@@ -17,7 +17,7 @@
 package services
 
 import connectors.SubscriptionConnector
-import models.{FullDetails, SubscriptionReference}
+import models.{FullDetailsModel, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito.when
@@ -61,8 +61,8 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
   "Calling SubscriptionService .getGhostSubscription response" should {
     "return a SubscriptionReference model with a valid request" in {
 
-      val fullDetailsModel = new FullDetails("john", "smith", "addressLineOne",
-        "addressLineTwo", "town", "county", "postcode", "country")
+      val fullDetailsModel = new FullDetailsModel("john", "smith", "addressLineOne",
+        Some("addressLineTwo"), "town", Some("county"), "postcode", "country")
 
       val service = mockedService(Some("CGT-2123"))
 
@@ -72,8 +72,8 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
     }
 
     "return None when called with an invalid request" in {
-      val invalidFullDetailsModel = new FullDetails("name of an invalid character length", "smith", "addressLineOne",
-        "addressLineTwo", "town", "county", "postcode", "country")
+      val invalidFullDetailsModel = new FullDetailsModel("name of an invalid character length", "smith", "addressLineOne",
+        Some("addressLineTwo"), "town", Some("county"), "postcode", "country")
 
       val service = mockedService(None)
 
