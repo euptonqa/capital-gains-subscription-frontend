@@ -16,7 +16,7 @@
 
 package config
 
-import com.google.inject.{Inject, Singleton}
+import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.config.{AppName, RunMode}
 import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut}

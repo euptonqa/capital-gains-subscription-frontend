@@ -16,7 +16,7 @@
 
 package connectors
 
-import com.google.inject.{Inject, Singleton}
+import javax.inject.{Inject, Singleton}
 import config.{AppConfig, WSHttp}
 import models.{FullDetails, SubscriptionReference}
 import uk.gov.hmrc.play.config.ServicesConfig

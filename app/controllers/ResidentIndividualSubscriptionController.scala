@@ -19,10 +19,9 @@ package controllers
 import javax.inject.Singleton
 
 import auth.{AuthorisedActions, CgtIndividual}
-import com.google.inject.Inject
+import javax.inject.Inject
 import config.AppConfig
 import helpers.EnrolmentToCGTCheck
-import models.SubscriptionReference
 import play.api.mvc.{Action, AnyContent, Result}
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -74,10 +73,8 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
   }
 
   def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-    isEnrolled match {
-      case true => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
-      //TODO: you're already enrolled to CGT!
-      case false => checkForCgtRefAndRedirectToConfirmation(user)
-    }
+    if (isEnrolled) Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+    //TODO: you're already enrolled to CGT!
+    else checkForCgtRefAndRedirectToConfirmation(user)
   }
 }

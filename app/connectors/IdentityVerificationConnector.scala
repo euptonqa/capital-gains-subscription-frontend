@@ -16,7 +16,7 @@
 
 package connectors
 
-import com.google.inject.{Inject, Singleton}
+import javax.inject.{Inject, Singleton}
 import config.WSHttp
 import enums.IdentityVerificationResult.IdentityVerificationResult
 import play.api.libs.json.Json

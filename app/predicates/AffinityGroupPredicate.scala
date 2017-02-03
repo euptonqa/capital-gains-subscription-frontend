@@ -18,7 +18,7 @@ package predicates
 
 import java.net.URI
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth._
