@@ -24,18 +24,26 @@ import models.FullDetailsModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.Result
+import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 @Singleton
 class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: FullDetailsForm,
-                                      val messagesApi: MessagesApi, actions: AuthorisedActions)
+                                      val messagesApi: MessagesApi, actions: AuthorisedActions,
+                                      subscriptionService: SubscriptionService)
   extends FrontendController with I18nSupport {
 
   //TODO attach actual service method to the request
-  def subscribeUser(): Future[Try[String]] = Future.successful(Success("CGT123456"))
+  def subscribeUser(fullDetailsModel: FullDetailsModel)(implicit hc: HeaderCarrier): Future[Try[String]] = {
+    subscriptionService.getSubscriptionResponseGhost(fullDetailsModel).map[Try[String]] {
+      case Some(data) => Success(data.cgtRef)
+      case _ => Failure(new Exception("No data found"))
+    }
+  }
 
   val userDetails = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
     Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.fullDetailsForm)))
@@ -53,7 +61,7 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Ful
       }
 
       for {
-        ref <- subscribeUser()
+        ref <- subscribeUser(model)
         action <- action(ref)
       } yield action
     }
