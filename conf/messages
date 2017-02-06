@@ -24,6 +24,17 @@ invalidAffinityGroup.paragraph.three.trust.link = Trusts and Capital Gains tax
 invalidAffinityGroup.paragraph.three.pensionTrust = pension trust, see
 invalidAffinityGroup.paragraph.three.pensionTrust.link = Pension trustees: investments and tax
 
+## User Details Messages ##
+userDetails.title = Enter your name and address
+userDetails.secondaryHeading = Contact address
+userDetails.firstName = First name
+userDetails.lastName = Last name
+userDetails.addressLineOne = Building and street
+userDetails.addressLineTwo = Building and street line two
+userDetails.townOrCity = Town or city
+userDetails.county = County
+userDetails.postCode = Postcode
+userDetails.country = Country
 
 ## Organisation Type Messages ##
 organisationType.title = What type of organisation are you?
@@ -37,6 +48,7 @@ organisationType.pensionTrust = Pension trust administrator
 
 ## Error Messages ##
 errors.mandatory = Please select an option
+errors.required = This field is required
 
 ## Common Messages ##
 common.continue = Continue

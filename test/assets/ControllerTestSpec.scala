@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package assets
 
-import play.api.libs.json.{Json, OFormat}
+import akka.stream.Materializer
+import config.AppConfig
+import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.play.test.UnitSpec
 
-case class UserFactsModel(firstName: String,
-                          lastName: String,
-                          addressLineOne: String,
-                          addressLineTwo: Option[String],
-                          townOrCity: String,
-                          county: Option[String],
-                          postCode: String,
-                          country: String)
 
-object UserFactsModel {
-  implicit val formats: OFormat[UserFactsModel] = Json.format[UserFactsModel]
+trait ControllerTestSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
+
+  val mockConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  val messagesApi = app.injector.instanceOf[MessagesApi]
+
+  implicit val mat: Materializer = app.injector.instanceOf[Materializer]
+
 }

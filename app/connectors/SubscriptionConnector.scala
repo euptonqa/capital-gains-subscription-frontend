@@ -17,6 +17,7 @@
 package connectors
 
 import javax.inject.{Inject, Singleton}
+
 import config.{AppConfig, WSHttp}
 import models.{UserFactsModel, SubscriptionReference}
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -24,18 +25,19 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 
-import scala.concurrent.Future
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Singleton
 class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extends ServicesConfig {
 
-  lazy val serviceUrl: String =  appConfig.subscription
-  val subscriptionUrl: String = "subscribe/resident/individual"
+  lazy val serviceUrl: String = appConfig.subscription
+  val subscriptionUrl: String = "subscribe/individual"
 
   def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val getUrl = s"""$serviceUrl/$subscriptionUrl/?nino=$nino"""
-    http.GET[HttpResponse](getUrl).map{
+    http.GET[HttpResponse](getUrl).map {
       response =>
         response.status match {
           case OK =>
@@ -53,7 +55,7 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
         response.status match {
           case OK =>
             Some(response.json.as[SubscriptionReference])
-          case _=> None
+          case _ => None
         }
     }
   }

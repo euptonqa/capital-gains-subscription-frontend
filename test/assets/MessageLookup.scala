@@ -24,6 +24,7 @@ object MessageLookup {
 
   object Errors {
     val errorMandatory = "Please select an option"
+    val errorRequired = "This field is required"
   }
 
   object InvalidAffinityGroup {
@@ -43,6 +44,19 @@ object MessageLookup {
     val linkTextTrust = "Trusts and Capital Gains tax"
     val textThreePensionTrust = "For more information about how to report taxable gains for your pension trust, see Pension trustees: investments and tax."
     val linkTextPensionTrust = "Pension trustees: investments and tax"
+  }
+
+  object UserDetails {
+    val title = "Enter your name and address"
+    val secondHeader = "Contact address"
+    val firstName = "First name"
+    val lastName = "Last name"
+    val addressLineOne = "Building and street"
+    val addressLineTwo = "Building and street line two"
+    val townOrCity = "Town or city"
+    val county = "County"
+    val postCode = "Postcode"
+    val country = "Country"
   }
 
   object OrganisationType {

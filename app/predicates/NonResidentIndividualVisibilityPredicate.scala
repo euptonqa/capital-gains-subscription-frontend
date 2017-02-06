@@ -30,8 +30,6 @@ class NonResidentIndividualVisibilityPredicate (applicationConfig: AppConfig, au
 
   override def children: Seq[PageVisibilityPredicate] = Seq (
     new TwoFAPredicate(twoFactorURI),
-    //TODO Update URI to reverse routing when made
-    new NINOPredicate(new URI("http://localhost:9771/capital-gains-tax/subscription/non-resident/individual/address-details")),
     new AffinityGroupPredicate(authorisationService)(new URI(affinityGroup))
   )
 
