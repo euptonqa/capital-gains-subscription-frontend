@@ -14,3 +14,14 @@ POST       /individual/organisation-type                      controllers.Organi
 
 GET        /non-resident/individual/user-details              controllers.UserDetailsController.userDetails()
 POST       /non-resident/individual/user-details              controllers.UserDetailsController.submitUserDetails()
+
+GET        /company                                           controllers.CompanyController.company()
+
+GET        /company/business-address-confirm                  controllers.CompanyController.businessAddressConfirm()
+POST       /company/business-address-confirm                  controllers.CompanyController.submitBussinessAddressConfirm()
+
+GET       /company/business-address-amend                     controllers.CompanyController.amendBusinessAddress()
+POST      /company/business-address-amend                     controllers.CompanyController.submitAmendBusinessAddress()
+
+GET       /company/business-address-final-confirmation        controllers.CompanyController.businessAddressFinalConfirmation()
+POST      /company/business-address-final-confirmation        controllers.CompanyController.submitBusinessAddressFinalConfirmation()
