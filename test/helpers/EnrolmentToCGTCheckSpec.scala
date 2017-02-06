@@ -40,5 +40,9 @@ class EnrolmentToCGTCheckSpec extends UnitSpec {
       val enrolments = Seq(Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""))
       await(EnrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe false
     }
+
+    "return false when supplied with a None" in {
+      await(EnrolmentToCGTCheck.checkEnrolments(None)) shouldBe false
+    }
   }
 }
