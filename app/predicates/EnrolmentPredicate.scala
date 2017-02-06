@@ -36,10 +36,7 @@ class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: Auth
     implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
 
     def checkEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = {
-      enrolments match {
-        case Some(data) => EnrolmentToCGTCheck.checkEnrolments(data)
-        case None => Future.successful(false)
-      }
+        EnrolmentToCGTCheck.checkEnrolments(enrolments)
     }
 
     def getPageVisibility(enrolled: Boolean): Future[PageVisibilityResult] = {
