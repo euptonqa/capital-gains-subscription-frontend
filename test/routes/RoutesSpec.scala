@@ -61,4 +61,51 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
       path shouldEqual "/capital-gains-tax/subscription/resident/individual/confirmation"
     }
   }
+
+  "The URL for the company action" should {
+    "be equal to /capital-gains-tax/subscription/company" in {
+      val path = controllers.routes.CompanyController.company().url
+
+      path shouldEqual "/capital-gains-tax/subscription/company"
+    }
+  }
+
+  "The URL for the businessAddressConfirm action" should {
+    "be equal to /capital-gains-tax/subscription/business-address-confirm" in {
+      val path = controllers.routes.CompanyController.businessAddressConfirm().url
+
+      path shouldEqual "/capital-gains-tax/subscription/company/business-address-confirm"
+    }
+  }
+
+  "The URL for the submitBussinessAddressConfirm action" should {
+    "be equal to /capital-gains-tax/subscription/business-address-confirm" in {
+      val path = controllers.routes.CompanyController.submitBusinessAddressConfirm().url
+
+      path shouldEqual "/capital-gains-tax/subscription/company/business-address-confirm"
+    }
+  }
+
+  "The URL for the amendBusinessAddress action" should {
+    "be equal to /capital-gains-tax/subscription/company/business-address-amend" in {
+      val path = controllers.routes.CompanyController.amendBusinessAddress()
+
+      path shouldEqual "/capital-gains-tax/subscription/company/business-address-amend"
+    }
+  }
+
+  "The URL for the submitAmendBusinessAddress action" should {
+    "be equal to /capital-gains-tax/subscription/company/business-address-amend" in {
+      val path = controllers.routes.CompanyController.submitAmendBusinessAddress()
+
+      path shouldEqual "/capital-gains-tax/subscription/company/business-address-amend"
+    }
+  }
+
+  "The URL for the businessAddressFinalConfirmation action" should {
+    "be equal to /capital-gains-tax/subscription/company/business-address-final-confirmation" in {
+      val path = controllers.routes.CompanyController.
+      shouldEqual "/capital-gains-tax/subscription/company"
+    }
+  }
 }

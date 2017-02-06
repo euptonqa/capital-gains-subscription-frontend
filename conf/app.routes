@@ -18,7 +18,7 @@ POST       /non-resident/individual/user-details              controllers.UserDe
 GET        /company                                           controllers.CompanyController.company()
 
 GET        /company/business-address-confirm                  controllers.CompanyController.businessAddressConfirm()
-POST       /company/business-address-confirm                  controllers.CompanyController.submitBussinessAddressConfirm()
+POST       /company/business-address-confirm                  controllers.CompanyController.submitBusinessAddressConfirm()
 
 GET       /company/business-address-amend                     controllers.CompanyController.amendBusinessAddress()
 POST      /company/business-address-amend                     controllers.CompanyController.submitAmendBusinessAddress()
