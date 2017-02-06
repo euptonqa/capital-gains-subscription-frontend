@@ -18,12 +18,11 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 import config.{AppConfig, WSHttp}
-import models.{FullDetails, SubscriptionReference}
+import models.{UserFactsModel, SubscriptionReference}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.domain.Nino
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -46,10 +45,10 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
     }
   }
 
-  def getSubscriptionResponseGhost(fullDetails: FullDetails)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
-    val stringOfJson = Json.toJson(fullDetails).toString()
-    val getUrl =s"""$serviceUrl/$subscriptionUrl/$stringOfJson""".stripMargin
-    http.GET[HttpResponse](getUrl).map{
+  def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+
+    val postUrl =s"""$serviceUrl/$subscriptionUrl/"""
+    http.POST[JsValue, HttpResponse](postUrl, Json.toJson(userFacts)).map{
       response =>
         response.status match {
           case OK =>

@@ -18,15 +18,15 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class FullDetails(firstName: String,
-                       lastName: String,
-                       addressLineOne: String,
-                       addressLineTwo: String,
-                       townOrCity: String,
-                       county: String,
-                       postCode: String,
-                       Country: String)
+case class UserFactsModel(firstName: String,
+                          lastName: String,
+                          addressLineOne: String,
+                          addressLineTwo: String,
+                          townOrCity: String,
+                          county: String,
+                          postCode: String,
+                          country: String)
 
-object FullDetails {
-  implicit val formats: OFormat[FullDetails] = Json.format[FullDetails]
+object UserFactsModel {
+  implicit val formats: OFormat[UserFactsModel] = Json.format[UserFactsModel]
 }

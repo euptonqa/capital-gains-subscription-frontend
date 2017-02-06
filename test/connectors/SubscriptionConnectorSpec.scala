@@ -17,7 +17,7 @@
 package connectors
 
 import builders.TestUserBuilder
-import models.{FullDetails, SubscriptionReference}
+import models.{UserFactsModel, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
@@ -77,7 +77,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
   "SubscriptionConnecter .getSubscriptionResponseGhost with a valid request" should {
     val dummyRef = "CGT-2134"
 
-    val model = FullDetails("john", "smith", "addressLineOne",
+    val model = UserFactsModel("john", "smith", "addressLineOne",
       "addressLineTwo", "town", "county", "postcode", "country")
 
     when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -97,7 +97,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
   "SubscriptionConnector .getSubscriptionResponseGhost with an invalid request" should {
     val dummyRef = "CGT-2134"
 
-    val model = FullDetails("name of an invalid character length", "smith", "addressLineOne",
+    val model = UserFactsModel("name of an invalid character length", "smith", "addressLineOne",
       "addressLineTwo", "town", "county", "postcode", "country")
 
     when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
