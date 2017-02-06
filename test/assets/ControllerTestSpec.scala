@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package services
+package assets
 
-import javax.inject.Inject
+import akka.stream.Materializer
+import config.AppConfig
+import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.play.test.UnitSpec
 
-import connectors.SubscriptionConnector
-import models.FullDetailsModel
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-class SubscriptionService @Inject()(connector: SubscriptionConnector) {
+trait ControllerTestSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
-  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier) = {
-    connector.getSubscriptionResponse(nino)
-  }
+  val mockConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  val messagesApi = app.injector.instanceOf[MessagesApi]
 
-  def getSubscriptionResponseGhost(fullDetails: FullDetailsModel)(implicit hc: HeaderCarrier) = {
-    connector.getSubscriptionResponseGhost(fullDetails)
-  }
+  implicit val mat: Materializer = app.injector.instanceOf[Materializer]
+
 }
