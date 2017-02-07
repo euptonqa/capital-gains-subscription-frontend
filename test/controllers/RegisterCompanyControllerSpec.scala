@@ -16,12 +16,20 @@
 
 package controllers
 
+import akka.util.Timeout
 import assets.ControllerTestSpec
+import play.api.test.FakeRequest
 import play.api.test.Helpers.redirectLocation
 
 class RegisterCompanyControllerSpec extends ControllerTestSpec {
 
+  implicit val timeout: Timeout = mock[Timeout]
+
   "Calling .registerCompany" when {
+
+    lazy val fakeRequest = FakeRequest("GET", "/")
+    lazy val registerCompanyController: RegisterCompanyController = new RegisterCompanyController(mockConfig)
+    lazy val result = await(registerCompanyController.registerCompany(fakeRequest))
 
     "there is nothing special going on to begin with" should {
 

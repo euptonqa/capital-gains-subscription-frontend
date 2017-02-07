@@ -18,14 +18,14 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import config.ApplicationConfig
+import config.AppConfig
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
-class RegisterCompanyController @Inject()(appConfig: ApplicationConfig) extends FrontendController {
+class RegisterCompanyController @Inject()(appConfig: AppConfig) extends FrontendController {
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 

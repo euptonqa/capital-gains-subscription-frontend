@@ -17,7 +17,7 @@ POST       /individual/organisation-type                            controllers.
 GET        /non-resident/individual/user-details                    controllers.UserDetailsController.userDetails()
 POST       /non-resident/individual/user-details                    controllers.UserDetailsController.submitUserDetails()
 
-GET        /register/company                                        controllers.CompanyController.registerCompany()
+GET        /register/company                                        controllers.RegisterCompanyController.registerCompany()
 
 GET        /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()
 POST       /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm()
