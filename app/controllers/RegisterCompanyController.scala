@@ -16,10 +16,17 @@
 
 package controllers
 
+import java.net.URI
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-class CompanyController extends FrontendController {
+import scala.concurrent.Future
 
-  val company = TODO
+class RegisterCompanyController extends FrontendController {
+
+  //TODO: replace this Action.async with the new authorised for cgt company action that will be created with the predicate
+  val registerCompany: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Redirect(URI()))
+  }
 
 }

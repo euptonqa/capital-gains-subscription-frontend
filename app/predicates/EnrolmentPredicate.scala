@@ -20,7 +20,6 @@ import java.net.URI
 
 import javax.inject.Inject
 import helpers.EnrolmentToCGTCheck
-import models.Enrolment
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request}
 import services.AuthorisationService
