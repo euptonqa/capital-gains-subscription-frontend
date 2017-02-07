@@ -38,7 +38,6 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
   val nonResidentIndividualSubscription: Action[AnyContent] = actions.authorisedNonResidentIndividualAction {
     implicit user =>
       implicit request =>
-      user.nino.isDefined
         for {
           enrolments <- authorisationService.getEnrolments(hc(request))
           checkEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
@@ -53,11 +52,11 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
   }
 
   def notEnrolled()(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
-    if (user.nino.isDefined) subscribeAndEnrollWithNino()
+    if (user.nino.isDefined) subscribeAndEnrollWithNino(user.nino.get)
     else Future.successful(Redirect(routes.UserDetailsController.userDetails()))
   }
 
-  def subscribeAndEnrollWithNino()(implicit request: Request[AnyContent]): Future[Result] = {
+  def subscribeAndEnrollWithNino(nino: String)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
 
     def subscribeResultRoute(subscriptionRef: Option[String]) = subscriptionRef match {
       case Some(data) => Future.successful(Redirect(routes.CGTSubscriptionController.confirmationOfSubscription(data)))
@@ -65,7 +64,6 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
     }
 
     for {
-      nino <- authorisationService.getNino(hc)
       enrol <- subscriptionConnector.getSubscriptionResponse(nino)(hc)
       route <- subscribeResultRoute(enrol)
     } yield route
