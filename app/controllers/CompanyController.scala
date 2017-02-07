@@ -22,16 +22,4 @@ class CompanyController extends FrontendController {
 
   val company = TODO
 
-  val businessAddressConfirm = TODO
-
-  val submitBusinessAddressConfirm = TODO
-
-  val amendBusinessAddress = TODO
-
-  val submitAmendBusinessAddress = TODO
-
-  val businessAddressFinalConfirmation = TODO
-
-  val submitBusinessAddressFinalConfirmation = TODO
-
 }

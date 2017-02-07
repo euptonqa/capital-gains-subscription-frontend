@@ -18,9 +18,13 @@ package controllers
 
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CompanyControllerSpec extends UnitSpec {
+class CorrespondenceAddressConfirmControllerSpec extends UnitSpec {
 
-  "Calling .company" when {
+  "Calling .correspondenceAddressConfirm" when {
+
+  }
+
+  "Calling .submitCorrespondenceAddressConfirm" when {
 
   }
 
