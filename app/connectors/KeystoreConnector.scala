@@ -30,9 +30,9 @@ import scala.concurrent.Future
 @Singleton
 class KeystoreConnector @Inject()(appConfig: AppConfig, subscriptionSessionCache: SubscriptionSessionCache,
                                   servicesConfig: ServicesConfig) extends ServicesConfig {
-  val sessionCache = subscriptionSessionCache
-  val http = WSHttp
-  val serviceUrl = baseUrl("capital-gains-subscription")
+  lazy val sessionCache = subscriptionSessionCache
+  lazy val http = WSHttp
+  lazy val serviceUrl = baseUrl("capital-gains-subscription")
 
   implicit val hc: HeaderCarrier = HeaderCarrier().withExtraHeaders("Accept" -> "applications/vnd.hmrc.1.0+json")
 
