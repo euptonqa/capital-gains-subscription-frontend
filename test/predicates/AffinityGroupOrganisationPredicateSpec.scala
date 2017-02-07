@@ -31,7 +31,6 @@ import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.HeaderCarrier
-import predicates.AffinityGroupOrganisationPredicate
 
 import scala.concurrent.Future
 
