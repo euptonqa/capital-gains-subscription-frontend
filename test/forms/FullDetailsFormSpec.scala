@@ -16,7 +16,7 @@
 
 package forms
 
-import models.FullDetailsModel
+import models.UserFactsModel
 import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import assets.MessageLookup.Errors
@@ -24,7 +24,7 @@ import assets.MessageLookup.Errors
 class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
 
   "Creating a form" when {
-    val form = app.injector.instanceOf[FullDetailsForm]
+    val form = app.injector.instanceOf[UserFactsForm]
 
     "provided with a valid map with no optional values" should {
       val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "",
@@ -36,7 +36,7 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "return a model containing the stored data" in {
-        result.value.get shouldBe FullDetailsModel("Bob", "Smith", "XX Fake Lane", None, "Fakeville", None, "XX22 1XX", "Fakeland")
+        result.value.get shouldBe UserFactsModel("Bob", "Smith", "XX Fake Lane", None, "Fakeville", None, "XX22 1XX", "Fakeland")
       }
 
       "contain no errors" in {
@@ -54,7 +54,7 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "return a model containing the stored data" in {
-        result.value.get shouldBe FullDetailsModel("Bob", "Smith", "XX", Some("Fake Lane"), "Fakeville", Some("Fake"), "XX22 1XX", "Fakeland")
+        result.value.get shouldBe UserFactsModel("Bob", "Smith", "XX", Some("Fake Lane"), "Fakeville", Some("Fake"), "XX22 1XX", "Fakeland")
       }
 
       "contain no errors" in {

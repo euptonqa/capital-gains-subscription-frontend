@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-package models
+package controllers
 
-import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.play.test.UnitSpec
 
-case class FullDetailsModel(firstName: String,
-                            lastName: String,
-                            addressLineOne: String,
-                            addressLineTwo: Option[String],
-                            townOrCity: String,
-                            county: Option[String],
-                            postCode: String,
-                            country: String)
+class CompanyControllerSpec extends UnitSpec {
 
-object FullDetailsModel {
-  implicit val formats: OFormat[FullDetailsModel] = Json.format[FullDetailsModel]
+  "Calling .company" when {
+
+  }
+
 }

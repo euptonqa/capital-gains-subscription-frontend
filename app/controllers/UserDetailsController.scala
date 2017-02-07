@@ -19,8 +19,8 @@ package controllers
 import auth.AuthorisedActions
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
-import forms.FullDetailsForm
-import models.FullDetailsModel
+import forms.UserFactsForm
+import models.UserFactsModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
 import play.api.mvc.Result
@@ -32,14 +32,14 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 @Singleton
-class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: FullDetailsForm,
+class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: UserFactsForm,
                                       val messagesApi: MessagesApi, actions: AuthorisedActions,
                                       subscriptionService: SubscriptionService)
   extends FrontendController with I18nSupport {
 
   //TODO attach actual service method to the request
-  def subscribeUser(fullDetailsModel: FullDetailsModel)(implicit hc: HeaderCarrier): Future[Try[String]] = {
-    subscriptionService.getSubscriptionResponseGhost(fullDetailsModel).map[Try[String]] {
+  def subscribeUser(userFactsModel: UserFactsModel)(implicit hc: HeaderCarrier): Future[Try[String]] = {
+    subscriptionService.getSubscriptionResponseGhost(userFactsModel).map[Try[String]] {
       case Some(data) => Success(data.cgtRef)
       case _ => Failure(new Exception("No data found"))
     }
@@ -51,7 +51,7 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Ful
 
   val submitUserDetails = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
 
-    val successAction: FullDetailsModel => Future[Result] = model => {
+    val successAction: UserFactsModel => Future[Result] = model => {
 
       def action(cgtRef: Try[String]) = {
         cgtRef match {

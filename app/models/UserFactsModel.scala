@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package helpers
+package models
 
-import common.Keys
-import models.Enrolment
+import play.api.libs.json.{Json, OFormat}
 
-import scala.concurrent.Future
+case class UserFactsModel(firstName: String,
+                          lastName: String,
+                          addressLineOne: String,
+                          addressLineTwo: Option[String],
+                          townOrCity: String,
+                          county: Option[String],
+                          postCode: String,
+                          country: String)
 
-object EnrolmentToCGTCheck extends EnrolmentToCGTCheck
-
-trait EnrolmentToCGTCheck {
-  def checkEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = enrolments match {
-    case Some(data) => Future.successful(data.exists(_.key == Keys.cGTEnrolmentKey))
-    case None => Future.successful(false)
-  }
+object UserFactsModel {
+  implicit val formats: OFormat[UserFactsModel] = Json.format[UserFactsModel]
 }

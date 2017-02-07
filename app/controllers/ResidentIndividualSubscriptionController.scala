@@ -43,21 +43,22 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
       implicit request =>
         for {
           enrolments <- authService.getEnrolments
-          isEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments.get)
+          isEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
           redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
         } yield redirect
+  }
+
+
+  def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
+    if (isEnrolled) Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+    //TODO: you're already enrolled to CGT!
+    else checkForCgtRefAndRedirectToConfirmation(user)
   }
 
   def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual)(implicit hc: HeaderCarrier): Future[Result] = {
 
     val nino = user.nino
-    val cgtRef = subscriptionService.getSubscriptionResponse(nino.get)
-
-    def matchCgtRef(cgtRef: Option[String]): Future[Result] = {
-      for {
-        redirect <- redirectToCGTConfirmationOrError(cgtRef)
-      } yield redirect
-    }
+    val cgtRefNumber = subscriptionService.getSubscriptionResponse(nino.get)
 
     def redirectToCGTConfirmationOrError(cgtRef: Option[String]): Future[Result] = {
       cgtRef match {
@@ -67,14 +68,8 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
     }
 
     for {
-      cgtRef <- cgtRef
-      test <- matchCgtRef(cgtRef)
+      cgtRef <- cgtRefNumber
+      test <- redirectToCGTConfirmationOrError(cgtRef)
     } yield test
-  }
-
-  def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-    if (isEnrolled) Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
-    //TODO: you're already enrolled to CGT!
-    else checkForCgtRefAndRedirectToConfirmation(user)
   }
 }

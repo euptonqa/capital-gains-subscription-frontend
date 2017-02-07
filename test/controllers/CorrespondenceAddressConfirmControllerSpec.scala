@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package services
+package controllers
 
-import javax.inject.Inject
+import uk.gov.hmrc.play.test.UnitSpec
 
-import connectors.SubscriptionConnector
-import models.{SubscriptionReference, UserFactsModel}
-import uk.gov.hmrc.play.http.HeaderCarrier
+class CorrespondenceAddressConfirmControllerSpec extends UnitSpec {
 
-import scala.concurrent.Future
+  "Calling .correspondenceAddressConfirm" when {
 
-class SubscriptionService @Inject()(connector: SubscriptionConnector) {
-
-  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    connector.getSubscriptionResponse(nino)
   }
 
-  def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
-    connector.getSubscriptionResponseGhost(userFacts)
+  "Calling .submitCorrespondenceAddressConfirm" when {
+
   }
+
 }

@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package helpers
+package controllers
 
-import common.Keys
-import models.Enrolment
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-import scala.concurrent.Future
+class CorrespondenceAddressConfirmController extends FrontendController {
 
-object EnrolmentToCGTCheck extends EnrolmentToCGTCheck
+  val correspondenceAddressConfirm = TODO
 
-trait EnrolmentToCGTCheck {
-  def checkEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = enrolments match {
-    case Some(data) => Future.successful(data.exists(_.key == Keys.cGTEnrolmentKey))
-    case None => Future.successful(false)
-  }
+  val submitCorrespondenceAddressConfirm = TODO
+
 }

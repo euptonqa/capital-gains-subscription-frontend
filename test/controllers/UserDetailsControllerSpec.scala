@@ -19,8 +19,8 @@ package controllers
 import assets.{ControllerTestSpec, MessageLookup}
 import auth.{AuthorisedActions, CgtIndividual}
 import builders.TestUserBuilder
-import forms.FullDetailsForm
-import models.{FullDetailsModel, SubscriptionReference}
+import forms.UserFactsForm
+import models.{UserFactsModel, SubscriptionReference}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -40,7 +40,7 @@ import scala.util.Failure
 class UserDetailsControllerSpec extends ControllerTestSpec {
 
   val unauthorisedLoginUri = "some-url"
-  val form = app.injector.instanceOf[FullDetailsForm]
+  val form = app.injector.instanceOf[UserFactsForm]
 
   def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithNINO): AuthorisedActions = {
 
@@ -159,7 +159,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
         when(mockException.getMessage)
           .thenReturn("test")
 
-        override def subscribeUser(fullDetailsModel: FullDetailsModel)(implicit hc: HeaderCarrier) = Future.successful(Failure(mockException))
+        override def subscribeUser(fullDetailsModel: UserFactsModel)(implicit hc: HeaderCarrier) = Future.successful(Failure(mockException))
       }
       lazy val result = controller.submitUserDetails(fakeRequest)
       lazy val document = Jsoup.parse(bodyOf(result))

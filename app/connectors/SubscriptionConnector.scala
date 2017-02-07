@@ -19,11 +19,12 @@ package connectors
 import javax.inject.{Inject, Singleton}
 
 import config.{AppConfig, WSHttp}
-import models.{FullDetailsModel, SubscriptionReference}
-import play.api.http.Status._
-import play.api.libs.json.Json
+import models.{UserFactsModel, SubscriptionReference}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import play.api.http.Status._
+import play.api.libs.json.{JsValue, Json}
+
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,7 +33,7 @@ import scala.concurrent.Future
 class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extends ServicesConfig {
 
   lazy val serviceUrl: String = appConfig.subscription
-  val subscriptionUrl: String = "subscribe/resident/individual"
+  val subscriptionUrl: String = "subscribe/individual"
 
   def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val getUrl = s"""$serviceUrl/$subscriptionUrl/?nino=$nino"""
@@ -46,10 +47,10 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
     }
   }
 
-  def getSubscriptionResponseGhost(fullDetails: FullDetailsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
-    val stringOfJson = Json.toJson(fullDetails).toString()
-    val getUrl =s"""$serviceUrl/$subscriptionUrl/$stringOfJson""".stripMargin
-    http.GET[HttpResponse](getUrl).map {
+  def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+
+    val postUrl =s"""$serviceUrl/$subscriptionUrl/"""
+    http.POST[JsValue, HttpResponse](postUrl, Json.toJson(userFacts)).map{
       response =>
         response.status match {
           case OK =>
