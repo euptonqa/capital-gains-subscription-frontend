@@ -16,17 +16,21 @@
 
 package controllers
 
-import java.net.URI
+import javax.inject.{Inject, Singleton}
+
+import config.ApplicationConfig
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-class RegisterCompanyController extends FrontendController {
+@Singleton
+class RegisterCompanyController @Inject()(appConfig: ApplicationConfig) extends FrontendController {
+
+  val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 
   //TODO: replace this Action.async with the new authorised for cgt company action that will be created with the predicate
   val registerCompany: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Redirect(URI()))
+    Future.successful(Redirect(businessCustomerFrontendUrl))
   }
-
 }

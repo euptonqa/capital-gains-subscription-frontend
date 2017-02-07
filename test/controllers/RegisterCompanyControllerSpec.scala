@@ -16,12 +16,22 @@
 
 package controllers
 
-import uk.gov.hmrc.play.test.UnitSpec
+import assets.ControllerTestSpec
+import play.api.test.Helpers.redirectLocation
 
-class CompanyControllerSpec extends UnitSpec {
+class RegisterCompanyControllerSpec extends ControllerTestSpec {
 
-  "Calling .company" when {
+  "Calling .registerCompany" when {
 
+    "there is nothing special going on to begin with" should {
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the business customer frontend" in {
+        redirectLocation(result).get.toString shouldBe "http://localhost:9923/business-customer/business-verification/capital-gains-tax"
+      }
+    }
   }
-
 }

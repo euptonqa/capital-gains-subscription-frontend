@@ -35,6 +35,7 @@ trait AppConfig {
   val individualNonResident: String
   val individualBadAffinity: String
   val subscription: String
+  val businessCompanyFrontendRegister: String
 }
 
 @Singleton
@@ -59,4 +60,7 @@ class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfi
   override lazy val individualNonResident: String = configuration.getString(s"non-resident-individual-sign-in.url").getOrElse("")
   override lazy val individualBadAffinity: String = configuration.getString(s"resident-individual-bad-affinity.url").getOrElse("")
   override lazy val subscription: String = configuration.getString(s"subscription.url").getOrElse("")
+
+  //TODO: config has been added but nothing has been raised for other environments yet or service manager configs.
+  override lazy val businessCompanyFrontendRegister: String = configuration.getString(s"business-customer-frontend.url").getOrElse("")
 }
