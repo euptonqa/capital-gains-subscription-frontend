@@ -88,7 +88,7 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
 
   "The URL for the amendBusinessAddress action" should {
     "be equal to /capital-gains-tax/subscription/company/business-address-amend" in {
-      val path = controllers.routes.CompanyController.amendBusinessAddress()
+      val path = controllers.routes.CompanyController.amendBusinessAddress().url
 
       path shouldEqual "/capital-gains-tax/subscription/company/business-address-amend"
     }
@@ -96,7 +96,7 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
 
   "The URL for the submitAmendBusinessAddress action" should {
     "be equal to /capital-gains-tax/subscription/company/business-address-amend" in {
-      val path = controllers.routes.CompanyController.submitAmendBusinessAddress()
+      val path = controllers.routes.CompanyController.submitAmendBusinessAddress().url
 
       path shouldEqual "/capital-gains-tax/subscription/company/business-address-amend"
     }
@@ -104,8 +104,16 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
 
   "The URL for the businessAddressFinalConfirmation action" should {
     "be equal to /capital-gains-tax/subscription/company/business-address-final-confirmation" in {
-      val path = controllers.routes.CompanyController.
-      shouldEqual "/capital-gains-tax/subscription/company"
+      val path = controllers.routes.CompanyController.businessAddressFinalConfirmation().url
+        path shouldEqual "/capital-gains-tax/subscription/company/business-address-final-confirmation"
+    }
+  }
+
+  "The URL for the submitBusinessAddressFinalConfirmation action" should {
+    "be equal to /capital-gains-tax/subscription/company/business-address-final-confirmation" in {
+      val path = controllers.routes.CompanyController.submitBusinessAddressFinalConfirmation().url
+
+      path shouldEqual "/capital-gains-tax/subscription/company/business-address-final-confirmation"
     }
   }
 }
