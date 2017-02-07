@@ -29,7 +29,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AffinityGroupPredicate @Inject()(authorisationService: AuthorisationService) (errorPageUri: URI)
+class AffinityGroupIndividualPredicate @Inject()(authorisationService: AuthorisationService) (errorPageUri: URI)
   extends PageVisibilityPredicate {
 
   private val errorPage = Future.successful(Redirect(errorPageUri.toString))
@@ -40,7 +40,7 @@ class AffinityGroupPredicate @Inject()(authorisationService: AuthorisationServic
   }
 
   private def affinityGroupSupplied(group: String): Future[PageVisibilityResult] = {
-    val check = AffinityGroupCheck.affinityGroupCheck(group)
+    val check = AffinityGroupCheck.affinityGroupCheckIndividual(group)
     for {
       affinityGroupCheck <- check
     } yield pageVisibility(affinityGroupCheck)
