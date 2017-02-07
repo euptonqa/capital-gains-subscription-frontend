@@ -31,10 +31,11 @@ import org.mockito.Mockito.when
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.HeaderCarrier
+import predicates.AffinityGroupOrganisationPredicate
 
 import scala.concurrent.Future
 
-class AffinityGroupOrganisationPredicate extends UnitSpec with WithFakeApplication with MockitoSugar {
+class AffinityGroupOrganisationPredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
   def mockedService(response: Option[AuthorisationDataModel], nino: Option[Nino]): AuthorisationService = {
 
@@ -68,7 +69,7 @@ class AffinityGroupOrganisationPredicate extends UnitSpec with WithFakeApplicati
 
       val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Individual, ConfidenceLevel.L200, "", Accounts())), None)
 
-      val predicate = new AffinityGroupPredicate(service)(dummyUri)
+      val predicate = new AffinityGroupOrganisationPredicate(service)(dummyUri)
       val authContext = TestUserBuilder.noCredUserAuthContext
 
       val result = predicate(authContext, FakeRequest())

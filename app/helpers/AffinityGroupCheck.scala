@@ -23,7 +23,7 @@ object AffinityGroupCheck extends AffinityGroupCheck
 
 trait AffinityGroupCheck {
 
-  def affinityGroupCheck(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+  def affinityGroupCheckIndividual(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
 
   def affinityGroupCheckCompany(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Organisation)
 

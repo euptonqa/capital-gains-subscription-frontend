@@ -34,7 +34,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+class AffinityGroupIndividualPredicateSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
   def mockedService(response: Option[AuthorisationDataModel], nino: Option[Nino]): AuthorisationService = {
 
@@ -49,13 +49,13 @@ class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with 
   val dummyUri = new URI("http://example.com")
   implicit val hc = mock[HeaderCarrier]
 
-  "Instantiating AffinityGroupPredicate" when {
+  "Instantiating AffinityGroupIndividualPredicate" when {
 
     "supplied with an authContext with an agent credential should return false for page visibility" in {
 
       val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Agent, ConfidenceLevel.L200, "", Accounts())), None)
 
-      val predicate = new AffinityGroupPredicate(service)(dummyUri)
+      val predicate = new AffinityGroupIndividualPredicate(service)(dummyUri)
       val authContext = TestUserBuilder.weakUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
@@ -68,7 +68,7 @@ class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with 
 
       val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Organisation, ConfidenceLevel.L200, "", Accounts())), None)
 
-      val predicate = new AffinityGroupPredicate(service)(dummyUri)
+      val predicate = new AffinityGroupIndividualPredicate(service)(dummyUri)
       val authContext = TestUserBuilder.weakUserAuthContext
 
       val result = predicate(authContext, FakeRequest())
@@ -81,7 +81,7 @@ class AffinityGroupPredicateSpec extends UnitSpec with WithFakeApplication with 
 
       val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, Individual, ConfidenceLevel.L200, "", Accounts())), None)
 
-      val predicate = new AffinityGroupPredicate(service)(dummyUri)
+      val predicate = new AffinityGroupIndividualPredicate(service)(dummyUri)
       val authContext = TestUserBuilder.noCredUserAuthContext
 
       val result = predicate(authContext, FakeRequest())

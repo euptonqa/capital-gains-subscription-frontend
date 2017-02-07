@@ -21,18 +21,18 @@ import common.Constants.AffinityGroup._
 
 class AffinityGroupCheckSpec extends UnitSpec{
 
-  "Calling .affinityGroupCheck" should {
+  "Calling .affinityGroupCheckIndividual" should {
 
     "return true when supplied with an individual user" in {
-      await(AffinityGroupCheck.affinityGroupCheck(Individual)) shouldBe true
+      await(AffinityGroupCheck.affinityGroupCheckIndividual(Individual)) shouldBe true
     }
 
     "return false when supplied with an agent user" in {
-      await(AffinityGroupCheck.affinityGroupCheck(Agent)) shouldBe false
+      await(AffinityGroupCheck.affinityGroupCheckIndividual(Agent)) shouldBe false
     }
 
     "return false when supplied with an organisation user" in {
-      await(AffinityGroupCheck.affinityGroupCheck(Organisation)) shouldBe false
+      await(AffinityGroupCheck.affinityGroupCheckIndividual(Organisation)) shouldBe false
     }
   }
 
