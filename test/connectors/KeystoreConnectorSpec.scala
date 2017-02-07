@@ -18,21 +18,22 @@ package connectors
 
 import java.util.UUID
 
+import assets.ControllerTestSpec
 import config.{AppConfig, SubscriptionSessionCache, WSHttp}
 import org.scalatest.mock.MockitoSugar
-import uk.gov.hmrc.http.cache.client.SessionCache
+import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.test.UnitSpec
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
+import play.api.libs.json.Json
 import uk.gov.hmrc.play.config.ServicesConfig
 
 import scala.concurrent.Future
 
-class KeystoreConnectorSpec extends UnitSpec with MockitoSugar {
+class KeystoreConnectorSpec extends ControllerTestSpec {
 
-  lazy val mockSessionCache = mock[SessionCache]
   lazy val sessionId = UUID.randomUUID.toString
   lazy val http = mock[WSHttp]
   lazy val config = mock[AppConfig]
@@ -45,14 +46,29 @@ class KeystoreConnectorSpec extends UnitSpec with MockitoSugar {
 
   "KeystoreConnector .fetchFormData" should {
 
-    when(mockSessionCache.fetchAndGetEntry[String](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(Option("hello")))
+    val testData = Some("hello")
+
+    when(subscriptionSessionCache.fetchAndGetEntry[String](ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(testData))
 
     "should be able to retrieve a String" in {
       lazy val result = target.fetchAndGetFormData[String]("String")
-      await(result) shouldBe "hello"
+      await(result) shouldBe Some("hello")
     }
+  }
 
+  "KeystoreConnector .saveFormData" should {
+    val testData = "hello"
+    val returnedCacheMap = CacheMap("key", Map("data" -> Json.toJson(testData)))
+
+    when(subscriptionSessionCache.cache[String](ArgumentMatchers.anyString(), ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(returnedCacheMap))
+
+    "save data to keystore" in {
+      lazy val result = target.saveFormData[String]("key", testData)
+
+      await(result) shouldBe returnedCacheMap
+    }
   }
 
 }
