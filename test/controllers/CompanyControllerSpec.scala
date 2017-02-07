@@ -16,7 +16,6 @@
 
 package controllers
 
-import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.test.UnitSpec
 
 class CompanyControllerSpec extends UnitSpec {

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package controllers.company
+package controllers
 
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-class AmendCorrespondenceAddress extends FrontendController {
+class CorrespondenceAddressFinalConfirmationController extends FrontendController {
 
-  val amendCorrespondenceAddress = TODO
+  val correspondenceAddressFinalConfirmation = TODO
 
-  val submitAmendCorrespondenceAddress =TODO
+  val submitCorrespondenceAddressFinalConfirmation = TODO
 
 }

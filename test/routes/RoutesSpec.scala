@@ -71,49 +71,49 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
   }
 
   "The URL for the businessAddressConfirm action" should {
-    "be equal to /capital-gains-tax/subscription/business-address-confirm" in {
-      val path = controllers.routes.CompanyController.businessAddressConfirm().url
+    "be equal to /capital-gains-tax/subscription/correspondence-address-confirm" in {
+      val path = controllers.routes.CorrespondenceAddressConfirmController.correspondenceAddressConfirm().url
 
-      path shouldEqual "/capital-gains-tax/subscription/company/business-address-confirm"
+      path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-confirm"
     }
   }
 
   "The URL for the submitBussinessAddressConfirm action" should {
-    "be equal to /capital-gains-tax/subscription/business-address-confirm" in {
-      val path = controllers.routes.CompanyController.submitBusinessAddressConfirm().url
+    "be equal to /capital-gains-tax/subscription/correspondence-address-confirm" in {
+      val path = controllers.routes.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm().url
 
-      path shouldEqual "/capital-gains-tax/subscription/company/business-address-confirm"
+      path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-confirm"
     }
   }
 
   "The URL for the amendBusinessAddress action" should {
-    "be equal to /capital-gains-tax/subscription/company/business-address-amend" in {
-      val path = controllers.routes.CompanyController.amendBusinessAddress().url
+    "be equal to /capital-gains-tax/subscription/company/correspondence-address-amend" in {
+      val path = controllers.routes.AmendCorrespondenceAddressController.amendCorrespondenceAddress().url
 
-      path shouldEqual "/capital-gains-tax/subscription/company/business-address-amend"
+      path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-amend"
     }
   }
 
   "The URL for the submitAmendBusinessAddress action" should {
-    "be equal to /capital-gains-tax/subscription/company/business-address-amend" in {
-      val path = controllers.routes.CompanyController.submitAmendBusinessAddress().url
+    "be equal to /capital-gains-tax/subscription/company/correspondence-address-amend" in {
+      val path = controllers.routes.AmendCorrespondenceAddressController.submitAmendCorrespondenceAddress().url
 
-      path shouldEqual "/capital-gains-tax/subscription/company/business-address-amend"
+      path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-amend"
     }
   }
 
-  "The URL for the businessAddressFinalConfirmation action" should {
-    "be equal to /capital-gains-tax/subscription/company/business-address-final-confirmation" in {
-      val path = controllers.routes.CompanyController.businessAddressFinalConfirmation().url
-        path shouldEqual "/capital-gains-tax/subscription/company/business-address-final-confirmation"
+  "The URL for the correspondenceAddressFinalConfirmation action" should {
+    "be equal to /capital-gains-tax/subscription/company/correspondence-address-final-confirmation" in {
+      val path = controllers.routes.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation().url
+        path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-final-confirmation"
     }
   }
 
-  "The URL for the submitBusinessAddressFinalConfirmation action" should {
-    "be equal to /capital-gains-tax/subscription/company/business-address-final-confirmation" in {
-      val path = controllers.routes.CompanyController.submitBusinessAddressFinalConfirmation().url
+  "The URL for the submitCorrespondenceAddressFinalConfirmation action" should {
+    "be equal to /capital-gains-tax/subscription/company/correspondence-address-final-confirmation" in {
+      val path = controllers.routes.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation().url
 
-      path shouldEqual "/capital-gains-tax/subscription/company/business-address-final-confirmation"
+      path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-final-confirmation"
     }
   }
 }

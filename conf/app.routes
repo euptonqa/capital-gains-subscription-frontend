@@ -17,11 +17,11 @@ POST       /non-resident/individual/user-details              controllers.UserDe
 
 GET        /company                                           controllers.CompanyController.company()
 
-GET        /company/business-address-confirm                  controllers.CompanyController.businessAddressConfirm()
-POST       /company/business-address-confirm                  controllers.CompanyController.submitBusinessAddressConfirm()
+GET        /company/correspondence-address-confirm            controllers.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()
+POST       /company/correspondence-address-confirm            controllers.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm()
 
-GET       /company/business-address-amend                     controllers.CompanyController.amendBusinessAddress()
-POST      /company/business-address-amend                     controllers.CompanyController.submitAmendBusinessAddress()
+GET       /company/correspondence-address-amend               controllers.AmendCorrespondenceAddressController.amendCorrespondenceAddress()
+POST      /company/correspondence-address-amend               controllers.AmendCorrespondenceAddressController.submitAmendCorrespondenceAddress()
 
-GET       /company/business-address-final-confirmation        controllers.CompanyController.businessAddressFinalConfirmation()
-POST      /company/business-address-final-confirmation        controllers.CompanyController.submitBusinessAddressFinalConfirmation()
+GET       /company/correspondence-address-final-confirmation  controllers.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation()
+POST      /company/correspondence-address-final-confirmation  controllers.CorrespondenceAddressFinalConfirmationController.submitCorrespondenceAddressFinalConfirmation()
