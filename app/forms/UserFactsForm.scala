@@ -17,12 +17,12 @@
 package forms
 
 import com.google.inject.Inject
-import models.FullDetailsModel
+import models.{UserFactsModel}
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.data.Forms._
 
-class FullDetailsForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
+class UserFactsForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
 
   val nonEmptyCheck: String => Boolean = input => !input.isEmpty
 
@@ -45,6 +45,6 @@ class FullDetailsForm @Inject()(val messagesApi: MessagesApi) extends I18nSuppor
       "county" -> text.transform(textToOptional, optionalToText),
       "postCode" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
       "country" -> text.verifying(Messages("errors.required"), nonEmptyCheck)
-    )(FullDetailsModel.apply)(FullDetailsModel.unapply)
+    )(UserFactsModel.apply)(UserFactsModel.unapply)
   )
 }

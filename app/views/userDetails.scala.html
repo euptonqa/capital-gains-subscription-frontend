@@ -1,7 +1,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form, input}
-@import models.FullDetailsModel
+@import models.UserFactsModel
 
-@(appConfig: config.AppConfig, userDetailsForm: Form[FullDetailsModel])(implicit request: Request[_], messages: Messages)
+@(appConfig: config.AppConfig, userDetailsForm: Form[UserFactsModel])(implicit request: Request[_], messages: Messages)
 
 @userInput(label: String, identifier: String, size: Int = 2, hiddenLabel: Boolean = false) = {
 

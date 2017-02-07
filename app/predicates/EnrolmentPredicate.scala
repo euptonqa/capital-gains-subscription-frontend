@@ -35,13 +35,6 @@ class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: Auth
 
     implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
 
-    def checkEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = {
-      enrolments match {
-        case Some(data) => EnrolmentToCGTCheck.checkEnrolments(data)
-        case None => Future.successful(false)
-      }
-    }
-
     def getPageVisibility(enrolled: Boolean): Future[PageVisibilityResult] = {
       if (enrolled) Future.successful(PageIsVisible)
       else Future.successful(PageBlocked(needsEnrolment))
@@ -49,7 +42,7 @@ class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: Auth
 
     for {
       enrolments <- authorisationService.getEnrolments(hc(request))
-      enrolled <- checkEnrolments(enrolments)
+      enrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
       display <- getPageVisibility(enrolled)
     } yield display
   }

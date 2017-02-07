@@ -20,7 +20,7 @@ import assets.FakeRequestHelper
 import assets.MessageLookup.UserDetails
 import assets.MessageLookup.Common
 import config.AppConfig
-import forms.FullDetailsForm
+import forms.UserFactsForm
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.scalatestplus.play.OneAppPerSuite
@@ -50,7 +50,7 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
   }
 
   "The User Details view" should {
-    lazy val form = new FullDetailsForm(messagesApi)
+    lazy val form = new UserFactsForm(messagesApi)
     lazy val view = userDetails(appConfig, form.fullDetailsForm)
     lazy val doc = Jsoup.parse(view.body)
 

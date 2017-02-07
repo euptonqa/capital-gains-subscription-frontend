@@ -17,7 +17,7 @@
 package connectors
 
 import builders.TestUserBuilder
-import models.{FullDetailsModel, SubscriptionReference}
+import models.{UserFactsModel, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
@@ -77,11 +77,12 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
   "SubscriptionConnecter .getSubscriptionResponseGhost with a valid request" should {
     val dummyRef = "CGT-2134"
 
-    val model = FullDetailsModel("john", "smith", "addressLineOne",
+    val model = UserFactsModel("john", "smith", "addressLineOne",
       Some("addressLineTwo"), "town", Some("county"), "postcode", "country")
 
-    when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse(dummyRef)))))
+    when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
+      thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse(dummyRef)))))
 
     val result = await(target.getSubscriptionResponseGhost(model))
 
@@ -95,13 +96,13 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
   }
 
   "SubscriptionConnector .getSubscriptionResponseGhost with an invalid request" should {
-    val dummyRef = "CGT-2134"
 
-    val model = FullDetailsModel("name of an invalid character length", "smith", "addressLineOne",
+    val model = UserFactsModel("name of an invalid character length", "smith", "addressLineOne",
       Some("addressLineTwo"), "town", Some("county"), "postcode", "country")
 
-    when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.toJson("invalid:n")))))
+    when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
+      thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.toJson("invalid:n")))))
 
     val result = await(target.getSubscriptionResponseGhost(model))
 
