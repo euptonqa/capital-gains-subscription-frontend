@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import play.api.mvc.Results.Redirect
-
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class AffinityGroupOrganisationPredicate @Inject()(authorisationService: AuthorisationService) (errorPageUri: URI)
   extends PageVisibilityPredicate {
