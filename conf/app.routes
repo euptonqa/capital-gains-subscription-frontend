@@ -9,6 +9,8 @@ POST       /resident/individual/confirmation                  controllers.CGTSub
 
 GET        /resident/individual                               controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
 
+GET        /non-resident/individual                           controllers.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription
+
 GET        /individual/organisation-type                      controllers.OrganisationTypeController.organisationType
 POST       /individual/organisation-type                      controllers.OrganisationTypeController.submitOrganisationType
 
