@@ -18,6 +18,7 @@ package services
 
 import javax.inject.{Inject, Singleton}
 import connectors.AuthorisationConnector
+import exceptions.AuthorisationNotFoundException
 import models.{AuthorisationDataModel, Enrolment}
 import uk.gov.hmrc.play.http.HeaderCarrier
 

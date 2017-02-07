@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-package assets
+package exceptions
 
-import akka.stream.Materializer
-import config.AppConfig
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneAppPerSuite
-import play.api.i18n.MessagesApi
-import uk.gov.hmrc.play.test.UnitSpec
-
-
-trait ControllerTestSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
-
-  val mockConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
-  implicit val mat: Materializer = app.injector.instanceOf[Materializer]
-
-}
+case class AuthorisationNotFoundException(string: String) extends Exception(string)

@@ -33,6 +33,5 @@ class NINOPredicate(ninoURI: URI) extends PageVisibilityPredicate {
       case _ => PageBlocked(needsNINO)
     }
   }
-
   private val needsNINO = Future.successful(Redirect(ninoURI.toString))
 }
