@@ -19,7 +19,6 @@ package controllers
 import auth.{AuthorisedActions, CgtIndividual}
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
-import connectors.SubscriptionConnector
 import helpers.EnrolmentToCGTCheck
 import play.api.mvc._
 import services.{AuthorisationService, SubscriptionService}
@@ -52,11 +51,11 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
   }
 
   def notEnrolled()(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
-    if (user.nino.isDefined) subscribeAndEnrollWithNino(user.nino.get)
+    if (user.nino.isDefined) subscribeAndEnrolWithNino(user.nino.get)
     else Future.successful(Redirect(routes.UserDetailsController.userDetails()))
   }
 
-  def subscribeAndEnrollWithNino(nino: String)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
+  def subscribeAndEnrolWithNino(nino: String)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
 
     def subscribeResultRoute(subscriptionRef: Option[String]) = subscriptionRef match {
       case Some(data) => Future.successful(Redirect(routes.CGTSubscriptionController.confirmationOfSubscription(data)))
