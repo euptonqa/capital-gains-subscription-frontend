@@ -49,7 +49,8 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
 
     val dummyRef = "CGT-2122"
 
-    when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(dummyRef)))))
 
     val result = await(target.getSubscriptionResponse("fakeNino")(hc))
@@ -64,7 +65,8 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
 
   "SubscriptionConnector .getSubscriptionResponse with an invalid request" should {
 
-    when(mockHttp.GET[HttpResponse](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.toJson("invalid:n")))))
 
     val result = await(target.getSubscriptionResponse("fakeNino")(hc))
