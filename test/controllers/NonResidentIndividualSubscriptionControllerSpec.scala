@@ -181,7 +181,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
     "provided with a user who has no nino" should {
 
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val mockActions = createMockActions(valid = true)
+      lazy val mockActions = createMockActions(valid = true, TestUserBuilder.create200ConfidenceUserAuthContext)
       val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
       val enrolments = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelNoNino))
@@ -189,9 +189,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
         mockAuthorisationService, enrolmentToCGTCheck)
 
-      lazy val testCgtIndividual = CgtIndividual(TestUserBuilder.create200ConfidenceUserAuthContext)
-
-      lazy val result = target.notEnrolled()(fakeRequest, testCgtIndividual)
+      lazy val result = target.nonResidentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
         status(result) shouldBe 303
