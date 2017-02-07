@@ -34,8 +34,8 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
   val subscriptionUrl: String = "subscribe/individual"
 
   def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    val getUrl = s"""$serviceUrl/$subscriptionUrl/?nino=$nino"""
-    http.GET[HttpResponse](getUrl).map {
+    val postUrl = s"""$serviceUrl/$subscriptionUrl/?nino=$nino"""
+    http.POST[JsValue, HttpResponse](postUrl, Json.toJson("")).map {
       response =>
         response.status match {
           case OK =>

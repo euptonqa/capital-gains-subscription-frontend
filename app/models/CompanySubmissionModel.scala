@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package helpers
+package models
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+import play.api.libs.json.Json
 
-object AffinityGroupCheck extends AffinityGroupCheck
+case class CompanySubmissionModel(
+                                   sap: Option[String],
+                                   contactAddress: Option[CompanyAddressModel],
+                                   registeredAddress: Option[CompanyAddressModel]
+                                 )
 
-trait AffinityGroupCheck {
-
-  def affinityGroupCheckIndividual(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
-
-  def affinityGroupCheckCompany(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Organisation)
-
+object CompanySubmissionModel {
+  implicit val formats = Json.format[CompanySubmissionModel]
 }
+

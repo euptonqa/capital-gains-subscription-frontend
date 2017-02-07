@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package helpers
+package controllers
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+import uk.gov.hmrc.play.test.UnitSpec
 
-object AffinityGroupCheck extends AffinityGroupCheck
+class AmendCorrespondenceControllerSpec extends UnitSpec {
 
-trait AffinityGroupCheck {
+  "Calling .amendCorrespondenceAddress" when {
 
-  def affinityGroupCheckIndividual(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
+  }
 
-  def affinityGroupCheckCompany(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Organisation)
+  "Calling .submitCorrespondenceAddress" when {
+
+  }
 
 }

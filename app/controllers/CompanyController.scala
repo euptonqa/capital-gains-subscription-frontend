@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package helpers
+package controllers
 
-import scala.concurrent.Future
-import common.Constants.AffinityGroup._
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-object AffinityGroupCheck extends AffinityGroupCheck
+class CompanyController extends FrontendController {
 
-trait AffinityGroupCheck {
-
-  def affinityGroupCheckIndividual(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
-
-  def affinityGroupCheckCompany(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Organisation)
+  val company = TODO
 
 }
