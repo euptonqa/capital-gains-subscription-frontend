@@ -19,7 +19,7 @@ package controllers
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CompanyControllerSpec extends FrontendController with UnitSpec {
+class CompanyControllerSpec extends UnitSpec {
 
   "Calling .company" when {
 
