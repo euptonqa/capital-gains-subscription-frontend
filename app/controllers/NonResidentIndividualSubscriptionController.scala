@@ -22,7 +22,7 @@ import config.AppConfig
 import connectors.SubscriptionConnector
 import helpers.EnrolmentToCGTCheck
 import play.api.mvc._
-import services.AuthorisationService
+import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
@@ -30,9 +30,9 @@ import scala.concurrent.Future
 @Singleton
 class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
                                                             appConfig: AppConfig,
-                                                            cGTSubscriptionController: CGTSubscriptionController,
+                                                            subscriptionService: SubscriptionService,
                                                             authorisationService: AuthorisationService,
-                                                            subscriptionConnector: SubscriptionConnector)
+                                                            enrolmentToCGTCheck: EnrolmentToCGTCheck)
   extends FrontendController {
 
   val nonResidentIndividualSubscription: Action[AnyContent] = actions.authorisedNonResidentIndividualAction {
@@ -40,7 +40,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
       implicit request =>
         for {
           enrolments <- authorisationService.getEnrolments(hc(request))
-          checkEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
+          checkEnrolled <- enrolmentToCGTCheck.checkEnrolments(enrolments)
           route <- routeRequest(checkEnrolled)
         } yield route
   }
@@ -64,7 +64,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
     }
 
     for {
-      enrol <- subscriptionConnector.getSubscriptionResponse(nino)(hc)
+      enrol <- subscriptionService.getSubscriptionResponse(nino)(hc)
       route <- subscribeResultRoute(enrol)
     } yield route
   }

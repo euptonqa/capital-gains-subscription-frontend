@@ -16,35 +16,37 @@
 
 package controllers
 
+import assets.ControllerTestSpec
 import auth.{AuthorisedActions, CgtIndividual}
 import builders.TestUserBuilder
 import common.Constants.AffinityGroup
 import common.Keys
-import config.AppConfig
+import config.WSHttp
 import connectors.{AuthorisationConnector, SubscriptionConnector}
+import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment, Identifier, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import org.scalatest.mock.MockitoSugar
+import play.api.inject.Injector
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import types.AuthenticatedIndividualAction
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import services.{AuthorisationService, SubscriptionService}
-import config.WSHttp
+import types.AuthenticatedIndividualAction
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength, PayeAccount}
 
 import scala.concurrent.Future
 
-class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
 
   val unauthorisedLoginUri = "some-url"
-  val mockConfig: AppConfig = mock[AppConfig]
+
+  val injector: Injector = app.injector
+  val enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
 
   def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithNINO): AuthorisedActions = {
 
@@ -109,12 +111,13 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
     "provided with a valid user who has a nino and a subscription service that has a CGT reference" should {
 
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val actions = createMockActions(true)
+      lazy val actions = createMockActions(valid = true)
       val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
       val enrolments =  Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
-      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService, authorisationService)
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
+        authorisationService, enrolmentToCGTCheck)
 
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
@@ -129,13 +132,14 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
 
     "provided with a valid user who has a nino but a preexisting CGT enrolment" should {
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val actions = createMockActions(true)
+      lazy val actions = createMockActions(valid = true)
       val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
       val enrolments =  Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("test","test")), ""), Enrolment("key", Seq(), ""))
 
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
-      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService, authorisationService)
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
+        authorisationService, enrolmentToCGTCheck)
 
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
@@ -150,12 +154,13 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
 
     "provided with a valid user but no CGT reference" should {
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val actions = createMockActions(true)
+      lazy val actions = createMockActions(valid = true)
       val mockSubscriptionService = createMockSubscriptionService(None)
       val enrolments =  Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
-      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService, authorisationService)
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
+        authorisationService, enrolmentToCGTCheck)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
@@ -169,12 +174,13 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
 
     "provided with no CGT reference or nino" should {
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val actions = createMockActions(true, TestUserBuilder.userWithNINO)
+      lazy val actions = createMockActions(valid = true, TestUserBuilder.userWithNINO)
       val mockSubscriptionService = createMockSubscriptionService(None)
       val enrolments =  Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
-      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService, authorisationService)
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
+        authorisationService, enrolmentToCGTCheck)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
@@ -188,10 +194,11 @@ class ResidentIndividualSubscriptionControllerSpec extends UnitSpec with WithFak
 
     "provided with an invalid user" should {
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val actions = createMockActions(false, TestUserBuilder.userWithNINO)
+      lazy val actions = createMockActions(valid = false, TestUserBuilder.userWithNINO)
       val mockSubscriptionService = createMockSubscriptionService(None)
       lazy val authorisationService = createMockAuthorisationService(None, Some(authorisationDataModelFail))
-      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService, authorisationService)
+      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
+        authorisationService, enrolmentToCGTCheck)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {

@@ -30,7 +30,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: AuthorisationService) extends PageVisibilityPredicate {
+class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: AuthorisationService,
+                                   enrolmentToCGTCheck: EnrolmentToCGTCheck) extends PageVisibilityPredicate {
   def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
 
     implicit def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
@@ -42,7 +43,7 @@ class EnrolmentPredicate @Inject()(enrolmentURI: URI, authorisationService: Auth
 
     for {
       enrolments <- authorisationService.getEnrolments(hc(request))
-      enrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
+      enrolled <- enrolmentToCGTCheck.checkEnrolments(enrolments)
       display <- getPageVisibility(enrolled)
     } yield display
   }

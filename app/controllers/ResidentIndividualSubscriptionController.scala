@@ -34,7 +34,8 @@ import scala.concurrent.Future
 class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
                                                          appConfig: AppConfig,
                                                          subscriptionService: SubscriptionService,
-                                                         authService: AuthorisationService)
+                                                         authService: AuthorisationService,
+                                                         enrolmentToCGTCheck: EnrolmentToCGTCheck)
   extends FrontendController {
 
   val residentIndividualSubscription: Action[AnyContent] =
@@ -43,7 +44,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
       implicit request =>
         for {
           enrolments <- authService.getEnrolments
-          isEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
+          isEnrolled <- enrolmentToCGTCheck.checkEnrolments(enrolments)
           redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
         } yield redirect
   }
