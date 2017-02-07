@@ -18,11 +18,29 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 
-import config.AppConfig
+import config.FrontendAuthConnector.WSHttp
+import config.{AppConfig, SubscriptionSessionCache}
+import play.api.libs.json.Format
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 @Singleton
-class KeystoreConnector @Inject()(appConfig: AppConfig) {
+class KeystoreConnector @Inject()(appConfig: AppConfig, subscriptionSessionCache: SubscriptionSessionCache,
+                                  servicesConfig: ServicesConfig) extends ServicesConfig {
+  val sessionCache = subscriptionSessionCache
+  val http = WSHttp
+  val serviceUrl = baseUrl("capital-gains-subscription")
 
+  implicit val hc: HeaderCarrier = HeaderCarrier().withExtraHeaders("Accept" -> "applications/vnd.hmrc.1.0+json")
 
+  def saveFormData[T](key: String, data: T)(implicit hc: HeaderCarrier, formats: Format[T]): Future[CacheMap] = {
+    sessionCache.cache(key, data)
+  }
 
+  def fetchAndGetFormData[T](key: String)(implicit hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
+    sessionCache.fetchAndGetEntry(key)
+  }
 }

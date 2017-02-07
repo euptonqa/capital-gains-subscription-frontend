@@ -48,7 +48,7 @@ object FrontendAuthConnector extends AuthConnector with ServicesConfig {
   }
 }
 
-class CalculatorSessionCache @Inject()(override val http: WSHttp, appConfig: AppConfig) extends SessionCache with ServicesConfig with AppName {
+class SubscriptionSessionCache @Inject()(override val http: WSHttp, appConfig: AppConfig) extends SessionCache with ServicesConfig with AppName {
   override lazy val domain = getConfString("cachable.session-cache.domain", throw new Exception(""))
   override lazy val baseUri = baseUrl("cachable.session-cache")
   override lazy val defaultSource = appName
