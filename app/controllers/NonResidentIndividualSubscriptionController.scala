@@ -16,12 +16,11 @@
 
 package controllers
 
-import auth.AuthorisedActions
+import auth.{AuthorisedActions, CgtIndividual}
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import connectors.SubscriptionConnector
 import helpers.EnrolmentToCGTCheck
-import models.{Enrolment, SubscriptionReference}
 import play.api.mvc._
 import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -39,52 +38,36 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
   val nonResidentIndividualSubscription: Action[AnyContent] = actions.authorisedNonResidentIndividualAction {
     implicit user =>
       implicit request =>
-
+      user.nino.isDefined
         for {
           enrolments <- authorisationService.getEnrolments(hc(request))
-          checkEnrolled <- checkEnrolments(enrolments)
+          checkEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
           route <- routeRequest(checkEnrolled)
         } yield route
   }
 
-  def checkEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = {
-    EnrolmentToCGTCheck.checkEnrolments(enrolments)
+  def routeRequest(alreadyEnrolled: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
+    //TODO: Update the route here to point to the actual Iform (on success)
+    if (alreadyEnrolled) Future.successful(Redirect(routes.HelloWorld.helloWorld()))
+    else notEnrolled()
+  }
+
+  def notEnrolled()(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
+    if (user.nino.isDefined) subscribeAndEnrollWithNino()
+    else Future.successful(Redirect(routes.UserDetailsController.userDetails()))
   }
 
   def subscribeAndEnrollWithNino()(implicit request: Request[AnyContent]): Future[Result] = {
 
-    def subscribeResultRoute(subscriptionRef: Option[SubscriptionReference]) = subscriptionRef match {
-      case Some(data) => Future.successful(Redirect(routes.CGTSubscriptionController.confirmationOfSubscription(data.cgtRef)))
-      case None => Future.successful(Redirect(Call("To 'We are experiencing technical difficulties' page", "")))
+    def subscribeResultRoute(subscriptionRef: Option[String]) = subscriptionRef match {
+      case Some(data) => Future.successful(Redirect(routes.CGTSubscriptionController.confirmationOfSubscription(data)))
+      case None => Future.successful(InternalServerError("DES responded with no subscription reference."))
     }
 
     for {
       nino <- authorisationService.getNino(hc)
       enrol <- subscriptionConnector.getSubscriptionResponse(nino)(hc)
-      route <- subscribeResultRoute(Some(SubscriptionReference("Subscription Reference")))
+      route <- subscribeResultRoute(enrol)
     } yield route
-  }
-
-  def captureAddress(): Future[Result] = {
-    Future.successful(Redirect(Call("Redirect to the Address Details page", "")))
-  }
-
-  def notEnrolled()(implicit request: Request[AnyContent]): Future[Result] = {
-
-    authorisationService.hasANino(hc).flatMap(
-      i => {
-        if (i) {
-          subscribeAndEnrollWithNino()
-        }
-        else {
-          Future.successful(Redirect(Call("Redirect to the Address Details page", "")))
-        }
-      }
-    )
-  }
-
-  def routeRequest(alreadyEnrolled: Boolean)(implicit request: Request[AnyContent]): Future[Result] = {
-    if (alreadyEnrolled) Future.successful(Redirect(Call("To the I-Form", "")))
-    else notEnrolled()
   }
 }
