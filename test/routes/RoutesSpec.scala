@@ -93,19 +93,19 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
     }
   }
 
-  "The URL for the amendBusinessAddress action" should {
-    "be equal to /capital-gains-tax/subscription/company/correspondence-address-amend" in {
-      val path = controllers.routes.AmendCorrespondenceAddressController.amendCorrespondenceAddress().url
+  "The URL for the enterCorrespondenceAddress action" should {
+    "be equal to /capital-gains-tax/subscription/company/correspondence-address-enter" in {
+      val path = controllers.routes.EnterCorrespondenceAddressController.enterCorrespondenceAddress().url
 
-      path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-amend"
+      path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-enter"
     }
   }
 
-  "The URL for the submitAmendBusinessAddress action" should {
-    "be equal to /capital-gains-tax/subscription/company/correspondence-address-amend" in {
-      val path = controllers.routes.AmendCorrespondenceAddressController.submitAmendCorrespondenceAddress().url
+  "The URL for the submitCorrespondenceAddress action" should {
+    "be equal to /capital-gains-tax/subscription/company/correspondence-address-enter" in {
+      val path = controllers.routes.EnterCorrespondenceAddressController.submitCorrespondenceAddress().url
 
-      path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-amend"
+      path shouldEqual "/capital-gains-tax/subscription/company/correspondence-address-enter"
     }
   }
 

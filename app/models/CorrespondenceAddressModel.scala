@@ -23,7 +23,7 @@ case class CorrespondenceAddressModel(addressLineOne: String,
                                       addressLineThree: Option[String],
                                       addressLineFour: Option[String],
                                       country: String,
-                                      postCode: String)
+                                      postcode: String)
 
 object CorrespondenceAddressModel {
   implicit val formats: OFormat[CorrespondenceAddressModel] = Json.format[CorrespondenceAddressModel]
