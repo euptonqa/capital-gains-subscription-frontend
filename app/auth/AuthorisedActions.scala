@@ -94,7 +94,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   }
 
   private val createAuthorisedNonResidentOrganisationAction: AuthenticatedNROrganisationAction => Action[AnyContent] = {
-    val postSignInRedirectUrl: String = "" //TODO set to controller action for non-resident organisations in config
+    val postSignInRedirectUrl: String = controllers.routes.CompanyController.company().url
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
 
     val regime = new CgtRegime {
@@ -102,7 +102,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     }
 
     lazy val visibilityPredicate = new NonResidentOrganisationVisibilityPredicate(
-      authorisationService)(controllers.routes.HelloWorld.helloWorld().url
+      authorisationService)(controllers.routes.HelloWorld.helloWorld().url //TODO: add url for error page
     )
 
     lazy val guardedAction: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)

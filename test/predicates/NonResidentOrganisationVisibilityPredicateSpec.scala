@@ -50,7 +50,7 @@ class NonResidentOrganisationVisibilityPredicateSpec extends UnitSpec with Mocki
     new NonResidentOrganisationVisibilityPredicate(mockedService(dataModel, affinityGroup))(affinityGroup)
   }
 
-  "Calling the VisibilityPredicate when supplied with appropriate URIs" when {
+  "Calling the VisibilityPredicate" when {
 
     implicit val fakeRequest = FakeRequest()
     implicit val hc = HeaderCarrier
