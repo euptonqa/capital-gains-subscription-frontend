@@ -16,23 +16,71 @@
 
 package controllers
 
-import com.google.inject.{Inject, Singleton}
-import config.AppConfig
+import javax.inject.Inject
+
+import config.{AppConfig, SubscriptionSessionCache}
 import connectors.KeystoreConnector
-import play.api.mvc.Action
+import models.{CompanyAddressModel, YesNoModel}
+import play.api.data.Form
+import play.api.mvc.{Action, Result}
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import forms.YesNoForm
 
 import scala.concurrent.Future
 
 @Singleton
-class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig, keystoreConnector: KeystoreConnector) extends FrontendController {
+class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
+                                                       subscriptionSessionCache: SubscriptionSessionCache,
+                                                       servicesConfig: ServicesConfig,
+                                                       yesNoForm: YesNoForm) extends FrontendController {
 
-  val correspondenceAddressConfirm = Action.async { implicit request =>
-    keystoreConnector.fetchAndGetBusinessData().flatMap { data =>
-      Future.successful(Ok(""))
-    }
+
+  val keyStoreConnector = new KeystoreConnector(appConfig, subscriptionSessionCache, servicesConfig)
+
+  val keystoreKey = "stubKey"
+  //TODO: Find out actual key/create key
+
+  val correspondenceAddressConfirm = Action.async {
+    implicit request =>
+      val containsData = Ok(views.html.helloworld.hello_world(appConfig))
+      val doesNotContainData = Ok(views.html.helloworld.hello_world(appConfig))
+      //TODO: Replace with correspondence address and fill for containsData with obtained KS data
+      keyStoreConnector.fetchAndGetFormData[CompanyAddressModel](keystoreKey).map {
+        case Some(data) => containsData
+        case None => doesNotContainData
+      }
   }
 
-  val submitCorrespondenceAddressConfirm = TODO
+  val submitCorrespondenceAddressConfirm = Action.async { implicit request =>
+    val yes = Redirect(routes.HelloWorld.helloWorld())
+    //TODO: Capital Gains Contact Details page
+    val no = Redirect(routes.HelloWorld.helloWorld())
+    //TODO: User details/enter correspondence details page
+
+    def errorAction(form: Form[YesNoModel]): Future[Result] ={
+      keyStoreConnector.fetchAndGetFormData[CompanyAddressModel](keystoreKey).map {
+        case Some(data) => BadRequest(views.html.useRegisteredAddress(appConfig, form, data))
+        case None => BadRequest(views.html.useRegisteredAddress(appConfig, form,
+          CompanyAddressModel(None, None, None, None, None, None)))
+      }
+    }
+
+    def successAction(model: YesNoModel) = {
+      for {
+        save <- keyStoreConnector.saveFormData[YesNoModel](keystoreKey, model)
+        route <- routeRequest(model)
+      } yield route
+    }
+
+    def routeRequest(data: YesNoModel): Future[Result] = {
+      if(data.response)
+        Future.successful(Redirect(routes.HelloWorld.helloWorld()))
+      else
+        Future.successful(no)
+    }
+
+    yesNoForm.yesNoForm.bindFromRequest.fold(errorAction, successAction)
+  }
 
 }
