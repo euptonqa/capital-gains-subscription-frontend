@@ -47,13 +47,13 @@ object MessageLookup {
   }
 
   object EnterCorrespondenceDetails {
-    val title = "Something"
-    val addressLineOne = "One"
-    val addressLineTwo = "One"
-    val addressLineThree = "One"
-    val addressLineFour = "One"
-    val country = "One"
-    val postcode = "One"
+    val title = "Your correspondence address"
+    val addressLineOne = "Address line 1"
+    val addressLineTwo = "Address line 2"
+    val addressLineThree = "Address line 3 (optional)"
+    val addressLineFour = "Address line 4 (optional)"
+    val country = "Country"
+    val postcode = "Postcode"
   }
 
   object UserDetails {

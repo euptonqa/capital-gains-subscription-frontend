@@ -19,17 +19,17 @@
 
     @form(action = controllers.routes.EnterCorrespondenceAddressController.submitCorrespondenceAddress) {
 
-        @userInput(Messages("enterCorrespondenceAddress.firstName"), "addressLineOne")
+        @userInput(Messages("enterCorrespondenceAddress.addressLineOne"), "addressLineOne")
 
-        @userInput(Messages("enterCorrespondenceAddress.lastName"), "addressLineTwo")
+        @userInput(Messages("enterCorrespondenceAddress.addressLineTwo"), "addressLineTwo")
 
-        @userInput(Messages("enterCorrespondenceAddress.addressLineOne"), "addressLineThree")
+        @userInput(Messages("enterCorrespondenceAddress.addressLineThree"), "addressLineThree")
 
-        @userInput(Messages("enterCorrespondenceAddress.addressLineTwo"), "addressLineFour")
+        @userInput(Messages("enterCorrespondenceAddress.addressLineFour"), "addressLineFour")
 
         @userInput(Messages("enterCorrespondenceAddress.country"), "country")
 
-        @userInput(Messages("enterCorrespondenceAddress.postCode"), "postcode", size = 4)
+        @userInput(Messages("enterCorrespondenceAddress.postcode"), "postcode", size = 4)
 
         <button class="button" type="submit" id="continue-button">@Messages("common.continue")</button>
     }
