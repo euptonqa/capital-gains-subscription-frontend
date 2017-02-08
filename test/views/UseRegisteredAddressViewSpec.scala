@@ -20,7 +20,7 @@ import assets.ViewTestSpec
 import forms.YesNoForm
 import org.jsoup.Jsoup
 import views.html.useRegisteredAddress
-import assets.MessageLookup.UseRegisteredAddress
+import assets.MessageLookup.{Common, UseRegisteredAddress}
 import models.CompanyAddressModel
 
 class UseRegisteredAddressViewSpec extends ViewTestSpec {
@@ -109,11 +109,63 @@ class UseRegisteredAddressViewSpec extends ViewTestSpec {
       }
 
       "has a label for the yes option" which {
-        lazy val yesLabel = input.select("label [for=response-yes]")
+        lazy val yesLabel = input.select("label[for=response-yes]")
 
         "has the class 'block-label'" in {
           yesLabel.attr("class") shouldBe "block-label"
         }
+
+        "has the text 'Yes'" in {
+          yesLabel.text() shouldBe "Yes"
+        }
+
+        "has the name 'response'" in {
+          yesLabel.select("input").attr("name") shouldBe "response"
+        }
+
+        "has the value 'Yes'" in {
+          yesLabel.select("input").attr("value") shouldBe "Yes"
+        }
+      }
+
+      "has a label for the no option" which {
+        lazy val noLabel = input.select("label[for=response-no]")
+
+        "has the class 'block-label'" in {
+          noLabel.attr("class") shouldBe "block-label"
+        }
+
+        "has the text 'No'" in {
+          noLabel.text() shouldBe "No"
+        }
+
+        "has the name 'response'" in {
+          noLabel.select("input").attr("name") shouldBe "response"
+        }
+
+        "has the value 'No'" in {
+          noLabel.select("input").attr("value") shouldBe "No"
+        }
+      }
+    }
+
+    "have a button" which {
+      lazy val button = doc.select("button")
+
+      "has the text 'Continue'" in {
+        button.text() shouldBe Common.continue
+      }
+
+      "has the class 'button'" in {
+        button.attr("class") shouldBe "button"
+      }
+
+      "has the type 'submit'" in {
+        button.attr("type") shouldBe "submit"
+      }
+
+      "has the id 'continue-button'" in {
+        button.attr("id") shouldBe "continue-button"
       }
     }
   }

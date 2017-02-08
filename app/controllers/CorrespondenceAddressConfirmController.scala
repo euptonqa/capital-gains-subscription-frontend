@@ -16,34 +16,11 @@
 
 package controllers
 
-import com.google.inject.{Inject, Singleton}
-import config.AppConfig
-import forms.YesNoForm
-import models.CompanyAddressModel
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-import scala.concurrent.Future
+class CorrespondenceAddressConfirmController extends FrontendController {
 
-@Singleton
-class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
-                                                       yesNoForm: YesNoForm,
-                                                       val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
-
-  val correspondenceAddressConfirm = Action.async {
-    implicit request => {
-      val addressModel = CompanyAddressModel(
-        Some("line1"),
-        Some("line2"),
-        Some("line3"),
-        Some("line4"),
-        Some("postCode"),
-        Some("country")
-      )
-      Future.successful(Ok(views.html.useRegisteredAddress(appConfig, yesNoForm.yesNoForm, addressModel)))
-    }
-  }
+  val correspondenceAddressConfirm = TODO
 
   val submitCorrespondenceAddressConfirm = TODO
 
