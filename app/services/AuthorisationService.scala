@@ -47,7 +47,6 @@ class AuthorisationService @Inject()(authConnector: AuthorisationConnector) {
 
       authData match {
         case Some(data) => {
-          println(authData.get.accounts)
           authConnector.getEnrolmentsResponse(data.uri)
         }
         case _ => Future.successful(None)
