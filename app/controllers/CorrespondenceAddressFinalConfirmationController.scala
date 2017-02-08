@@ -16,11 +16,25 @@
 
 package controllers
 
+import javax.inject.Inject
+
+import config.AppConfig
+import models.{CompanyAddressModel, CompanySubmissionModel}
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-class CorrespondenceAddressFinalConfirmationController extends FrontendController {
+import scala.concurrent.Future
 
-  val correspondenceAddressFinalConfirmation = TODO
+class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppConfig, implicit val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+
+  val correspondenceAddressFinalConfirmation = Action.async {
+    implicit request =>
+      val registeredModel = CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None)
+      val contactModel = CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None)
+      val submissionModel = CompanySubmissionModel(Some("SAP"), Some(contactModel), Some(registeredModel))
+      Future.successful(Ok(views.html.reviewBusinessDetails(appConfig, submissionModel)))
+  }
 
   val submitCorrespondenceAddressFinalConfirmation = TODO
 

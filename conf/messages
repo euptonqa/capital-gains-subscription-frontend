@@ -53,6 +53,15 @@ errors.required = This field is required
 ## Common Messages ##
 common.continue = Continue
 
+##Review BusinessDetails Page ##
+reviewBusinessDetails.title = Review business details
+reviewBusinessDetails.subtitle = Your Capital Gains Tax account will be created with these details.
+reviewBusinessDetails.colHeading = Name
+reviewBusinessDetails.registeredAddress = Registered address
+reviewBusinessDetails.correspondenceAddress = Correspondence address
+reviewBusinessDetails.contactDetails = Capital Gains Tax contact details
+reviewBusinessDetails.registerConfirm = Register and confirm
+
 ## Confirmation View Messages ##
 
 confirmation.title = Your Capital Gains Tax ID

@@ -1,0 +1,82 @@
+@import models.CompanySubmissionModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@(appConfig: config.AppConfig, companySubmissionModel: CompanySubmissionModel)(implicit request: Request [_], messages: Messages)
+
+@insertAddress(addressTypeName: String, companyAddressModel: CompanyAddressModel, redirect: Option[String]) = {
+    <tr>
+        <th style="vertical-align: top">@addressTypeName</th>
+        <td>
+            @if(companyAddressModel.addressLine1.isDefined){
+                @companyAddressModel.addressLine1.get<br/>
+            }
+            @if(companyAddressModel.addressLine2.isDefined){
+                @companyAddressModel.addressLine2.get<br/>
+            }
+            @if(companyAddressModel.addressLine3.isDefined){
+                @companyAddressModel.addressLine3.get<br/>
+            }
+            @if(companyAddressModel.addressLine4.isDefined){
+                @companyAddressModel.addressLine4.get<br/>
+            }
+            @if(companyAddressModel.postCode.isDefined){
+                @companyAddressModel.postCode.get<br/>
+            }
+            @if(companyAddressModel.country.isDefined){
+                @companyAddressModel.country.get<br/>
+            }
+        </td>
+        <td style="vertical-align: top">
+            @if(redirect.isDefined){
+            <a href='@redirect.get'>Edit</a>
+            }
+        </td>
+    </tr>
+}
+
+@views.html.main_template(title = Messages("reviewBusinessDetails.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <div class="grid-row">
+        <div class="colum-two-thirds">
+
+            <h1 class="heading-xlarge">@Messages("reviewBusinessDetails.title")</h1>
+
+            <h2 class="heading" style="font-weight:normal">@Messages("reviewBusinessDetails.subtitle")</h2>
+
+            <div class="form-group">
+                <table>
+                    <tbody>
+                    <tr>
+                        <th style="width:60%">@Messages("reviewBusinessDetails.colHeading")</th>
+                        <td>???</td>
+                        <!--TODO: UPDATE COMPANY NAME-->
+                        <td></td>
+                    </tr>
+                    @if(companySubmissionModel.registeredAddress.isDefined){
+                        @insertAddress(Messages("reviewBusinessDetails.registeredAddress"),
+                        companySubmissionModel.registeredAddress.get, None)
+                    }
+                    @if(companySubmissionModel.contactAddress.isDefined){
+                        @insertAddress(Messages("reviewBusinessDetails.correspondenceAddress"),
+                        companySubmissionModel.contactAddress.get, Some("google.com"))
+                        <!--TODO: UPDATE REDIRECT URL!-->
+                    }
+                    <tr>
+                        <th style="vertical-align: top">@Messages("reviewBusinessDetails.contactDetails")</th>
+                        <td>Blah blah blah
+                        </td>
+                        <td><a href="google.com">Edit</a></td>
+                        <!--TODO:UPDATE REDIRECT URL!-->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group">
+                <a href="client_summary">
+                    <input class="button" value='@Messages("reviewBusinessDetails.registerConfirm")' type="submit">
+                </a>
+            </div>
+        </div>
+    </div>
+}

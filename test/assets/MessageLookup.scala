@@ -77,4 +77,15 @@ object MessageLookup {
     val whatNextContent = "Continue to report your Capital Gains Tax using our online form."
     val figuresReady = "You should have already done your Capital Gains Tax calculation and have your figures ready."
   }
+
+  object ReviewBusinessDetails {
+    val title = "Review business details"
+    val subtitle = "Your Capital Gains Tax account will be created with these details."
+    val colHeading = "Name"
+    val registeredAddress = "Registered address"
+    val correspondenceAddress = "Correspondence address"
+    val contactDetails = "Capital Gains Tax contact details"
+    val registerConfirm = "Register and confirm"
+
+  }
 }
