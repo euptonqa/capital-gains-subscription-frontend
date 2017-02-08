@@ -17,8 +17,9 @@
 package connectors
 
 import javax.inject.{Inject, Singleton}
+
 import config.{AppConfig, WSHttp}
-import models.{UserFactsModel, SubscriptionReference}
+import models.{CompanySubmissionModel, SubscriptionReference, UserFactsModel}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import play.api.http.Status._
@@ -32,6 +33,7 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
 
   lazy val serviceUrl: String = appConfig.subscription
   val subscriptionUrl: String = "subscribe/individual"
+  val companyUrl: String = "/subscribe/company"
 
   def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val postUrl = s"""$serviceUrl/$subscriptionUrl/?nino=$nino"""
@@ -49,6 +51,19 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
 
     val postUrl =s"""$serviceUrl/$subscriptionUrl/"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(userFacts)).map{
+      response =>
+        response.status match {
+          case OK =>
+            Some(response.json.as[SubscriptionReference])
+          case _ => None
+        }
+    }
+  }
+
+  def getSubscriptionResponseCompany(companySubmissionModel: CompanySubmissionModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+
+    val postUrl = s"""$serviceUrl/$companyUrl"""
+    http.POST[JsValue, HttpResponse](postUrl, Json.toJson(companySubmissionModel)).map {
       response =>
         response.status match {
           case OK =>
