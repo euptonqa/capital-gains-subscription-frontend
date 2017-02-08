@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import auth.{CgtIndividual, CgtNROrganisation}
-import play.api.mvc.{AnyContent, Request, Result}
+package auth
 
-import scala.concurrent.Future
+import org.joda.time.DateTime
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 
-package object types {
-  type AuthenticatedIndividualAction = CgtIndividual => Request[AnyContent] => Future[Result]
-  type AuthenticatedNROrganisationAction = CgtNROrganisation => Request[AnyContent] => Future[Result]
+case class CgtNROrganisation(authContext: AuthContext) {
+  def previouslyLoggedInAt: Option[DateTime] = authContext.user.previouslyLoggedInAt
 }
