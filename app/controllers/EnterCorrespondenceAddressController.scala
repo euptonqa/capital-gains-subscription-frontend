@@ -18,10 +18,13 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import common.Keys
 import config.AppConfig
+import connectors.KeystoreConnector
 import forms.CorrespondenceAddressForm
+import models.CorrespondenceAddressModel
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
@@ -29,6 +32,7 @@ import scala.concurrent.Future
 @Singleton
 class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
                                                      correspondenceAddressForm: CorrespondenceAddressForm,
+//                                                     keystoreConnector: KeystoreConnector,
                                                      val messagesApi: MessagesApi)
   extends FrontendController with I18nSupport {
 
@@ -37,6 +41,15 @@ class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
     Future.successful(Ok(views.html.address.enterCorrespondenceAddress(appConfig, correspondenceAddressForm.correspondenceAddressForm)))
   }
 
-  val submitCorrespondenceAddress = TODO
+  val submitCorrespondenceAddress: Action[AnyContent] = Action.async { implicit request =>
 
+    def successAction(correspondenceAddressModel: CorrespondenceAddressModel): Future[Result] = {
+//      keystoreConnector.saveFormData[CorrespondenceAddressModel](Keys.KeystoreKeys.correspondenceAddressKey, correspondenceAddressModel)
+      Future.successful(Redirect(routes.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()))
+    }
+
+    correspondenceAddressForm.correspondenceAddressForm.bindFromRequest.fold(errors =>
+      Future.successful(BadRequest(views.html.address.enterCorrespondenceAddress(appConfig, errors))),
+      successAction)
+  }
 }

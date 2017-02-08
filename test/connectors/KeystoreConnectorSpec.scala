@@ -32,11 +32,11 @@ import scala.concurrent.Future
 
 class KeystoreConnectorSpec extends ControllerTestSpec {
 
-  lazy val sessionId = UUID.randomUUID.toString
-  lazy val http = mock[WSHttp]
-  lazy val config = mock[AppConfig]
-  lazy val servicesConfig = mock[ServicesConfig]
-  lazy val subscriptionSessionCache = mock[SubscriptionSessionCache]
+  lazy val sessionId: String = UUID.randomUUID.toString
+  lazy val http: WSHttp = mock[WSHttp]
+  lazy val config: AppConfig = mock[AppConfig]
+  lazy val servicesConfig: ServicesConfig = mock[ServicesConfig]
+  lazy val subscriptionSessionCache: SubscriptionSessionCache = mock[SubscriptionSessionCache]
 
   lazy implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 

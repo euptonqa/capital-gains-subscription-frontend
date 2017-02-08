@@ -46,7 +46,7 @@ object MessageLookup {
     val linkTextPensionTrust = "Pension trustees: investments and tax"
   }
 
-  object EnterCorrespondenceDetails {
+  object EnterCorrespondenceAddress {
     val title = "Your correspondence address"
     val addressLineOne = "Address line 1"
     val addressLineTwo = "Address line 2"

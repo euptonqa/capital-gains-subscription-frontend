@@ -17,7 +17,7 @@
 package views.address
 
 import assets.FakeRequestHelper
-import assets.MessageLookup.{Common, EnterCorrespondenceDetails}
+import assets.MessageLookup.{Common, EnterCorrespondenceAddress}
 import config.AppConfig
 import forms.CorrespondenceAddressForm
 import org.jsoup.Jsoup
@@ -44,8 +44,8 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
         doc.select("h1").attr("class") shouldBe "heading-xlarge"
       }
 
-      s"has the message '${EnterCorrespondenceDetails.title}'" in {
-        doc.select("h1").text() shouldBe EnterCorrespondenceDetails.title
+      s"has the message '${EnterCorrespondenceAddress.title}'" in {
+        doc.select("h1").text() shouldBe EnterCorrespondenceAddress.title
       }
     }
 
@@ -65,8 +65,8 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
       lazy val label = doc.select("label[for=addressLineOne]")
       lazy val input = label.select("input#addressLineOne")
 
-      s"has the text '${EnterCorrespondenceDetails.addressLineOne}'" in {
-        label.text() shouldBe EnterCorrespondenceDetails.addressLineOne
+      s"has the text '${EnterCorrespondenceAddress.addressLineOne}'" in {
+        label.text() shouldBe EnterCorrespondenceAddress.addressLineOne
       }
 
       "has a label class of 'form-group'" in {
@@ -86,8 +86,8 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
       lazy val label = doc.select("label[for=addressLineTwo]")
       lazy val input = label.select("input#addressLineTwo")
 
-      s"has the text '${EnterCorrespondenceDetails.addressLineTwo}'" in {
-        label.text() shouldBe EnterCorrespondenceDetails.addressLineTwo
+      s"has the text '${EnterCorrespondenceAddress.addressLineTwo}'" in {
+        label.text() shouldBe EnterCorrespondenceAddress.addressLineTwo
       }
 
       "has a label class of 'form-group'" in {
@@ -107,8 +107,8 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
       lazy val label = doc.select("label[for=addressLineThree]")
       lazy val input = label.select("input#addressLineThree")
 
-      s"has the text '${EnterCorrespondenceDetails.addressLineThree}'" in {
-        label.text() shouldBe EnterCorrespondenceDetails.addressLineThree
+      s"has the text '${EnterCorrespondenceAddress.addressLineThree}'" in {
+        label.text() shouldBe EnterCorrespondenceAddress.addressLineThree
       }
 
       "has a label class of 'form-group'" in {
@@ -128,8 +128,8 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
       lazy val label = doc.select("label[for=addressLineFour]")
       lazy val input = label.select("input#addressLineFour")
 
-      s"has the text '${EnterCorrespondenceDetails.addressLineFour}'" in {
-        label.text() shouldBe EnterCorrespondenceDetails.addressLineFour
+      s"has the text '${EnterCorrespondenceAddress.addressLineFour}'" in {
+        label.text() shouldBe EnterCorrespondenceAddress.addressLineFour
       }
 
       "has a label class of 'form-group'" in {
@@ -149,8 +149,8 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
       lazy val label = doc.select("label[for=country]")
       lazy val input = label.select("input#country")
 
-      s"has the text '${EnterCorrespondenceDetails.country}'" in {
-        label.text() shouldBe EnterCorrespondenceDetails.country
+      s"has the text '${EnterCorrespondenceAddress.country}'" in {
+        label.text() shouldBe EnterCorrespondenceAddress.country
       }
 
       "has a label class of 'form-group'" in {
@@ -170,8 +170,8 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
       lazy val label = doc.select("label[for=postcode]")
       lazy val input = label.select("input#postcode")
 
-      s"has the text '${EnterCorrespondenceDetails.postcode}'" in {
-        label.text() shouldBe EnterCorrespondenceDetails.postcode
+      s"has the text '${EnterCorrespondenceAddress.postcode}'" in {
+        label.text() shouldBe EnterCorrespondenceAddress.postcode
       }
 
       "has a label class of 'form-group'" in {

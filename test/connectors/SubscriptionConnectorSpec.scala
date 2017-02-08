@@ -31,12 +31,12 @@ import scala.concurrent.Future
 
 class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
 
-  val nino = TestUserBuilder.createRandomNino
+  val nino: String = TestUserBuilder.createRandomNino
   implicit val hc = HeaderCarrier()
 
   def cgtSubscriptionResponse(cgtRef: String): JsValue = Json.toJson(SubscriptionReference(cgtRef))
 
-  val config = mock[AppConfig]
+  val config: AppConfig = mock[AppConfig]
 
   lazy val target = new SubscriptionConnector(mockHttp, config) {
     override lazy val serviceUrl: String = "test"
@@ -45,7 +45,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
     override val subscriptionNonResidentNinoUrl: String  = "testNRWithNino"
   }
 
-  lazy val mockHttp = mock[WSHttp]
+  lazy val mockHttp: WSHttp = mock[WSHttp]
 
   "SubscriptionConnector .getSubscriptionResponse with a valid request" should {
 
