@@ -16,12 +16,40 @@
 
 package controllers
 
+import com.google.inject.{Inject, Singleton}
+import connectors.KeystoreConnector
+import models.CompanyAddressModel
+import play.api.mvc.{Action, Result}
+import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-class CorrespondenceAddressFinalConfirmationController extends FrontendController {
+import scala.concurrent.Future
+
+@Singleton
+class CorrespondenceAddressFinalConfirmationController @Inject()(subscriptionService: SubscriptionService,
+                                                                 keystoreConnector: KeystoreConnector) extends FrontendController {
 
   val correspondenceAddressFinalConfirmation = TODO
 
-  val submitCorrespondenceAddressFinalConfirmation = TODO
+  val submitCorrespondenceAddressFinalConfirmation = Action.async { implicit request =>
 
+    def successAction(companyAddressModel: CompanyAddressModel): Future[Result] = {
+      //TODO replace stub with actual call when created
+      val result = Future.successful("CGT123456")
+
+      result.map { reference =>
+        Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(reference))
+      }.recoverWith {
+        case error => Future.successful(InternalServerError(error.getMessage))
+      }
+    }
+
+    //TODO replace mock key with actual key
+    val companyAddress = keystoreConnector.fetchAndGetFormData[CompanyAddressModel]("mockKey")
+
+    companyAddress.flatMap {
+      case Some(data) => successAction(data)
+      case None => Future.successful(BadRequest(""))
+    }
+  }
 }

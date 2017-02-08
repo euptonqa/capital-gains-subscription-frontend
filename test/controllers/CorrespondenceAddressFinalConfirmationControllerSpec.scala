@@ -16,16 +16,65 @@
 
 package controllers
 
-import uk.gov.hmrc.play.test.UnitSpec
+import assets.ControllerTestSpec
+import connectors.KeystoreConnector
+import models.CompanyAddressModel
+import org.mockito.ArgumentMatchers
+import services.SubscriptionService
+import org.mockito.Mockito._
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
 
-class CorrespondenceAddressFinalConfirmationControllerSpec extends UnitSpec {
+import scala.concurrent.Future
+
+class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTestSpec {
 
   "Calling .correspondenceAddressFinalConfirmation" when {
 
   }
 
   "Calling .submitCorrespondenceAddressFinalConfirmation" when {
+    def createMockPostController(companyAddressModel: Option[CompanyAddressModel]) = {
 
+      val mockService = mock[SubscriptionService]
+      val mockKeystoreConnector = mock[KeystoreConnector]
+
+      when(mockKeystoreConnector.fetchAndGetFormData[CompanyAddressModel](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(companyAddressModel))
+
+      new CorrespondenceAddressFinalConfirmationController(mockService, mockKeystoreConnector)
+    }
+
+    "the cgt reference is retrieved correctly" should {
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)))
+      lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
+
+      "have a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "load the cgt confirmation page" in {
+        redirectLocation(result) shouldBe Some(controllers.routes.CGTSubscriptionController.confirmationOfSubscription("CGT123456").url)
+      }
+    }
+
+    "there is no keystore data available" should {
+      lazy val controller = createMockPostController(None)
+      lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
+
+      "have a status of 400" in {
+        status(result) shouldBe 400
+      }
+    }
+
+    "an error occurs during subscription" should {
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)))
+      lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
+
+      "have a status of 500" in {
+        status(result) shouldBe 500
+      }
+    }
   }
 
 }
