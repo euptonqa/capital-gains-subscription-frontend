@@ -32,7 +32,7 @@ import scala.concurrent.Future
 @Singleton
 class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
                                                      correspondenceAddressForm: CorrespondenceAddressForm,
-//                                                     keystoreConnector: KeystoreConnector,
+                                                     keystoreConnector: KeystoreConnector,
                                                      val messagesApi: MessagesApi)
   extends FrontendController with I18nSupport {
 
@@ -44,7 +44,7 @@ class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
   val submitCorrespondenceAddress: Action[AnyContent] = Action.async { implicit request =>
 
     def successAction(correspondenceAddressModel: CorrespondenceAddressModel): Future[Result] = {
-//      keystoreConnector.saveFormData[CorrespondenceAddressModel](Keys.KeystoreKeys.correspondenceAddressKey, correspondenceAddressModel)
+      keystoreConnector.saveFormData[CorrespondenceAddressModel](Keys.KeystoreKeys.correspondenceAddressKey, correspondenceAddressModel)
       Future.successful(Redirect(routes.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()))
     }
 

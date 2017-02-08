@@ -16,9 +16,8 @@
 
 package controllers
 
-import akka.util.Timeout
 import assets.{ControllerTestSpec, MessageLookup}
-import config.{AppConfig, SubscriptionSessionCache, WSHttp}
+import config.{AppConfig, SubscriptionSessionCache}
 import connectors.KeystoreConnector
 import forms.CorrespondenceAddressForm
 import org.jsoup.Jsoup
@@ -28,13 +27,13 @@ import uk.gov.hmrc.play.config.ServicesConfig
 
 class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
 
-//  def createMockKeystoreConnector: KeystoreConnector = {
-//    lazy val config: AppConfig = mock[AppConfig]
-//    lazy val servicesConfig: ServicesConfig = mock[ServicesConfig]
-//    lazy val subscriptionSessionCache: SubscriptionSessionCache = mock[SubscriptionSessionCache]
-//
-//    new KeystoreConnector(config, subscriptionSessionCache, servicesConfig)
-//  }
+  def createMockKeystoreConnector: KeystoreConnector = {
+    lazy val config: AppConfig = mock[AppConfig]
+    lazy val servicesConfig: ServicesConfig = mock[ServicesConfig]
+    lazy val subscriptionSessionCache: SubscriptionSessionCache = mock[SubscriptionSessionCache]
+
+    new KeystoreConnector(config, subscriptionSessionCache)
+  }
 
   "Calling .enterCorrespondenceAddress" when {
 
@@ -42,8 +41,8 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
     "using correct authorisation" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
-//      lazy val keystoreConnector = createMockKeystoreConnector
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, /*keystoreConnector,*/ messagesApi)
+      lazy val keystoreConnector = createMockKeystoreConnector
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, messagesApi)
       lazy val result = controller.enterCorrespondenceAddress(fakeRequest)
       lazy val document = Jsoup.parse(bodyOf(result))
 
@@ -64,8 +63,8 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
       val fakeRequest = FakeRequest("POST", "/")
         .withFormUrlEncodedBody()
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
-//      lazy val keystoreConnector = createMockKeystoreConnector
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, /*keystoreConnector,*/ messagesApi)
+            lazy val keystoreConnector = createMockKeystoreConnector
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, messagesApi)
       lazy val result = controller.submitCorrespondenceAddress(fakeRequest)
       lazy val document = Jsoup.parse(bodyOf(result))
 
@@ -83,8 +82,8 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
         .withFormUrlEncodedBody("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "Fake City",
           "addressLineFour" -> "Fake County", "country" -> "Fakeland", "postcode" -> "XX22 1XX")
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
-//      lazy val keystoreConnector = createMockKeystoreConnector
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, /*keystoreConnector,*/ messagesApi)
+            lazy val keystoreConnector = createMockKeystoreConnector
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, messagesApi)
       lazy val result = controller.submitCorrespondenceAddress(fakeRequest)
 
       "return a status of 303" in {

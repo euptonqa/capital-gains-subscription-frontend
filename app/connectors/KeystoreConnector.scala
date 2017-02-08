@@ -28,8 +28,8 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 @Singleton
-class KeystoreConnector @Inject()(appConfig: AppConfig, subscriptionSessionCache: SubscriptionSessionCache,
-                                  servicesConfig: ServicesConfig) extends ServicesConfig {
+class KeystoreConnector @Inject()(appConfig: AppConfig, subscriptionSessionCache: SubscriptionSessionCache) extends ServicesConfig {
+
   lazy val sessionCache: SubscriptionSessionCache = subscriptionSessionCache
   lazy val http = WSHttp
   lazy val serviceUrl: String = baseUrl("capital-gains-subscription")
