@@ -32,6 +32,7 @@ trait AppConfig {
   val twoFactorUrl: String
   val governmentGateway: String
   val individualResident: String
+  val individualNonResident: String
   val individualBadAffinity: String
   val subscription: String
 }
@@ -55,6 +56,7 @@ class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfi
   override lazy val twoFactorUrl: String = configuration.getString(s"two-factor.host").getOrElse("")
   override lazy val governmentGateway: String = configuration.getString(s"government-gateway-sign-in.host").getOrElse("")
   override lazy val individualResident: String = configuration.getString(s"resident-individual-sign-in.url").getOrElse("")
+  override lazy val individualNonResident: String = configuration.getString(s"non-resident-individual-sign-in.url").getOrElse("")
   override lazy val individualBadAffinity: String = configuration.getString(s"resident-individual-bad-affinity.url").getOrElse("")
   override lazy val subscription: String = configuration.getString(s"subscription.url").getOrElse("")
 }

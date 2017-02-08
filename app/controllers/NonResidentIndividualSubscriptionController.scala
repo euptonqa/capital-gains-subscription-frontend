@@ -63,7 +63,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
     }
 
     for {
-      enrol <- subscriptionService.getSubscriptionResponse(nino)(hc)
+      enrol <- subscriptionService.getSubscriptionNonResidentNinoResponse(nino)(hc)
       route <- subscribeResultRoute(enrol)
     } yield route
   }

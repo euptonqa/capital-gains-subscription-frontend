@@ -30,7 +30,11 @@ class SubscriptionService @Inject()(connector: SubscriptionConnector) {
     connector.getSubscriptionResponse(nino)
   }
 
-  def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+  def getSubscriptionNonResidentNinoResponse(nino:String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    connector.getSubscriptionNonResidentNinoResponse(nino)
+  }
+
+  def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     connector.getSubscriptionResponseGhost(userFacts)
   }
 }
