@@ -73,4 +73,8 @@ object TestUserBuilder {
     AuthContext.apply(Authority("testUserId", Accounts(), None, None,
       CredentialStrength.Weak, ConfidenceLevel.L50, None, None, None, ""))
   }
+
+  val visibilityPredicateCompanyUserFail: AuthContext = {
+    AuthContext.apply(Authority("testUserId", Accounts(), None, None, CredentialStrength.None, ConfidenceLevel.L0, None, Some("testEnrolmentUri"), None, ""))
+  }
 }
