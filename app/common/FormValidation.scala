@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package models
+package common
 
-import play.api.libs.json.{Json, OFormat}
+object FormValidation {
 
-case class CompanySubmissionModel(
-                                   sap: Option[String],
-                                   contactAddress: Option[CompanyAddressModel],
-                                   registeredAddress: Option[CompanyAddressModel]
-                                 )
+  val nonEmptyCheck: String => Boolean = input => !input.isEmpty
 
-object CompanySubmissionModel {
-  implicit val formats: OFormat[CompanySubmissionModel] = Json.format[CompanySubmissionModel]
+  val textToOptional: String => Option[String] = input =>
+    if (input.isEmpty) None
+    else Some(input)
+
+  val optionalToText: Option[String] => String = {
+    case Some(data) => data
+    case _ => ""
+  }
+
 }
-
