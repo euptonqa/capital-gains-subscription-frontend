@@ -55,7 +55,7 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
       def action(cgtRef: Try[String]) = {
         cgtRef match {
           case Success(ref) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(ref)))
-          case Failure(error) => Future.successful(InternalServerError(Json.toJson("Bad cgt ref" + error.getMessage)))
+          case Failure(error) => Future.successful(InternalServerError(Json.toJson(error.getMessage)))
         }
       }
 
