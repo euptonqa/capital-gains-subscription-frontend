@@ -39,7 +39,7 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
 
   def subscribeUser(userFactsModel: UserFactsModel)(implicit hc: HeaderCarrier): Future[Try[String]] = {
     subscriptionService.getSubscriptionResponseGhost(userFactsModel).map[Try[String]] {
-      case Some(data) => Success(data)
+      case Some(data) => Success(data.cgtRef)
       case _ => Failure(new Exception("No data found"))
     }
   }

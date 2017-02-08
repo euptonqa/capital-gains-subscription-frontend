@@ -40,7 +40,9 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
 
   lazy val target = new SubscriptionConnector(mockHttp, config) {
     override lazy val serviceUrl: String = "test"
-    override val subscriptionUrl: String  = "test"
+    override val subscriptionResidentUrl: String  = "test"
+    override val subscriptionNonResidentUrl: String  = "testNR"
+    override val subscriptionNonResidentNinoUrl: String  = "testNRWithNino"
   }
 
   lazy val mockHttp = mock[WSHttp]
@@ -76,7 +78,38 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
     }
   }
 
-  "SubscriptionConnecter .getSubscriptionResponseGhost with a valid request" should {
+  "SubscriptionConnector .getSubscriptionNonResidentNinoResponse with a valid request" should {
+
+    val dummyRef = "CGT-2122"
+
+    when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(dummyRef)))))
+
+    val result = await(target.getSubscriptionNonResidentNinoResponse("fakeNino")(hc))
+    "return a valid SubscriptionReference" in {
+      result.get shouldBe a[String]
+    }
+
+    s"return a SubscriptionReference containing the reference $dummyRef" in {
+      result.get shouldBe dummyRef
+    }
+  }
+
+  "SubscriptionConnector .getSubscriptionNonResidentNinoResponse with an invalid request" should {
+
+    when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.toJson("invalid:n")))))
+
+    val result = await(target.getSubscriptionNonResidentNinoResponse("fakeNino")(hc))
+
+    "return None" in {
+      result shouldBe None
+    }
+  }
+
+  "SubscriptionConnector .getSubscriptionResponseGhost with a valid request" should {
     val dummyRef = "CGT-2134"
 
     val model = UserFactsModel("john", "smith", "addressLineOne",
@@ -84,16 +117,16 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
 
     when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
-      thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse(dummyRef)))))
+      thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(dummyRef)))))
 
     val result = await(target.getSubscriptionResponseGhost(model))
 
     "return a valid SubscriptionReference" in {
-      result.get shouldBe a[SubscriptionReference]
+      result.get shouldBe a[String]
     }
 
     s"return a SubscriptionReference containing the reference $dummyRef" in {
-      result.get.cgtRef shouldBe dummyRef
+      result.get shouldBe dummyRef
     }
   }
 

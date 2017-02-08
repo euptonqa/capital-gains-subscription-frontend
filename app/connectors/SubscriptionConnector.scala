@@ -35,37 +35,37 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
   val subscriptionNonResidentUrl: String = "subscribe/non-resident/individual"
   val subscriptionNonResidentNinoUrl: String = "subscribe/non-resident/individual-nino"
 
-  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
     val postUrl = s"""$serviceUrl/$subscriptionResidentUrl/?nino=$nino"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson("")).map {
       response =>
         response.status match {
           case OK =>
-            Some(response.json.as[String])
+            Some(response.json.as[SubscriptionReference])
           case _ => None
         }
     }
   }
 
-  def getSubscriptionNonResidentNinoResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def getSubscriptionNonResidentNinoResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
     val postUrl =s"""$serviceUrl/$subscriptionNonResidentNinoUrl/?nino=$nino"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson("")).map{
       response =>
         response.status match {
           case OK =>
-            Some(response.json.as[String])
+            Some(response.json.as[SubscriptionReference])
           case _ => None
         }
     }
   }
 
-  def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
     val postUrl =s"""$serviceUrl/$subscriptionNonResidentUrl/"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(userFacts)).map{
       response =>
         response.status match {
           case OK =>
-            Some(response.json.as[String])
+            Some(response.json.as[SubscriptionReference])
           case _ => None
         }
     }
