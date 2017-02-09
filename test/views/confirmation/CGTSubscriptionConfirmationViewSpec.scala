@@ -147,8 +147,8 @@ class CGTSubscriptionConfirmationViewSpec extends UnitSpec with WithFakeApplicat
 
       lazy val form = doc.select("form")
 
-      "have the action /capital-gains-tax/subscription/resident/individual/confirmation" in {
-        form.attr("action") shouldEqual "/capital-gains-tax/subscription/resident/individual/confirmation"
+      "have the action /capital-gains-tax/subscription/individual/confirmation" in {
+        form.attr("action") shouldEqual "/capital-gains-tax/subscription/individual/confirmation"
       }
 
       "have the action type POST" in {

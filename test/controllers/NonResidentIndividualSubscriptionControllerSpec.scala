@@ -81,7 +81,10 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
     val mockConnector = mock[SubscriptionConnector]
 
     when(mockConnector.getSubscriptionResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
-      .thenReturn(Future.successful(response))
+      .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
+
+    when(mockConnector.getSubscriptionNonResidentNinoResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
 
     when(mockConnector.getSubscriptionResponseGhost(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(response.map(SubscriptionReference(_))))

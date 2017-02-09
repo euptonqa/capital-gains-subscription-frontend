@@ -66,7 +66,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   }
 
   private val createAuthorisedNonResidentIndividualAction: AuthenticatedIndividualAction => Action[AnyContent] = {
-    val postSignInRedirectUrl: String = "" //TODO set to controller action for non-resident individuals in config
+    val postSignInRedirectUrl: String = applicationConfig.individualResident //TODO set to controller action for non-resident individuals in config
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
       override def authenticationType: AuthenticationProvider = ggProvider
