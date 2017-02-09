@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.config.ServicesConfig
 
-trait AppConfig {
+trait AppConfig extends ServicesConfig {
   val assetsPrefix: String
   val analyticsToken: String
   val analyticsHost: String
@@ -38,7 +38,7 @@ trait AppConfig {
 }
 
 @Singleton
-class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfig with ServicesConfig {
+class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 

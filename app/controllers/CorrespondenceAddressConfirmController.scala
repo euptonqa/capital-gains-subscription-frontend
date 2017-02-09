@@ -16,11 +16,23 @@
 
 package controllers
 
+import com.google.inject.{Inject, Singleton}
+import config.AppConfig
+import connectors.KeystoreConnector
+import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-class CorrespondenceAddressConfirmController extends FrontendController {
+import scala.concurrent.Future
 
-  val correspondenceAddressConfirm = TODO
+@Singleton
+class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig, keystoreConnector: KeystoreConnector) extends FrontendController {
+
+  val correspondenceAddressConfirm = Action.async { implicit request =>
+    keystoreConnector.fetchAndGetBusinessData().flatMap { data =>
+      println(s"#############$data####################")
+      Future.successful(Ok(""))
+    }
+  }
 
   val submitCorrespondenceAddressConfirm = TODO
 

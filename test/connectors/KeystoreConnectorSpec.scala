@@ -19,8 +19,9 @@ package connectors
 import java.util.UUID
 
 import assets.ControllerTestSpec
-import config.{AppConfig, SubscriptionSessionCache, WSHttp}
-import uk.gov.hmrc.http.cache.client.{CacheMap}
+import config.{AppConfig, BusinessCustomerSessionCache, SubscriptionSessionCache, WSHttp}
+import models.ReviewDetails
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.SessionId
 import org.mockito.ArgumentMatchers
@@ -35,18 +36,18 @@ class KeystoreConnectorSpec extends ControllerTestSpec {
   lazy val sessionId = UUID.randomUUID.toString
   lazy val http = mock[WSHttp]
   lazy val config = mock[AppConfig]
-  lazy val servicesConfig = mock[ServicesConfig]
   lazy val subscriptionSessionCache = mock[SubscriptionSessionCache]
+  lazy val businessCustomerSessionCache = mock[BusinessCustomerSessionCache]
 
   lazy implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 
-  lazy val target = new KeystoreConnector(config, subscriptionSessionCache, servicesConfig)
+  lazy val target = new KeystoreConnector(config, subscriptionSessionCache, businessCustomerSessionCache)
 
   "KeystoreConnector .fetchFormData" should {
 
     val testData = Some("hello")
 
-    when(subscriptionSessionCache.fetchAndGetEntry[String](ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(subscriptionSessionCache.fetchAndGetEntry[String](ArgumentMatchers.eq("String"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(testData))
 
     "should be able to retrieve a String" in {
@@ -69,4 +70,17 @@ class KeystoreConnectorSpec extends ControllerTestSpec {
     }
   }
 
+  "KeystoreConnector .fetchAndGetBusinessData" should {
+
+    val testData = Some(mock[ReviewDetails])
+
+    when(businessCustomerSessionCache.fetchAndGetEntry[ReviewDetails](ArgumentMatchers.eq("BC_Business_Details"))(ArgumentMatchers.any(),
+      ArgumentMatchers.any()))
+      .thenReturn(Future.successful(testData))
+
+    "should be able to retrieve a model" in {
+      lazy val result = target.fetchAndGetBusinessData()
+      await(result) shouldBe testData
+    }
+  }
 }
