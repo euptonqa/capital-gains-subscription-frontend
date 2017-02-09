@@ -84,7 +84,7 @@ class RegisterCompanyControllerSpec extends ControllerTestSpec {
         status(result) shouldBe 303
       }
 
-      "redirect to the business customer frontend" in {
+      "redirect to the test route" in {
         redirectLocation(result).get.toString shouldBe "just-a-test"
       }
     }
