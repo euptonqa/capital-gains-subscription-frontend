@@ -30,6 +30,9 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
 
   val correspondenceAddressFinalConfirmation = Action.async {
     implicit request =>
+      //TODO: Obtain from keystore
+      //TODO: Pass in businessFrontendDetails
+      //TODO: Error handling
       val registeredModel = Some(CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None))
       val contactModel = Some(CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None))
       Future.successful(Ok(views.html.reviewBusinessDetails(appConfig, registeredModel, contactModel)))
