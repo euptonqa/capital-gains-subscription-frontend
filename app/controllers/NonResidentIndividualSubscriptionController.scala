@@ -58,14 +58,9 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
 
   def subscribeAndEnrolWithNino(nino: String)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
 
-    def subscribeResultRoute(subscriptionRef: Option[SubscriptionReference]) = subscriptionRef match {
-      case Some(data) => Future.successful(Redirect(routes.CGTSubscriptionController.confirmationOfSubscription(data.cgtRef)))
-      case None => Future.successful(InternalServerError("DES responded with no subscription reference."))
+   subscriptionService.getSubscriptionNonResidentNinoResponse(nino)(hc).map {
+      case Some(result) => Redirect(routes.CGTSubscriptionController.confirmationOfSubscription(result.cgtRef))
+      case None => InternalServerError("DES responded with no subscription reference.")
     }
-
-    for {
-      enrol <- subscriptionService.getSubscriptionNonResidentNinoResponse(nino)(hc)
-      route <- subscribeResultRoute(enrol)
-    } yield route
   }
 }
