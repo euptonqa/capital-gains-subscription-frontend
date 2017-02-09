@@ -18,6 +18,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import auth.AuthorisedActions
 import common.Keys
 import config.AppConfig
 import connectors.KeystoreConnector
@@ -33,23 +34,28 @@ import scala.concurrent.Future
 class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
                                                      correspondenceAddressForm: CorrespondenceAddressForm,
                                                      keystoreConnector: KeystoreConnector,
+                                                     authorisedActions: AuthorisedActions,
                                                      val messagesApi: MessagesApi)
   extends FrontendController with I18nSupport {
 
   //TODO: Replace this action with the authorised for action after it has been built
-  val enterCorrespondenceAddress: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(views.html.address.enterCorrespondenceAddress(appConfig, correspondenceAddressForm.correspondenceAddressForm)))
+  val enterCorrespondenceAddress: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
+    implicit user =>
+      implicit request =>
+        Future.successful(Ok(views.html.address.enterCorrespondenceAddress(appConfig, correspondenceAddressForm.correspondenceAddressForm)))
   }
 
-  val submitCorrespondenceAddress: Action[AnyContent] = Action.async { implicit request =>
+  val submitCorrespondenceAddress: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
+    implicit user =>
+      implicit request =>
 
-    def successAction(correspondenceAddressModel: CorrespondenceAddressModel): Future[Result] = {
-      keystoreConnector.saveFormData[CorrespondenceAddressModel](Keys.KeystoreKeys.correspondenceAddressKey, correspondenceAddressModel)
-      Future.successful(Redirect(routes.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()))
-    }
+        def successAction(correspondenceAddressModel: CorrespondenceAddressModel): Future[Result] = {
+          keystoreConnector.saveFormData[CorrespondenceAddressModel](Keys.KeystoreKeys.correspondenceAddressKey, correspondenceAddressModel)
+          Future.successful(Redirect(routes.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()))
+        }
 
-    correspondenceAddressForm.correspondenceAddressForm.bindFromRequest.fold(errors =>
-      Future.successful(BadRequest(views.html.address.enterCorrespondenceAddress(appConfig, errors))),
-      successAction)
+        correspondenceAddressForm.correspondenceAddressForm.bindFromRequest.fold(errors =>
+          Future.successful(BadRequest(views.html.address.enterCorrespondenceAddress(appConfig, errors))),
+          successAction)
   }
 }

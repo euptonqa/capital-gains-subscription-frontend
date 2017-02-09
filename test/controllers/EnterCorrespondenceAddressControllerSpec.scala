@@ -17,19 +17,50 @@
 package controllers
 
 import assets.{ControllerTestSpec, MessageLookup}
+import auth.{AuthorisedActions, CgtNROrganisation}
+import builders.TestUserBuilder
 import config.{AppConfig, SubscriptionSessionCache}
 import connectors.KeystoreConnector
 import forms.CorrespondenceAddressForm
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.config.ServicesConfig
+import types.AuthenticatedNROrganisationAction
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
 
+  val testOnlyUnauthorisedLoginUri = "just-a-test"
+
+  def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.strongUserAuthContext): AuthorisedActions = {
+
+    val mockActions = mock[AuthorisedActions]
+
+    if (valid) {
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+        .thenAnswer(new Answer[Action[AnyContent]] {
+
+          override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
+            val action = invocation.getArgument[AuthenticatedNROrganisationAction](0)
+            val organisation = CgtNROrganisation(authContext)
+            Action.async(action(organisation))
+          }
+        })
+    }
+    else {
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+        .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
+    }
+    mockActions
+  }
+
   def createMockKeystoreConnector: KeystoreConnector = {
     lazy val config: AppConfig = mock[AppConfig]
-    lazy val servicesConfig: ServicesConfig = mock[ServicesConfig]
     lazy val subscriptionSessionCache: SubscriptionSessionCache = mock[SubscriptionSessionCache]
 
     new KeystoreConnector(config, subscriptionSessionCache)
@@ -37,12 +68,12 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
 
   "Calling .enterCorrespondenceAddress" when {
 
-    //TODO: This is just in preparation for the update once the action has been created.
     "using correct authorisation" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
       lazy val keystoreConnector = createMockKeystoreConnector
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, messagesApi)
+      lazy val action = createMockActions(valid = true)
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
       lazy val result = controller.enterCorrespondenceAddress(fakeRequest)
       lazy val document = Jsoup.parse(bodyOf(result))
 
@@ -54,17 +85,35 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
         document.title() shouldBe MessageLookup.EnterCorrespondenceAddress.title
       }
     }
+
+    "using incorrect authorisation" should {
+      val fakeRequest = FakeRequest("GET", "/")
+      lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
+      lazy val keystoreConnector = createMockKeystoreConnector
+      lazy val action = createMockActions()
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
+      lazy val result = controller.enterCorrespondenceAddress(fakeRequest)
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the test uri" in {
+        redirectLocation(result).get.toString shouldBe "just-a-test"
+      }
+    }
   }
 
   "Calling .submitCorrespondenceAddress" when {
 
-    "with an invalid form" should {
+    "authorised but with an invalid form" should {
 
       val fakeRequest = FakeRequest("POST", "/")
         .withFormUrlEncodedBody()
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
-            lazy val keystoreConnector = createMockKeystoreConnector
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, messagesApi)
+      lazy val keystoreConnector = createMockKeystoreConnector
+      lazy val action = createMockActions(valid = true)
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
       lazy val result = controller.submitCorrespondenceAddress(fakeRequest)
       lazy val document = Jsoup.parse(bodyOf(result))
 
@@ -76,14 +125,16 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
         document.title() shouldBe MessageLookup.EnterCorrespondenceAddress.title
       }
     }
-    "with a valid form" should {
+
+    "authorised with a valid form" should {
 
       val fakeRequest = FakeRequest("POST", "/")
         .withFormUrlEncodedBody("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "Fake City",
           "addressLineFour" -> "Fake County", "country" -> "Fakeland", "postcode" -> "XX22 1XX")
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
-            lazy val keystoreConnector = createMockKeystoreConnector
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, messagesApi)
+      lazy val keystoreConnector = createMockKeystoreConnector
+      lazy val action = createMockActions(valid = true)
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
       lazy val result = controller.submitCorrespondenceAddress(fakeRequest)
 
       "return a status of 303" in {
@@ -92,6 +143,25 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
 
       "redirect to the confirm correspondence address details page" in {
         redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/company/correspondence-address-confirm")
+      }
+    }
+
+    "un-authorised" should {
+
+      val fakeRequest = FakeRequest("POST", "/")
+        .withFormUrlEncodedBody()
+      lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
+      lazy val keystoreConnector = createMockKeystoreConnector
+      lazy val action = createMockActions()
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
+      lazy val result = controller.submitCorrespondenceAddress(fakeRequest)
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the test uri" in {
+        redirectLocation(result).get.toString shouldBe "just-a-test"
       }
     }
   }
