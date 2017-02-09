@@ -3,17 +3,24 @@
 
 @(appConfig: config.AppConfig, yesNoForm: Form[YesNoModel], companyAddress: CompanyAddressModel)(implicit request: Request[_], messages: Messages)
 
+
+@listItem(input: Option[String])={
+    @if(input.isDefined){
+        <li>@input.get</li>
+    }
+}
+
 @views.html.main_template(title = Messages("useRegisteredAddress.title"), bodyClasses = None, appConfig = appConfig) {
 
     <h1 class="heading-xlarge">@Messages("useRegisteredAddress.title")</h1>
 
     <ul>
-        <li>@companyAddress.addressLine1.getOrElse("")</li>
-        <li>@companyAddress.addressLine2.getOrElse("")</li>
-        <li>@companyAddress.addressLine3.getOrElse("")</li>
-        <li>@companyAddress.addressLine4.getOrElse("")</li>
-        <li>@companyAddress.postCode.getOrElse("")</li>
-        <li>@companyAddress.country.getOrElse("")</li>
+        @listItem(companyAddress.addressLine1)
+        @listItem(companyAddress.addressLine2)
+        @listItem(companyAddress.addressLine3)
+        @listItem(companyAddress.addressLine4)
+        @listItem(companyAddress.postCode)
+        @listItem(companyAddress.country)
     </ul>
 
     @form(action = controllers.routes.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm) {
