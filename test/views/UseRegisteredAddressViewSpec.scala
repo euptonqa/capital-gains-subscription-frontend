@@ -169,4 +169,19 @@ class UseRegisteredAddressViewSpec extends ViewTestSpec {
       }
     }
   }
+
+  "The useRegisteredAddress view with no optional data" should {
+    lazy val form = new YesNoForm(messagesApi)
+    val addressModel = CompanyAddressModel(None, None, None, None, None, None)
+    lazy val view = useRegisteredAddress(appConfig, form.yesNoForm, addressModel)
+    lazy val doc = Jsoup.parse(view.body)
+
+    "contain a list" which {
+      lazy val list = doc.select("main ul")
+
+      "has no elements" in {
+        list.select("li").size() shouldBe 0
+      }
+    }
+  }
 }
