@@ -45,23 +45,6 @@ class AuthorisationServiceSpec extends UnitSpec with MockitoSugar {
     new AuthorisationService(mockConnector)
   }
 
-  "Calling AuthorisationService .getAuthData" should {
-
-    "return an AuthDataModel with a valid request" in {
-      val service = mockedService(Some(AuthorisationDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", Accounts())))
-      val result = service.getAuthDataModel
-
-      await(result) shouldBe Some(AuthorisationDataModel(CredentialStrength.Strong, "", ConfidenceLevel.L200, "", Accounts()))
-    }
-
-    "return a None with an invalid request" in {
-      val service = mockedService(None)
-      val result = service.getAuthDataModel
-
-      await(result) shouldBe None
-    }
-  }
-
   "Calling .getAffinityGroup" should {
 
     "Return an affinity group when a valid request is sent" in {
