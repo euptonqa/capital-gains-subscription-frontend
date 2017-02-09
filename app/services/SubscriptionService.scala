@@ -19,7 +19,7 @@ package services
 import javax.inject.Inject
 
 import connectors.SubscriptionConnector
-import models.{SubscriptionReference, UserFactsModel}
+import models.{CompanySubmissionModel, SubscriptionReference, UserFactsModel}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -32,5 +32,9 @@ class SubscriptionService @Inject()(connector: SubscriptionConnector) {
 
   def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
     connector.getSubscriptionResponseGhost(userFacts)
+  }
+
+  def getSubscriptionResponseCompany(companySubmissionModel: CompanySubmissionModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+    connector.getSubscriptionResponseCompany(companySubmissionModel)
   }
 }

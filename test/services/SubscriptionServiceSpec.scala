@@ -17,7 +17,7 @@
 package services
 
 import connectors.SubscriptionConnector
-import models.{UserFactsModel, SubscriptionReference}
+import models.{CompanySubmissionModel, SubscriptionReference, UserFactsModel}
 import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito.when
@@ -37,6 +37,9 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
       .thenReturn(Future.successful(response))
 
     when(mockConnector.getSubscriptionResponseGhost(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
+
+    when(mockConnector.getSubscriptionResponseCompany(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
 
     new SubscriptionService(mockConnector)
@@ -79,6 +82,30 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
       val service = mockedService(None)
 
       val result = service.getSubscriptionResponseGhost(invalidFullDetailsModel)
+
+      await(result) shouldBe None
+    }
+  }
+
+  "Calling SubscriptionService .getSubscriptionResponseCompany response" should {
+    "return a SubscriptionReference model with a valid request" in {
+
+
+      val model = CompanySubmissionModel(Some("123456789"), None, None)
+      val service = mockedService(Some("CGT-2123"))
+
+      val result = service.getSubscriptionResponseCompany(model)
+
+      await(result) shouldBe Some(SubscriptionReference("CGT-2123"))
+    }
+
+    "return None when called with an invalid request" in {
+
+      val model = CompanySubmissionModel(Some("123456789"), None, None)
+
+      val service = mockedService(None)
+
+      val result = service.getSubscriptionResponseCompany(model)
 
       await(result) shouldBe None
     }
