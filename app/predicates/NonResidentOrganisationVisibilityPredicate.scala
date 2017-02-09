@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import auth.{CgtIndividual, CgtNROrganisation}
-import play.api.mvc.{AnyContent, Request, Result}
+package predicates
 
-import scala.concurrent.Future
+import java.net.URI
 
-package object types {
-  type AuthenticatedIndividualAction = CgtIndividual => Request[AnyContent] => Future[Result]
-  type AuthenticatedNROrganisationAction = CgtNROrganisation => Request[AnyContent] => Future[Result]
+import services.AuthorisationService
+import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, PageVisibilityPredicate}
+
+class NonResidentOrganisationVisibilityPredicate(authorisationService: AuthorisationService)(affinityGroup: String) extends CompositePageVisibilityPredicate {
+
+  override def children: Seq[PageVisibilityPredicate] = Seq (
+    new AffinityGroupOrganisationPredicate(authorisationService)(new URI(affinityGroup))
+  )
 }
