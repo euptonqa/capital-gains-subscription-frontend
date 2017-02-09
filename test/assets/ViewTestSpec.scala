@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package assets
 
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import config.AppConfig
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.inject.Injector
+import uk.gov.hmrc.play.test.UnitSpec
 
-class CorrespondenceAddressConfirmController extends FrontendController {
-
-  val correspondenceAddressConfirm = TODO
-
-  val submitCorrespondenceAddressConfirm = TODO
-
+trait ViewTestSpec extends UnitSpec with OneAppPerSuite with FakeRequestHelper with I18nSupport {
+  lazy val injector: Injector = app.injector
+  lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
+  implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 }

@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-package controllers
+package models
 
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-
-class CorrespondenceAddressConfirmController extends FrontendController {
-
-  val correspondenceAddressConfirm = TODO
-
-  val submitCorrespondenceAddressConfirm = TODO
-
-}
+case class YesNoModel (response: Boolean)

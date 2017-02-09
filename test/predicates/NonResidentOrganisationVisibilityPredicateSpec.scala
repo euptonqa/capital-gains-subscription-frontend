@@ -37,9 +37,6 @@ class NonResidentOrganisationVisibilityPredicateSpec extends UnitSpec with Mocki
 
     val mockService = mock[AuthorisationService]
 
-    when(mockService.getAuthDataModel(ArgumentMatchers.any()))
-      .thenReturn(Future.successful(authorisationDataModel))
-
     when(mockService.getAffinityGroup(ArgumentMatchers.any()))
       .thenReturn(Future.successful(Some(affinityGroup)))
 

@@ -60,19 +60,9 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
 
   def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual)(implicit hc: HeaderCarrier): Future[Result] = {
 
-    val nino = user.nino
-    val cgtRefNumber = subscriptionService.getSubscriptionResponse(nino.get)
-
-    def redirectToCGTConfirmationOrError(cgtRef: Option[SubscriptionReference]): Future[Result] = {
-      cgtRef match {
-        case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef)))
-        case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
-      }
+    subscriptionService.getSubscriptionResponse(user.nino.get).map{
+      case Some(response) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(response.cgtRef))
+      case _ => Redirect(controllers.routes.HelloWorld.helloWorld())
     }
-
-    for {
-      cgtRef <- cgtRefNumber
-      test <- redirectToCGTConfirmationOrError(cgtRef)
-    } yield test
   }
 }
