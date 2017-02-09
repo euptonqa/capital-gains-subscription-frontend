@@ -18,8 +18,8 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 
-import config.FrontendAuthConnector.WSHttp
-import config.{AppConfig, SubscriptionSessionCache}
+import config.{AppConfig, BusinessCustomerSessionCache, SubscriptionSessionCache}
+import models.ReviewDetails
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -28,11 +28,9 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 @Singleton
-class KeystoreConnector @Inject()(appConfig: AppConfig, subscriptionSessionCache: SubscriptionSessionCache,
-                                  servicesConfig: ServicesConfig) extends ServicesConfig {
-  lazy val sessionCache = subscriptionSessionCache
-  lazy val http = WSHttp
-  lazy val serviceUrl = baseUrl("capital-gains-subscription")
+class KeystoreConnector @Inject()(appConfig: AppConfig, sessionCache: SubscriptionSessionCache,
+                                  businessCustomerSessionCache: BusinessCustomerSessionCache) extends ServicesConfig {
+  val sourceId: String = "BC_Business_Details"
 
   implicit val hc: HeaderCarrier = HeaderCarrier().withExtraHeaders("Accept" -> "applications/vnd.hmrc.1.0+json")
 
@@ -42,5 +40,9 @@ class KeystoreConnector @Inject()(appConfig: AppConfig, subscriptionSessionCache
 
   def fetchAndGetFormData[T](key: String)(implicit hc: HeaderCarrier, formats: Format[T]): Future[Option[T]] = {
     sessionCache.fetchAndGetEntry(key)
+  }
+
+  def fetchAndGetBusinessData()(implicit hc: HeaderCarrier): Future[Option[ReviewDetails]] = {
+    businessCustomerSessionCache.fetchAndGetEntry[ReviewDetails](sourceId)
   }
 }

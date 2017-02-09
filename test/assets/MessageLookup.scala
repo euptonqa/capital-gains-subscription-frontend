@@ -59,6 +59,11 @@ object MessageLookup {
     val country = "Country"
   }
 
+  object UseRegisteredAddress {
+    val title = "Your correspondence address"
+    val question = "Is this your correspondence address?"
+  }
+
   object OrganisationType {
     val title = "What type of organisation are you?"
     val question = "What type of organisation are you?"

@@ -20,6 +20,7 @@ import auth.{AuthorisedActions, CgtIndividual}
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import helpers.EnrolmentToCGTCheck
+import models.SubscriptionReference
 import play.api.mvc._
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -57,14 +58,9 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
 
   def subscribeAndEnrolWithNino(nino: String)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
 
-    def subscribeResultRoute(subscriptionRef: Option[String]) = subscriptionRef match {
-      case Some(data) => Future.successful(Redirect(routes.CGTSubscriptionController.confirmationOfSubscription(data)))
-      case None => Future.successful(InternalServerError("DES responded with no subscription reference."))
+   subscriptionService.getSubscriptionNonResidentNinoResponse(nino)(hc).map {
+      case Some(result) => Redirect(routes.CGTSubscriptionController.confirmationOfSubscription(result.cgtRef))
+      case None => InternalServerError("DES responded with no subscription reference.")
     }
-
-    for {
-      enrol <- subscriptionService.getSubscriptionResponse(nino)(hc)
-      route <- subscribeResultRoute(enrol)
-    } yield route
   }
 }

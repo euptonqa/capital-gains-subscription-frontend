@@ -19,18 +19,26 @@ package services
 import javax.inject.Inject
 
 import connectors.SubscriptionConnector
-import models.{SubscriptionReference, UserFactsModel}
+import models.{CompanySubmissionModel, SubscriptionReference, UserFactsModel}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 class SubscriptionService @Inject()(connector: SubscriptionConnector) {
 
-  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
     connector.getSubscriptionResponse(nino)
+  }
+
+  def getSubscriptionNonResidentNinoResponse(nino:String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+    connector.getSubscriptionNonResidentNinoResponse(nino)
   }
 
   def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
     connector.getSubscriptionResponseGhost(userFacts)
+  }
+
+  def getSubscriptionResponseCompany(companySubmissionModel: CompanySubmissionModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+    connector.getSubscriptionResponseCompany(companySubmissionModel)
   }
 }

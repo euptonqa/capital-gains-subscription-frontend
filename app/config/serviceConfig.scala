@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.config.ServicesConfig
 
-trait AppConfig {
+trait AppConfig extends ServicesConfig {
   val assetsPrefix: String
   val analyticsToken: String
   val analyticsHost: String
@@ -32,12 +32,13 @@ trait AppConfig {
   val twoFactorUrl: String
   val governmentGateway: String
   val individualResident: String
+  val individualNonResident: String
   val individualBadAffinity: String
   val subscription: String
 }
 
 @Singleton
-class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfig with ServicesConfig {
+class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 
@@ -55,6 +56,7 @@ class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfi
   override lazy val twoFactorUrl: String = configuration.getString(s"two-factor.host").getOrElse("")
   override lazy val governmentGateway: String = configuration.getString(s"government-gateway-sign-in.host").getOrElse("")
   override lazy val individualResident: String = configuration.getString(s"resident-individual-sign-in.url").getOrElse("")
+  override lazy val individualNonResident: String = configuration.getString(s"non-resident-individual-sign-in.url").getOrElse("")
   override lazy val individualBadAffinity: String = configuration.getString(s"resident-individual-bad-affinity.url").getOrElse("")
   override lazy val subscription: String = configuration.getString(s"subscription.url").getOrElse("")
 }

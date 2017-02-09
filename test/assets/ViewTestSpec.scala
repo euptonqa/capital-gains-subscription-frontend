@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import auth.{CgtIndividual, CgtNROrganisation}
-import play.api.mvc.{AnyContent, Request, Result}
+package assets
 
-import scala.concurrent.Future
+import config.AppConfig
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.inject.Injector
+import uk.gov.hmrc.play.test.UnitSpec
 
-package object types {
-  type AuthenticatedIndividualAction = CgtIndividual => Request[AnyContent] => Future[Result]
-  type AuthenticatedNROrganisationAction = CgtNROrganisation => Request[AnyContent] => Future[Result]
+trait ViewTestSpec extends UnitSpec with OneAppPerSuite with FakeRequestHelper with I18nSupport {
+  lazy val injector: Injector = app.injector
+  lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
+  implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 }

@@ -22,7 +22,6 @@ import assets.MessageLookup.Common
 import config.AppConfig
 import forms.UserFactsForm
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
@@ -34,20 +33,6 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
   lazy val injector: Injector = app.injector
   lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
   implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
-
-  def inputStyleCheck(element: Element, label: String) = {
-    "has a type of text" in {
-      element.attr("type") shouldBe "text"
-    }
-
-    "has a class of form-group input" in {
-      element.attr("class") shouldBe "form-group input"
-    }
-
-    s"has the text '$label'" in {
-      element.text() shouldBe label
-    }
-  }
 
   "The User Details view" should {
     lazy val form = new UserFactsForm(messagesApi)

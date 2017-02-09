@@ -20,8 +20,10 @@ import javax.inject.Singleton
 
 import auth.{AuthorisedActions, CgtIndividual}
 import javax.inject.Inject
+
 import config.AppConfig
 import helpers.EnrolmentToCGTCheck
+import models.SubscriptionReference
 import play.api.mvc.{Action, AnyContent, Result}
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -58,19 +60,9 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
 
   def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual)(implicit hc: HeaderCarrier): Future[Result] = {
 
-    val nino = user.nino
-    val cgtRefNumber = subscriptionService.getSubscriptionResponse(nino.get)
-
-    def redirectToCGTConfirmationOrError(cgtRef: Option[String]): Future[Result] = {
-      cgtRef match {
-        case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x)))
-        case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
-      }
+    subscriptionService.getSubscriptionResponse(user.nino.get).map{
+      case Some(response) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(response.cgtRef))
+      case _ => Redirect(controllers.routes.HelloWorld.helloWorld())
     }
-
-    for {
-      cgtRef <- cgtRefNumber
-      test <- redirectToCGTConfirmationOrError(cgtRef)
-    } yield test
   }
 }
