@@ -1,0 +1,42 @@
+@import models.{YesNoModel, CompanyAddressModel}
+@import uk.gov.hmrc.play.views.html.helpers.{form, inputRadioGroup}
+
+@(appConfig: config.AppConfig, yesNoForm: Form[YesNoModel], companyAddress: CompanyAddressModel)(implicit request: Request[_], messages: Messages)
+
+
+@listItem(input: Option[String])={
+    @if(input.isDefined){
+        <li>@input.get</li>
+    }
+}
+
+@views.html.main_template(title = Messages("useRegisteredAddress.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <h1 class="heading-xlarge">@Messages("useRegisteredAddress.title")</h1>
+
+    <ul>
+        @listItem(companyAddress.addressLine1)
+        @listItem(companyAddress.addressLine2)
+        @listItem(companyAddress.addressLine3)
+        @listItem(companyAddress.addressLine4)
+        @listItem(companyAddress.postCode)
+        @listItem(companyAddress.country)
+    </ul>
+
+    @form(action = controllers.routes.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm) {
+
+        @inputRadioGroup(
+            yesNoForm("response"),
+            Seq(
+            "Yes" -> Messages("common.yes"),
+            "No" -> Messages("common.no")),
+            '_legend -> Messages("useRegisteredAddress.question"),
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_legendClass -> "heading-small",
+            '_groupClass -> "inline form-group radio-list"
+        )
+
+        <button class="button" type="submit" id="continue-button">@Messages("common.continue")</button>
+    }
+}
