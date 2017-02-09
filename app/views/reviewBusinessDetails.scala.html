@@ -1,7 +1,7 @@
 @import models.CompanySubmissionModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 
-@(appConfig: config.AppConfig, companySubmissionModel: CompanySubmissionModel)(implicit request: Request [_], messages: Messages)
+@(appConfig: config.AppConfig, registeredAddress: Option[CompanyAddressModel], contactAddress: Option[CompanyAddressModel])(implicit request: Request [_], messages: Messages)
 
 @insertAddress(addressTypeName: String, companyAddressModel: CompanyAddressModel, redirect: Option[String]) = {
     <tr>
@@ -46,28 +46,28 @@
             <div class="form-group">
                 <table>
                     <tbody>
-                    <tr>
-                        <th style="width:60%">@Messages("reviewBusinessDetails.colHeading")</th>
-                        <td>???</td>
-                        <!--TODO: UPDATE COMPANY NAME-->
-                        <td></td>
-                    </tr>
-                    @if(companySubmissionModel.registeredAddress.isDefined){
-                        @insertAddress(Messages("reviewBusinessDetails.registeredAddress"),
-                        companySubmissionModel.registeredAddress.get, None)
-                    }
-                    @if(companySubmissionModel.contactAddress.isDefined){
-                        @insertAddress(Messages("reviewBusinessDetails.correspondenceAddress"),
-                        companySubmissionModel.contactAddress.get, Some("google.com"))
-                        <!--TODO: UPDATE REDIRECT URL!-->
-                    }
-                    <tr>
-                        <th style="vertical-align: top">@Messages("reviewBusinessDetails.contactDetails")</th>
-                        <td>Blah blah blah
-                        </td>
-                        <td><a href="google.com">Edit</a></td>
-                        <!--TODO:UPDATE REDIRECT URL!-->
-                    </tr>
+                        <tr>
+                            <th style="width:60%">@Messages("reviewBusinessDetails.colHeading")</th>
+                            <td>???</td>
+                            <!--TODO: UPDATE COMPANY NAME-->
+                            <td></td>
+                        </tr>
+                        @if(registeredAddress.isDefined){
+                            @insertAddress(Messages("reviewBusinessDetails.registeredAddress"),
+                            registeredAddress.get, None)
+                        }
+                        @if(contactAddress.isDefined){
+                            @insertAddress(Messages("reviewBusinessDetails.correspondenceAddress"),
+                            contactAddress.get, Some("google.com"))
+                            <!--TODO: UPDATE REDIRECT URL!-->
+                        }
+                        <tr>
+                            <th style="vertical-align: top">@Messages("reviewBusinessDetails.contactDetails")</th>
+                            <td>Blah blah blah
+                            </td>
+                            <td><a href="google.com">Edit</a></td>
+                            <!--TODO:UPDATE REDIRECT URL!-->
+                        </tr>
                     </tbody>
                 </table>
             </div>

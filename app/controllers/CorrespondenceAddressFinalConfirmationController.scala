@@ -30,10 +30,9 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
 
   val correspondenceAddressFinalConfirmation = Action.async {
     implicit request =>
-      val registeredModel = CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None)
-      val contactModel = CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None)
-      val submissionModel = CompanySubmissionModel(Some("SAP"), Some(contactModel), Some(registeredModel))
-      Future.successful(Ok(views.html.reviewBusinessDetails(appConfig, submissionModel)))
+      val registeredModel = Some(CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None))
+      val contactModel = Some(CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None))
+      Future.successful(Ok(views.html.reviewBusinessDetails(appConfig, registeredModel, contactModel)))
   }
 
   val submitCorrespondenceAddressFinalConfirmation = TODO
