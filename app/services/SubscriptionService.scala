@@ -26,8 +26,12 @@ import scala.concurrent.Future
 
 class SubscriptionService @Inject()(connector: SubscriptionConnector) {
 
-  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
     connector.getSubscriptionResponse(nino)
+  }
+
+  def getSubscriptionNonResidentNinoResponse(nino:String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+    connector.getSubscriptionNonResidentNinoResponse(nino)
   }
 
   def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {

@@ -44,8 +44,11 @@ class AuthorisationService @Inject()(authConnector: AuthorisationConnector) {
   def getEnrolments(implicit hc: HeaderCarrier): Future[Option[Seq[Enrolment]]] = {
 
     def getData(authData: Option[AuthorisationDataModel]): Future[Option[Seq[Enrolment]]] = {
+
       authData match {
-        case Some(data) => authConnector.getEnrolmentsResponse(data.uri)
+        case Some(data) => {
+          authConnector.getEnrolmentsResponse(data.uri)
+        }
         case _ => Future.successful(None)
       }
     }

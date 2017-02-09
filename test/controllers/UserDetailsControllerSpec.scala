@@ -144,7 +144,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
       }
 
       "display the cgt reference page" in {
-        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/resident/individual/confirmation?cgtReference=CGT123456")
+        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/individual/confirmation?cgtReference=CGT123456")
       }
     }
 

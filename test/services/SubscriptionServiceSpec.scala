@@ -34,7 +34,7 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
     val mockConnector = mock[SubscriptionConnector]
 
     when(mockConnector.getSubscriptionResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
-      .thenReturn(Future.successful(response))
+      .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
 
     when(mockConnector.getSubscriptionResponseGhost(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
@@ -51,7 +51,7 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
 
       val result = service.getSubscriptionResponse("blah")
 
-      await(result) shouldBe Some("CGT-2121")
+      await(result) shouldBe Some(SubscriptionReference("CGT-2121"))
     }
     "return None with an invalid request" in {
       val service = mockedService(None)
