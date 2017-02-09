@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import auth.{CgtIndividual, CgtNROrganisation}
-import play.api.mvc.{AnyContent, Request, Result}
+package exceptions
 
-import scala.concurrent.Future
-
-package object types {
-  type AuthenticatedIndividualAction = CgtIndividual => Request[AnyContent] => Future[Result]
-  type AuthenticatedNROrganisationAction = CgtNROrganisation => Request[AnyContent] => Future[Result]
-}
+case class AuthorisationNotFoundException(string: String) extends Exception(string)

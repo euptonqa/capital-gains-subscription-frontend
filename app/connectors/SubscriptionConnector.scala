@@ -19,12 +19,11 @@ package connectors
 import javax.inject.{Inject, Singleton}
 
 import config.{AppConfig, WSHttp}
-import models.{UserFactsModel, SubscriptionReference}
+import models.{CompanySubmissionModel, SubscriptionReference, UserFactsModel}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
-
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -33,24 +32,51 @@ import scala.concurrent.Future
 class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extends ServicesConfig {
 
   lazy val serviceUrl: String = appConfig.subscription
-  val subscriptionUrl: String = "subscribe/individual"
+  val companyUrl: String = "/subscribe/company"
+  val subscriptionResidentUrl: String = "subscribe/resident/individual"
+  val subscriptionNonResidentUrl: String = "subscribe/non-resident/individual"
+  val subscriptionNonResidentNinoUrl: String = "subscribe/non-resident/individual-nino"
 
-  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    val postUrl = s"""$serviceUrl/$subscriptionUrl/?nino=$nino"""
+  def getSubscriptionResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+    val postUrl = s"""$serviceUrl/$subscriptionResidentUrl/?nino=$nino"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson("")).map {
       response =>
         response.status match {
           case OK =>
-            Some(response.json.as[String])
+            Some(response.json.as[SubscriptionReference])
+          case _ => None
+        }
+    }
+  }
+
+  def getSubscriptionNonResidentNinoResponse(nino: String)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+    val postUrl =s"""$serviceUrl/$subscriptionNonResidentNinoUrl/?nino=$nino"""
+    http.POST[JsValue, HttpResponse](postUrl, Json.toJson("")).map{
+      response =>
+        response.status match {
+          case OK =>
+            Some(response.json.as[SubscriptionReference])
           case _ => None
         }
     }
   }
 
   def getSubscriptionResponseGhost(userFacts: UserFactsModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
-
-    val postUrl =s"""$serviceUrl/$subscriptionUrl/"""
+    val postUrl =s"""$serviceUrl/$subscriptionNonResidentUrl/"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(userFacts)).map{
+      response =>
+        response.status match {
+          case OK =>
+            Some(response.json.as[SubscriptionReference])
+          case _ => None
+        }
+    }
+  }
+
+  def getSubscriptionResponseCompany(companySubmissionModel: CompanySubmissionModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+
+    val postUrl = s"""$serviceUrl/$companyUrl"""
+    http.POST[JsValue, HttpResponse](postUrl, Json.toJson(companySubmissionModel)).map {
       response =>
         response.status match {
           case OK =>

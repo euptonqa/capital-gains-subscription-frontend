@@ -20,8 +20,10 @@ import javax.inject.Singleton
 
 import auth.{AuthorisedActions, CgtIndividual}
 import javax.inject.Inject
+
 import config.AppConfig
 import helpers.EnrolmentToCGTCheck
+import models.SubscriptionReference
 import play.api.mvc.{Action, AnyContent, Result}
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -34,7 +36,8 @@ import scala.concurrent.Future
 class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
                                                          appConfig: AppConfig,
                                                          subscriptionService: SubscriptionService,
-                                                         authService: AuthorisationService)
+                                                         authService: AuthorisationService,
+                                                         enrolmentToCGTCheck: EnrolmentToCGTCheck)
   extends FrontendController {
 
   val residentIndividualSubscription: Action[AnyContent] =
@@ -43,7 +46,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
       implicit request =>
         for {
           enrolments <- authService.getEnrolments
-          isEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
+          isEnrolled <- enrolmentToCGTCheck.checkEnrolments(enrolments)
           redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
         } yield redirect
   }
@@ -60,9 +63,9 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
     val nino = user.nino
     val cgtRefNumber = subscriptionService.getSubscriptionResponse(nino.get)
 
-    def redirectToCGTConfirmationOrError(cgtRef: Option[String]): Future[Result] = {
+    def redirectToCGTConfirmationOrError(cgtRef: Option[SubscriptionReference]): Future[Result] = {
       cgtRef match {
-        case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x)))
+        case Some(x) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef)))
         case _ => Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
       }
     }

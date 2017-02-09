@@ -17,12 +17,13 @@
 package auth
 
 import javax.inject.Inject
+
 import config.ApplicationConfig
 import connectors.FrontendAuthorisationConnector
 import play.api.mvc.{Action, AnyContent}
-import predicates.{NonResidentIndividualVisibilityPredicate, ResidentIndividualVisibilityPredicate}
+import predicates.{NonResidentIndividualVisibilityPredicate, NonResidentOrganisationVisibilityPredicate, ResidentIndividualVisibilityPredicate}
 import services.AuthorisationService
-import types.AuthenticatedIndividualAction
+import types.{AuthenticatedIndividualAction, AuthenticatedNROrganisationAction}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 
@@ -65,7 +66,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   }
 
   private val createAuthorisedNonResidentIndividualAction: AuthenticatedIndividualAction => Action[AnyContent] = {
-    val postSignInRedirectUrl: String = "" //TODO set to controller action for non-resident individuals in config
+    val postSignInRedirectUrl: String = applicationConfig.individualResident //TODO set to controller action for non-resident individuals in config
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
       override def authenticationType: AuthenticationProvider = ggProvider
@@ -92,9 +93,38 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     authenticatedAction
   }
 
+  private val createAuthorisedNonResidentOrganisationAction: AuthenticatedNROrganisationAction => Action[AnyContent] = {
+    val postSignInRedirectUrl: String = controllers.routes.CompanyController.company().url
+    val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
+
+    val regime = new CgtRegime {
+      override def authenticationType: AuthenticationProvider = ggProvider
+    }
+
+    lazy val visibilityPredicate = new NonResidentOrganisationVisibilityPredicate(
+      authorisationService)(controllers.routes.HelloWorld.helloWorld().url //TODO: add url for error page
+    )
+
+    lazy val guardedAction: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
+
+    val authenticatedAction: AuthenticatedNROrganisationAction => Action[AnyContent] = action => {
+
+      guardedAction.async {
+        authContext: AuthContext =>
+          implicit request =>
+          action(CgtNROrganisation(authContext))(request)
+      }
+    }
+
+    authenticatedAction
+  }
+
   def authorisedResidentIndividualAction(action: AuthenticatedIndividualAction): Action[AnyContent] = createAuthorisedResidentIndividualAction(action)
 
   def authorisedNonResidentIndividualAction(action: AuthenticatedIndividualAction): Action[AnyContent] = createAuthorisedNonResidentIndividualAction(action)
+
+  def authorisedNonResidentOrganisationAction(action: AuthenticatedNROrganisationAction): Action[AnyContent] =
+    createAuthorisedNonResidentOrganisationAction(action)
 
   trait CgtRegime extends TaxRegime {
     override def isAuthorised(accounts: Accounts): Boolean = true

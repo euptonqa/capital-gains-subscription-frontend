@@ -27,7 +27,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 trait ControllerTestSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
   val mockConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  val messagesApi = app.injector.instanceOf[MessagesApi]
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
   implicit val mat: Materializer = app.injector.instanceOf[Materializer]
 

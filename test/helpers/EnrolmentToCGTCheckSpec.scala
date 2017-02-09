@@ -18,14 +18,18 @@ package helpers
 
 import common.Keys
 import models.{Enrolment, Identifier}
-import uk.gov.hmrc.play.test.UnitSpec
+import play.api.inject.Injector
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class EnrolmentToCGTCheckSpec extends UnitSpec {
+class EnrolmentToCGTCheckSpec extends UnitSpec with WithFakeApplication {
+
+  val injector: Injector = fakeApplication.injector
+  val enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
 
   "Calling .checkEnrolments" should {
     "return true when supplied with a single element Sequence of Enrolments that includes the CGT enrolment" in {
       val enrolments = Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), ""))
-      await(EnrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe true
+      await(enrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe true
     }
 
     "return true when supplied with a multiple element Sequence of Enrolments that includes the CGT enrolment" in {
@@ -33,16 +37,16 @@ class EnrolmentToCGTCheckSpec extends UnitSpec {
         Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""),
         Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), "")
       )
-      await(EnrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe true
+      await(enrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe true
       }
 
     "return false when supplied with Sequence of Enrolments that does not include the CGT enrolment" in {
       val enrolments = Seq(Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""))
-      await(EnrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe false
+      await(enrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe false
     }
 
     "return false when supplied with a None" in {
-      await(EnrolmentToCGTCheck.checkEnrolments(None)) shouldBe false
+      await(enrolmentToCGTCheck.checkEnrolments(None)) shouldBe false
     }
   }
 }

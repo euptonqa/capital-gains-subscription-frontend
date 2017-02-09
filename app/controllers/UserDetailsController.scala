@@ -23,7 +23,7 @@ import forms.UserFactsForm
 import models.UserFactsModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.libs.json.Json
-import play.api.mvc.Result
+import play.api.mvc.{Action, AnyContent, Result}
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -37,7 +37,6 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
                                       subscriptionService: SubscriptionService)
   extends FrontendController with I18nSupport {
 
-  //TODO attach actual service method to the request
   def subscribeUser(userFactsModel: UserFactsModel)(implicit hc: HeaderCarrier): Future[Try[String]] = {
     subscriptionService.getSubscriptionResponseGhost(userFactsModel).map[Try[String]] {
       case Some(data) => Success(data.cgtRef)
@@ -45,11 +44,11 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
     }
   }
 
-  val userDetails = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
+  val userDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
     Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.fullDetailsForm)))
   }
 
-  val submitUserDetails = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
+  val submitUserDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
 
     val successAction: UserFactsModel => Future[Result] = model => {
 
