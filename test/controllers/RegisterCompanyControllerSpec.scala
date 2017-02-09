@@ -16,22 +16,54 @@
 
 package controllers
 
-import akka.util.Timeout
 import assets.ControllerTestSpec
+import auth.{AuthorisedActions, CgtIndividual, CgtNROrganisation}
+import builders.TestUserBuilder
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito.when
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
+import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
-import play.api.test.Helpers.redirectLocation
+import play.api.test.Helpers._
+import types.AuthenticatedNROrganisationAction
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 class RegisterCompanyControllerSpec extends ControllerTestSpec {
 
-  implicit val timeout: Timeout = mock[Timeout]
+  val testOnlyUnauthorisedLoginUri = "just-a-test"
+
+  def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.strongUserAuthContext): AuthorisedActions = {
+
+    val mockActions = mock[AuthorisedActions]
+
+    if (valid) {
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+        .thenAnswer(new Answer[Action[AnyContent]] {
+
+          override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
+            val action = invocation.getArgument[AuthenticatedNROrganisationAction](0)
+            val organisation = CgtNROrganisation(authContext)
+            Action.async(action(organisation))
+          }
+        })
+    }
+    else {
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+        .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
+    }
+
+    mockActions
+  }
 
   "Calling .registerCompany" when {
 
-    lazy val fakeRequest = FakeRequest("GET", "/")
-    lazy val registerCompanyController: RegisterCompanyController = new RegisterCompanyController(mockConfig)
-    lazy val result = await(registerCompanyController.registerCompany(fakeRequest))
+    "the company is authorised" should {
 
-    "there is nothing special going on to begin with" should {
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      lazy val action = createMockActions(valid = true)
+      lazy val registerCompanyController: RegisterCompanyController = new RegisterCompanyController(mockConfig, action)
+      lazy val result = await(registerCompanyController.registerCompany(fakeRequest))
 
       "return a status of 303" in {
         status(result) shouldBe 303
@@ -39,6 +71,21 @@ class RegisterCompanyControllerSpec extends ControllerTestSpec {
 
       "redirect to the business customer frontend" in {
         redirectLocation(result).get.toString shouldBe "http://localhost:9923/business-customer/business-verification/capital-gains-tax"
+      }
+    }
+
+    "the company is unauthorised" should {
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      lazy val action = createMockActions()
+      lazy val registerCompanyController: RegisterCompanyController = new RegisterCompanyController(mockConfig, action)
+      lazy val result = await(registerCompanyController.registerCompany(fakeRequest))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the business customer frontend" in {
+        redirectLocation(result).get.toString shouldBe "just-a-test"
       }
     }
   }
