@@ -20,6 +20,7 @@ object MessageLookup {
 
   object Common {
     val continue = "Continue"
+    val change = "Change"
   }
 
   object Errors {
@@ -91,6 +92,5 @@ object MessageLookup {
     val correspondenceAddress = "Correspondence address"
     val contactDetails = "Capital Gains Tax contact details"
     val registerConfirm = "Register and confirm"
-
   }
 }

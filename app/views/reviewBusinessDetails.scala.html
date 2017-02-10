@@ -29,7 +29,7 @@
         </td>
         <td style="vertical-align: top">
             @if(redirect.isDefined){
-            <a href='@redirect.get'>Edit</a>
+            <a href='@redirect.get'>@Messages("common.change")</a>
             }
         </td>
     </tr>
@@ -63,9 +63,9 @@
                         }
                         <tr>
                             <th style="vertical-align: top">@Messages("reviewBusinessDetails.contactDetails")</th>
-                            <td>Blah blah blah
+                            <td>Blah blah blah <!--TODO: UPDATE WITH CGT CONTACT DETAILS (MARK'S NEW PROTOTYPE PAGE)-->
                             </td>
-                            <td><a href="google.com">Edit</a></td>
+                            <td><a href="google.com">@Messages("common.change")</a></td>
                             <!--TODO:UPDATE REDIRECT URL!-->
                         </tr>
                     </tbody>

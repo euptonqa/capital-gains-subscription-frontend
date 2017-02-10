@@ -16,7 +16,7 @@
 
 package views
 
-import assets.FakeRequestHelper
+import assets.{FakeRequestHelper, MessageLookup}
 import config.AppConfig
 import models.{CompanyAddressModel, CompanySubmissionModel}
 import org.jsoup.Jsoup
@@ -25,7 +25,7 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import uk.gov.hmrc.play.test.UnitSpec
 import views.html.reviewBusinessDetails
-import assets.MessageLookup.{ReviewBusinessDetails=>messages}
+import assets.MessageLookup.{ReviewBusinessDetails => messages}
 
 
 class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestHelper with I18nSupport {
@@ -116,9 +116,32 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
               tdOne.html() shouldBe registeredModel.get.addressLine1.get + "<br> " +
                 registeredModel.get.addressLine2.get + "<br>"
             }
-            "has a td for edit" in {
-              //TODO: update when got business frontend details...
+            s"has a td for ${MessageLookup.Common.change}" in {
+              lazy val tdTwo = row.select("td:nth-of-type(2)")
+              tdTwo.text() shouldBe MessageLookup.Common.change
             }
+          }
+        }
+
+        "have a fourth table row" which {
+          //TODO: needs further updating when view updated to take in CGT contact details
+          lazy val row = table.select("tr:nth-of-type(4)")
+          "has a table header" which {
+            lazy val tHeader = row.select("th")
+            "has an inline style of 'vertical-align: top'" in {
+              tHeader.attr("style") shouldBe "vertical-align: top"
+            }
+            s"with a title ${messages.contactDetails}" in {
+              tHeader.text() shouldBe messages.contactDetails
+            }
+          }
+          "has a td for CGT contact details" in {
+
+          }
+
+          "has a td for Change" in {
+            lazy val tdTwo = row.select("td:nth-of-type(2)")
+            tdTwo.text() shouldBe MessageLookup.Common.change
           }
         }
 

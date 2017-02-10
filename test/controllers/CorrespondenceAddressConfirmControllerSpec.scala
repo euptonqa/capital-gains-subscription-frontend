@@ -60,6 +60,7 @@ class CorrespondenceAddressConfirmControllerSpec extends UnitSpec with MockitoSu
 
 
   "Calling .correspondenceAddressConfirm" when {
+
     "supplied with valid data" should {
       lazy val testData = Some(ReviewDetails("string", Some(""), CompanyAddressModel(None, None, None, None, None, None),
         "sap", "safeId", false, false, Some("lastname"), Some("")))
@@ -98,7 +99,6 @@ class CorrespondenceAddressConfirmControllerSpec extends UnitSpec with MockitoSu
       "return a status of 400" in {
         status(result) shouldBe 400
       }
-
     }
   }
 
