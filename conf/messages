@@ -62,6 +62,8 @@ organisationType.pensionTrust = Pension trust administrator
 ## Error Messages ##
 errors.mandatory = Please select an option
 errors.required = This field is required
+errors.telephone = Please enter a valid telephone number
+errors.email = Please enter a valid email
 
 ## Common Messages ##
 common.continue = Continue
