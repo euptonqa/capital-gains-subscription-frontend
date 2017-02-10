@@ -26,12 +26,12 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import scala.concurrent.Future
 
 @Singleton
-class RegisterCompanyController @Inject()(appConfig: AppConfig,
-                                          authorisedActions: AuthorisedActions) extends FrontendController {
+class CompanyController @Inject()(appConfig: AppConfig,
+                                  authorisedActions: AuthorisedActions) extends FrontendController {
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 
-  val registerCompany: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
+  val subscribe: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
     implicit user =>
       implicit request =>
         Future.successful(Redirect(businessCustomerFrontendUrl))

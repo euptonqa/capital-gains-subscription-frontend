@@ -17,7 +17,7 @@
 package controllers
 
 import assets.ControllerTestSpec
-import auth.{AuthorisedActions, CgtIndividual, CgtNROrganisation}
+import auth.{AuthorisedActions, CgtNROrganisation}
 import builders.TestUserBuilder
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -29,7 +29,7 @@ import play.api.test.Helpers._
 import types.AuthenticatedNROrganisationAction
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
-class RegisterCompanyControllerSpec extends ControllerTestSpec {
+class CompanyControllerSpec extends ControllerTestSpec {
 
   val testOnlyUnauthorisedLoginUri = "just-a-test"
 
@@ -62,8 +62,8 @@ class RegisterCompanyControllerSpec extends ControllerTestSpec {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val action = createMockActions(valid = true)
-      lazy val registerCompanyController: RegisterCompanyController = new RegisterCompanyController(mockConfig, action)
-      lazy val result = await(registerCompanyController.registerCompany(fakeRequest))
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action)
+      lazy val result = await(companyController.subscribe(fakeRequest))
 
       "return a status of 303" in {
         status(result) shouldBe 303
@@ -77,8 +77,8 @@ class RegisterCompanyControllerSpec extends ControllerTestSpec {
     "the company is unauthorised" should {
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val action = createMockActions()
-      lazy val registerCompanyController: RegisterCompanyController = new RegisterCompanyController(mockConfig, action)
-      lazy val result = await(registerCompanyController.registerCompany(fakeRequest))
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action)
+      lazy val result = await(companyController.subscribe(fakeRequest))
 
       "return a status of 303" in {
         status(result) shouldBe 303
