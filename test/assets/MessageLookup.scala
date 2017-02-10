@@ -46,6 +46,16 @@ object MessageLookup {
     val linkTextPensionTrust = "Pension trustees: investments and tax"
   }
 
+  object EnterCorrespondenceAddress {
+    val title = "Your correspondence address"
+    val addressLineOne = "Address line 1"
+    val addressLineTwo = "Address line 2"
+    val addressLineThree = "Address line 3 (optional)"
+    val addressLineFour = "Address line 4 (optional)"
+    val country = "Country"
+    val postcode = "Postcode"
+  }
+
   object UserDetails {
     val title = "Enter your name and address"
     val secondHeader = "Contact address"

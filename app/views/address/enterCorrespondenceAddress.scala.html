@@ -1,0 +1,36 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form, input}
+@import models.CorrespondenceAddressModel
+
+@(appConfig: config.AppConfig, correspondenceAddressForm: Form[CorrespondenceAddressModel])(implicit request: Request[_], messages: Messages)
+
+@userInput(label: String, identifier: String, size: Int = 2) = {
+    @input(
+        correspondenceAddressForm(identifier),
+        '_label -> label,
+        '_type -> "text",
+        '_inputClass -> s"shim input grid-1-$size",
+        '_labelClass -> "form-group"
+    )
+}
+
+@views.html.main_template(title = Messages("enterCorrespondenceAddress.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <h1 class="heading-xlarge">@Messages("enterCorrespondenceAddress.title")</h1>
+
+    @form(action = controllers.routes.EnterCorrespondenceAddressController.submitCorrespondenceAddress) {
+
+        @userInput(Messages("enterCorrespondenceAddress.addressLineOne"), "addressLineOne")
+
+        @userInput(Messages("enterCorrespondenceAddress.addressLineTwo"), "addressLineTwo")
+
+        @userInput(Messages("enterCorrespondenceAddress.addressLineThree"), "addressLineThree")
+
+        @userInput(Messages("enterCorrespondenceAddress.addressLineFour"), "addressLineFour")
+
+        @userInput(Messages("enterCorrespondenceAddress.country"), "country")
+
+        @userInput(Messages("enterCorrespondenceAddress.postcode"), "postcode", size = 4)
+
+        <button class="button" type="submit" id="continue-button">@Messages("common.continue")</button>
+    }
+}

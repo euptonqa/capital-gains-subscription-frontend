@@ -22,8 +22,8 @@ GET        /company                                                 controllers.
 GET        /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()
 POST       /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm()
 
-GET        /company/correspondence-address-amend                    controllers.AmendCorrespondenceAddressController.amendCorrespondenceAddress()
-POST       /company/correspondence-address-amend                    controllers.AmendCorrespondenceAddressController.submitAmendCorrespondenceAddress()
+GET       /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.enterCorrespondenceAddress()
+POST      /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.submitCorrespondenceAddress()
 
 GET        /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation()
 POST       /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.submitCorrespondenceAddressFinalConfirmation()

@@ -20,4 +20,9 @@ object Keys {
 
   val cGTEnrolmentKey: String = "HMRC-CGTS-INDV"
 
+  object KeystoreKeys {
+
+    val correspondenceAddressKey = "correspondenceAddress"
+
+  }
 }
