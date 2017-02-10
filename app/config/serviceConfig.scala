@@ -42,6 +42,7 @@ trait AppConfig {
 class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfig with ServicesConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
+  private def constructUrl(key: String) = baseUrl(key) + configuration.getString(s"microservice.services.$key.path").getOrElse("")
 
   private val contactHost = configuration.getString(s"contact-frontend.host").getOrElse("")
   private val contactFormServiceIdentifier = "MyService"
@@ -60,7 +61,5 @@ class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfi
   override lazy val individualNonResident: String = configuration.getString(s"non-resident-individual-sign-in.url").getOrElse("")
   override lazy val individualBadAffinity: String = configuration.getString(s"resident-individual-bad-affinity.url").getOrElse("")
   override lazy val subscription: String = configuration.getString(s"subscription.url").getOrElse("")
-
-  //TODO: config has been added but nothing has been raised for other environments yet or service manager configs.
-  override lazy val businessCompanyFrontendRegister: String = configuration.getString(s"business-customer-frontend.url").getOrElse("")
+  override lazy val businessCompanyFrontendRegister: String = constructUrl("business-customer")
 }
