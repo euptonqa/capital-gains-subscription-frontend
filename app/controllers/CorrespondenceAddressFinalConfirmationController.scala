@@ -17,6 +17,7 @@
 package controllers
 
 import com.google.inject.{Inject, Singleton}
+import common.Keys
 import connectors.KeystoreConnector
 import models.{CompanyAddressModel, CompanySubmissionModel, ReviewDetails}
 import play.api.mvc.{Action, Result}
@@ -57,8 +58,7 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(subscriptionSer
       }
     }
 
-    //TODO replace mock key with actual key
-    val companyAddress = keystoreConnector.fetchAndGetFormData[CompanyAddressModel]("mockKey")
+    val companyAddress = keystoreConnector.fetchAndGetFormData[CompanyAddressModel](Keys.KeystoreKeys.correspondenceAddressKey)
 
     companyAddress.flatMap {
       case Some(data) => successAction(data)
