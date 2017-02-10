@@ -17,6 +17,7 @@
 package controllers
 
 import assets.ControllerTestSpec
+import auth.AuthorisedActions
 import connectors.KeystoreConnector
 import models.{CompanyAddressModel, ReviewDetails, SubscriptionReference}
 import org.mockito.ArgumentMatchers
@@ -38,6 +39,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
                                  referenceResponse: Future[Option[SubscriptionReference]],
                                  businessData: Option[ReviewDetails]) = {
 
+      val mockAuthorisedActions = mock[AuthorisedActions]
       val mockService = mock[SubscriptionService]
       val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -50,7 +52,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       when(mockService.getSubscriptionResponseCompany(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(referenceResponse)
 
-      new CorrespondenceAddressFinalConfirmationController(mockService, mockKeystoreConnector)
+      new CorrespondenceAddressFinalConfirmationController(mockAuthorisedActions, mockService, mockKeystoreConnector)
     }
 
     val validBusinessData = ReviewDetails("", None, mock[CompanyAddressModel], "123456789", "123456789", false, false, None)

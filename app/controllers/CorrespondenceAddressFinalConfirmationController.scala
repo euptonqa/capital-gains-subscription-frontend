@@ -16,53 +16,58 @@
 
 package controllers
 
-import com.google.inject.{Inject, Singleton}
+import javax.inject.{Inject, Singleton}
+
+import auth.AuthorisedActions
 import common.Keys
 import connectors.KeystoreConnector
 import models.{CompanyAddressModel, CompanySubmissionModel, ReviewDetails}
-import play.api.mvc.{Action, Result}
+import play.api.mvc.{Action, AnyContent, Result}
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
-class CorrespondenceAddressFinalConfirmationController @Inject()(subscriptionService: SubscriptionService,
+class CorrespondenceAddressFinalConfirmationController @Inject()(actions: AuthorisedActions,
+                                                                 subscriptionService: SubscriptionService,
                                                                  keystoreConnector: KeystoreConnector) extends FrontendController {
 
   val correspondenceAddressFinalConfirmation = TODO
 
-  val submitCorrespondenceAddressFinalConfirmation = Action.async { implicit request =>
+  val submitCorrespondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction {
+    implicit user =>
+      implicit request =>
 
-    def successAction(companyAddressModel: CompanyAddressModel): Future[Result] = {
-      val result = {
+        def successAction(companyAddressModel: CompanyAddressModel): Future[Result] = {
+          val result = {
 
-        def handleBusinessData(reviewDetails: Option[ReviewDetails], companyAddressModel: CompanyAddressModel) = {
-          reviewDetails match {
-            case Some(details) => Future.successful(CompanySubmissionModel(Some(details.safeId), Some(companyAddressModel), Some(details.businessAddress)))
-            case _ => Future.failed(new Exception("Details not found"))
+            def handleBusinessData(reviewDetails: Option[ReviewDetails], companyAddressModel: CompanyAddressModel) = {
+              reviewDetails match {
+                case Some(details) => Future.successful(CompanySubmissionModel(Some(details.safeId), Some(companyAddressModel), Some(details.businessAddress)))
+                case _ => Future.failed(new Exception("Details not found"))
+              }
+            }
+
+            for {
+              businessData <- keystoreConnector.fetchAndGetBusinessData()
+              submissionModel <- handleBusinessData(businessData, companyAddressModel)
+              cgtRef <- subscriptionService.getSubscriptionResponseCompany(submissionModel)
+            } yield cgtRef
+          }
+
+          result.map { reference =>
+            Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(reference.get.cgtRef))
+          } recoverWith {
+            case error => Future.successful(InternalServerError(error.getMessage))
           }
         }
 
-        for {
-          businessData <- keystoreConnector.fetchAndGetBusinessData()
-          submissionModel <- handleBusinessData(businessData, companyAddressModel)
-          cgtRef <- subscriptionService.getSubscriptionResponseCompany(submissionModel)
-        } yield cgtRef
-      }
+        val companyAddress = keystoreConnector.fetchAndGetFormData[CompanyAddressModel](Keys.KeystoreKeys.correspondenceAddressKey)
 
-      result.map { reference =>
-        Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(reference.get.cgtRef))
-      }.recoverWith {
-        case error => Future.successful(InternalServerError(error.getMessage))
-      }
-    }
-
-    val companyAddress = keystoreConnector.fetchAndGetFormData[CompanyAddressModel](Keys.KeystoreKeys.correspondenceAddressKey)
-
-    companyAddress.flatMap {
-      case Some(data) => successAction(data)
-      case None => Future.successful(BadRequest(""))
-    }
+        companyAddress.flatMap {
+          case Some(data) => successAction(data)
+          case None => Future.successful(BadRequest(""))
+        }
   }
 }
