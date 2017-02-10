@@ -19,14 +19,14 @@ package connectors
 import java.util.UUID
 
 import assets.ControllerTestSpec
-import config.{AppConfig, SubscriptionSessionCache, WSHttp}
-import uk.gov.hmrc.http.cache.client.{CacheMap}
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.SessionId
+import config.{AppConfig, BusinessCustomerSessionCache, SubscriptionSessionCache, WSHttp}
+import models.ReviewDetails
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.SessionId
 
 import scala.concurrent.Future
 
@@ -35,18 +35,18 @@ class KeystoreConnectorSpec extends ControllerTestSpec {
   lazy val sessionId: String = UUID.randomUUID.toString
   lazy val http: WSHttp = mock[WSHttp]
   lazy val config: AppConfig = mock[AppConfig]
-//  lazy val servicesConfig: ServicesConfig = mock[ServicesConfig]
   lazy val subscriptionSessionCache: SubscriptionSessionCache = mock[SubscriptionSessionCache]
+  lazy val businessCustomerSessionCache: BusinessCustomerSessionCache = mock[BusinessCustomerSessionCache]
 
   lazy implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 
-  lazy val target = new KeystoreConnector(config, subscriptionSessionCache)
+  lazy val target = new KeystoreConnector(config, subscriptionSessionCache, businessCustomerSessionCache)
 
   "KeystoreConnector .fetchFormData" should {
 
     val testData = Some("hello")
 
-    when(subscriptionSessionCache.fetchAndGetEntry[String](ArgumentMatchers.anyString())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(subscriptionSessionCache.fetchAndGetEntry[String](ArgumentMatchers.eq("String"))(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(testData))
 
     "should be able to retrieve a String" in {
@@ -69,4 +69,17 @@ class KeystoreConnectorSpec extends ControllerTestSpec {
     }
   }
 
+  "KeystoreConnector .fetchAndGetBusinessData" should {
+
+    val testData = Some(mock[ReviewDetails])
+
+    when(businessCustomerSessionCache.fetchAndGetEntry[ReviewDetails](ArgumentMatchers.eq("BC_Business_Details"))(ArgumentMatchers.any(),
+      ArgumentMatchers.any()))
+      .thenReturn(Future.successful(testData))
+
+    "should be able to retrieve a model" in {
+      lazy val result = target.fetchAndGetBusinessData()
+      await(result) shouldBe testData
+    }
+  }
 }

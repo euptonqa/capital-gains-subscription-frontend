@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package assets
 
-import com.google.inject.{Inject, Singleton}
 import config.AppConfig
-import connectors.KeystoreConnector
-import play.api.mvc.Action
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.inject.Injector
+import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Future
-
-@Singleton
-class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig, keystoreConnector: KeystoreConnector) extends FrontendController {
-
-  val correspondenceAddressConfirm = Action.async { implicit request =>
-    keystoreConnector.fetchAndGetBusinessData().flatMap { data =>
-      Future.successful(Ok(""))
-    }
-  }
-
-  val submitCorrespondenceAddressConfirm = TODO
-
+trait ViewTestSpec extends UnitSpec with OneAppPerSuite with FakeRequestHelper with I18nSupport {
+  lazy val injector: Injector = app.injector
+  lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
+  implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 }

@@ -1,29 +1,29 @@
 # microservice specific routes
 
-GET        /hello-world                                       controllers.HelloWorld.helloWorld
+GET        /hello-world                                             controllers.HelloWorld.helloWorld
 
-GET        /individual/invalid-user                           controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
+GET        /individual/invalid-user                                 controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
 
-GET        /individual/confirmation                           controllers.CGTSubscriptionController.confirmationOfSubscription(cgtReference: String)
-POST       /individual/confirmation                           controllers.CGTSubscriptionController.submitConfirmationOfSubscription
+GET        /individual/confirmation                                 controllers.CGTSubscriptionController.confirmationOfSubscription(cgtReference: String)
+POST       /individual/confirmation                                 controllers.CGTSubscriptionController.submitConfirmationOfSubscription
 
-GET        /resident/individual                               controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
+GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
 
-GET        /non-resident/individual                           controllers.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription
+GET        /non-resident/individual                                 controllers.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription
 
-GET        /individual/organisation-type                      controllers.OrganisationTypeController.organisationType
-POST       /individual/organisation-type                      controllers.OrganisationTypeController.submitOrganisationType
+GET        /individual/organisation-type                            controllers.OrganisationTypeController.organisationType
+POST       /individual/organisation-type                            controllers.OrganisationTypeController.submitOrganisationType
 
-GET        /non-resident/individual/user-details              controllers.UserDetailsController.userDetails()
-POST       /non-resident/individual/user-details              controllers.UserDetailsController.submitUserDetails()
+GET        /non-resident/individual/user-details                    controllers.UserDetailsController.userDetails()
+POST       /non-resident/individual/user-details                    controllers.UserDetailsController.submitUserDetails()
 
-GET        /company                                           controllers.CompanyController.company()
+GET        /company                                                 controllers.CompanyController.subscribe()
 
-GET        /company/correspondence-address-confirm            controllers.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()
-POST       /company/correspondence-address-confirm            controllers.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm()
+GET        /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()
+POST       /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm()
 
-GET       /company/correspondence-address-enter               controllers.EnterCorrespondenceAddressController.enterCorrespondenceAddress()
-POST      /company/correspondence-address-enter               controllers.EnterCorrespondenceAddressController.submitCorrespondenceAddress()
+GET       /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.enterCorrespondenceAddress()
+POST      /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.submitCorrespondenceAddress()
 
-GET       /company/correspondence-address-final-confirmation  controllers.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation()
-POST      /company/correspondence-address-final-confirmation  controllers.CorrespondenceAddressFinalConfirmationController.submitCorrespondenceAddressFinalConfirmation()
+GET        /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation()
+POST       /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.submitCorrespondenceAddressFinalConfirmation()

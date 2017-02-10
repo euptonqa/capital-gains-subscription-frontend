@@ -45,6 +45,10 @@ userDetails.county = County
 userDetails.postCode = Postcode
 userDetails.country = Country
 
+## Use Registered Address ##
+useRegisteredAddress.title = Your correspondence address
+useRegisteredAddress.question = Is this your correspondence address?
+
 ## Organisation Type Messages ##
 organisationType.title = What type of organisation are you?
 organisationType.question = What type of organisation are you?
@@ -61,6 +65,8 @@ errors.required = This field is required
 
 ## Common Messages ##
 common.continue = Continue
+common.yes = Yes
+common.no = No
 
 ## Confirmation View Messages ##
 

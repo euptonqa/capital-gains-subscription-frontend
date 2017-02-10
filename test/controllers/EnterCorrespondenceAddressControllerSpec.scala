@@ -19,7 +19,7 @@ package controllers
 import assets.{ControllerTestSpec, MessageLookup}
 import auth.{AuthorisedActions, CgtNROrganisation}
 import builders.TestUserBuilder
-import config.{AppConfig, SubscriptionSessionCache}
+import config.{AppConfig, BusinessCustomerSessionCache, SubscriptionSessionCache}
 import connectors.KeystoreConnector
 import forms.CorrespondenceAddressForm
 import org.jsoup.Jsoup
@@ -62,8 +62,9 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
   def createMockKeystoreConnector: KeystoreConnector = {
     lazy val config: AppConfig = mock[AppConfig]
     lazy val subscriptionSessionCache: SubscriptionSessionCache = mock[SubscriptionSessionCache]
+    lazy val businessCustomerSessionCache: BusinessCustomerSessionCache = mock[BusinessCustomerSessionCache]
 
-    new KeystoreConnector(config, subscriptionSessionCache)
+    new KeystoreConnector(config, subscriptionSessionCache, businessCustomerSessionCache)
   }
 
   "Calling .enterCorrespondenceAddress" when {
