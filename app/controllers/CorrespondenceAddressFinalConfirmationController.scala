@@ -46,10 +46,6 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
         }
       }
 
-      //TODO: Obtain from keystore
-      //TODO: Pass in businessFrontendDetails
-      //TODO: Error handling
-
       yieldBusinessData.recoverWith{
         case error: Exception => Future.successful(BadRequest(error.getMessage))}
   }
