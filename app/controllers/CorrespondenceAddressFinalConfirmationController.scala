@@ -28,26 +28,28 @@ import uk.gov.hmrc.play.http.InternalServerException
 
 import scala.concurrent.Future
 
-class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppConfig, implicit val messagesApi: MessagesApi,
+class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi,
                                                                 keystoreConnector: KeystoreConnector) extends FrontendController with I18nSupport {
 
   val correspondenceAddressFinalConfirmation = Action.async {
     implicit request =>
 
       val businessData = keystoreConnector.fetchAndGetBusinessData()
+
       val addressData: Future[Option[CompanyAddressModel]] = keystoreConnector.fetchAndGetFormData[CompanyAddressModel]("correspondenceAddress")
+
       def yieldBusinessData = {
         for{
           data <- businessData
-          (companyAddress, name) <- (data.get.businessAddress, data.get.businessName)
           address <- addressData
         } yield {
-          Future.successful(views.html.reviewBusinessDetails(appConfig, Some(companyAddress), address, name))
+          Ok(views.html.reviewBusinessDetails(appConfig, Some(data.get.businessAddress), address, data.get.businessName))
         }
       }
 
       yieldBusinessData.recoverWith{
-        case error: Exception => Future.successful(BadRequest(error.getMessage))}
+        case exception: Exception => Future.successful(BadRequest(exception.getMessage))
+      }
   }
 
   val submitCorrespondenceAddressFinalConfirmation = TODO

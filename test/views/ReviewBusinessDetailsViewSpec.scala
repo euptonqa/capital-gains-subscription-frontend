@@ -37,7 +37,7 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
 
     val registeredModel = Some(CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None))
     val contactModel = Some(CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None))
-    lazy val view = reviewBusinessDetails(appConfig, registeredModel, contactModel)
+    lazy val view = reviewBusinessDetails(appConfig, registeredModel, contactModel, "business name")
     lazy val doc = Jsoup.parse(view.body)
 
     "contain a header" which {
@@ -70,8 +70,8 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
           "has an header with an inline style of 'width:60%'" in {
             row.select("th").attr("style") shouldBe "width:60%"
           }
-          "has a td with" which {
-            //TODO: update to test for company name values
+          "has a td with the text 'name''" in {
+            row.select("td:nth-of-type(1)").text() shouldBe "business name"
           }
           "has an empty td" which {
             lazy val tdTwo = row.select("td:nth-of-type(2)")
