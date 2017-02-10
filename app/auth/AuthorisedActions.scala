@@ -115,7 +115,6 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
           action(CgtNROrganisation(authContext))(request)
       }
     }
-
     authenticatedAction
   }
 

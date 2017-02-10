@@ -19,7 +19,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import auth.AuthorisedActions
-import common.Keys
+import common.Keys.{KeystoreKeys => keystoreKeys}
 import config.AppConfig
 import connectors.KeystoreConnector
 import forms.CorrespondenceAddressForm
@@ -38,7 +38,6 @@ class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
                                                      val messagesApi: MessagesApi)
   extends FrontendController with I18nSupport {
 
-  //TODO: Replace this action with the authorised for action after it has been built
   val enterCorrespondenceAddress: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
     implicit user =>
       implicit request =>
@@ -50,7 +49,7 @@ class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
       implicit request =>
 
         def successAction(correspondenceAddressModel: CorrespondenceAddressModel): Future[Result] = {
-          keystoreConnector.saveFormData[CorrespondenceAddressModel](Keys.KeystoreKeys.correspondenceAddressKey, correspondenceAddressModel)
+          keystoreConnector.saveFormData[CorrespondenceAddressModel](keystoreKeys.correspondenceAddressKey, correspondenceAddressModel)
           Future.successful(Redirect(routes.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()))
         }
 
