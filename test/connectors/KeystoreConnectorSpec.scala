@@ -40,7 +40,7 @@ class KeystoreConnectorSpec extends ControllerTestSpec {
   lazy val businessCustomerSessionCache = mock[BusinessCustomerSessionCache]
 
   lazy implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
-  
+
   lazy val target = new KeystoreConnector(config, subscriptionSessionCache, businessCustomerSessionCache)
 
   "KeystoreConnector .fetchFormData" should {

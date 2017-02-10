@@ -18,7 +18,7 @@ package controllers
 
 import com.google.inject.{Inject, Singleton}
 import connectors.KeystoreConnector
-import models.CompanyAddressModel
+import models.{CompanyAddressModel, CompanySubmissionModel, ReviewDetails}
 import play.api.mvc.{Action, Result}
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -34,11 +34,24 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(subscriptionSer
   val submitCorrespondenceAddressFinalConfirmation = Action.async { implicit request =>
 
     def successAction(companyAddressModel: CompanyAddressModel): Future[Result] = {
-      //TODO replace stub with actual call when created
-      val result = Future.successful("CGT123456")
+      val result = {
+
+        def handleBusinessData(reviewDetails: Option[ReviewDetails], companyAddressModel: CompanyAddressModel) = {
+          reviewDetails match {
+            case Some(details) => Future.successful(CompanySubmissionModel(Some(details.safeId), Some(companyAddressModel), Some(details.businessAddress)))
+            case _ => Future.failed(new Exception("Details not found"))
+          }
+        }
+
+        for {
+          businessData <- keystoreConnector.fetchAndGetBusinessData()
+          submissionModel <- handleBusinessData(businessData, companyAddressModel)
+          cgtRef <- subscriptionService.getSubscriptionResponseCompany(submissionModel)
+        } yield cgtRef
+      }
 
       result.map { reference =>
-        Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(reference))
+        Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(reference.get.cgtRef))
       }.recoverWith {
         case error => Future.successful(InternalServerError(error.getMessage))
       }

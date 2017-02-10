@@ -18,7 +18,7 @@ package controllers
 
 import assets.ControllerTestSpec
 import connectors.KeystoreConnector
-import models.CompanyAddressModel
+import models.{CompanyAddressModel, ReviewDetails, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import services.SubscriptionService
 import org.mockito.Mockito._
@@ -34,7 +34,9 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
   }
 
   "Calling .submitCorrespondenceAddressFinalConfirmation" when {
-    def createMockPostController(companyAddressModel: Option[CompanyAddressModel]) = {
+    def createMockPostController(companyAddressModel: Option[CompanyAddressModel],
+                                 referenceResponse: Future[Option[SubscriptionReference]],
+                                 businessData: Option[ReviewDetails]) = {
 
       val mockService = mock[SubscriptionService]
       val mockKeystoreConnector = mock[KeystoreConnector]
@@ -42,11 +44,21 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       when(mockKeystoreConnector.fetchAndGetFormData[CompanyAddressModel](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(companyAddressModel))
 
+      when(mockKeystoreConnector.fetchAndGetBusinessData()(ArgumentMatchers.any()))
+        .thenReturn(Future.successful(businessData))
+
+      when(mockService.getSubscriptionResponseCompany(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(referenceResponse)
+
       new CorrespondenceAddressFinalConfirmationController(mockService, mockKeystoreConnector)
     }
 
+    val validBusinessData = ReviewDetails("", None, mock[CompanyAddressModel], "123456789", "123456789", false, false, None)
+
     "the cgt reference is retrieved correctly" should {
-      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)))
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+        Future.successful(Some(SubscriptionReference("CGT123456"))),
+        Some(validBusinessData))
       lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
       "have a status of 303" in {
@@ -59,7 +71,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
     }
 
     "there is no keystore data available" should {
-      lazy val controller = createMockPostController(None)
+      lazy val controller = createMockPostController(None, Future.successful(Some(SubscriptionReference("CGT123456"))), None)
       lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
       "have a status of 400" in {
@@ -67,8 +79,31 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       }
     }
 
+    "no business data is returned" should {
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+        Future.successful(Some(SubscriptionReference("CGT123456"))), None)
+      lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
+
+      "have a status of 500" in {
+        status(result) shouldBe 500
+      }
+    }
+
+    "no CGT reference is returned" should {
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+        Future.successful(None), Some(validBusinessData))
+      lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
+
+      "have a status of 500" in {
+        status(result) shouldBe 500
+      }
+    }
+
     "an error occurs during subscription" should {
-      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)))
+      lazy val exception = new Exception("testMessage")
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+        Future.failed(exception),
+        Some(validBusinessData))
       lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
       "have a status of 500" in {
@@ -76,5 +111,4 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       }
     }
   }
-
 }
