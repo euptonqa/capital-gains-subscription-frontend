@@ -16,10 +16,24 @@
 
 package controllers
 
+import javax.inject.{Inject, Singleton}
+
+import auth.AuthorisedActions
+import config.AppConfig
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-class CompanyController extends FrontendController {
+import scala.concurrent.Future
 
-  val company = TODO
+@Singleton
+class CompanyController @Inject()(appConfig: AppConfig,
+                                  authorisedActions: AuthorisedActions) extends FrontendController {
 
+  val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
+
+  val subscribe: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
+    implicit user =>
+      implicit request =>
+        Future.successful(Redirect(businessCustomerFrontendUrl))
+  }
 }
