@@ -45,6 +45,13 @@ userDetails.county = County
 userDetails.postCode = Postcode
 userDetails.country = Country
 
+##Contact Details Messages ##
+contactDetails.title = Capital Gains Tax contact details
+contactDetails.text = The person responsible for Capital Gains Tax related queries.
+contactDetails.contactName = Contact name
+contactDetails.telephone = Telephone
+contactDetails.email = Email
+
 ## Use Registered Address ##
 useRegisteredAddress.title = Your correspondence address
 useRegisteredAddress.question = Is this your correspondence address?

@@ -1,0 +1,33 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form, input}
+@import models.ContactDetailsModel
+
+@(appConfig: config.AppConfig, contactDetailsForm: Form[ContactDetailsModel])(implicit request: Request[_], messages: Messages)
+
+@userInput(label: String, identifier: String) = {
+    @input(
+        contactDetailsForm(identifier),
+        '_label -> label,
+        '_type -> "text",
+        '_inputClass -> s"shim input",
+        '_labelClass -> "form-group"
+    )
+}
+
+
+@views.html.main_template(title = Messages("contactDetails.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <h1 class="heading-xlarge">@Messages("contactDetails.title")</h1>
+
+    @form(action = controllers.routes.ContactDetailsController.submitContactDetails) {
+
+        <p class="lede">@Messages("contactDetails.text")</p>
+
+        @userInput(Messages("contactDetails.contactName"), "contactName")
+
+        @userInput(Messages("contactDetails.telephone"), "telephone")
+
+        @userInput(Messages("contactDetails.email"), "email")
+
+        <button class="button" type="submit" id="continue-button">@Messages("common.continue")</button>
+    }
+}

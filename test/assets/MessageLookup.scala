@@ -71,6 +71,14 @@ object MessageLookup {
     val country = "Country"
   }
 
+  object ContactDetails {
+    val title = "Capital Gains Tax contact details"
+    val text = "The person responsible for Capital Gains Tax related queries."
+    val contactName = "Contact name"
+    val telephone = "Telephone"
+    val email = "Email"
+  }
+
   object UseRegisteredAddress {
     val title = "Your correspondence address"
     val question = "Is this your correspondence address?"
