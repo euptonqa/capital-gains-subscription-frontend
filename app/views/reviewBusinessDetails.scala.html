@@ -2,7 +2,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 
 @(appConfig: config.AppConfig, registeredAddress: Option[CompanyAddressModel], contactAddress: Option[CompanyAddressModel], businessName: String)(implicit request: Request [_], messages: Messages)
-
+<!--TODO: Take in CGT contact details -->
 @insertAddress(addressTypeName: String, companyAddressModel: CompanyAddressModel, redirect: Option[String]) = {
 
     <tr>

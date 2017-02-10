@@ -18,7 +18,7 @@ package views
 
 import assets.{FakeRequestHelper, MessageLookup}
 import config.AppConfig
-import models.{CompanyAddressModel, CompanySubmissionModel}
+import models.{CompanyAddressModel}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}

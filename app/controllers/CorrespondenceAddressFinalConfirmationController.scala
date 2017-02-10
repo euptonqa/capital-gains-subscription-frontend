@@ -38,11 +38,14 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
 
       val addressData: Future[Option[CompanyAddressModel]] = keystoreConnector.fetchAndGetFormData[CompanyAddressModel]("correspondenceAddress")
 
+      //TODO: Obtain CGT contact details
+
       def yieldBusinessData = {
         for{
           data <- businessData
           address <- addressData
         } yield {
+          //TODO: Pass in CGT contact details
           Ok(views.html.reviewBusinessDetails(appConfig, Some(data.get.businessAddress), address, data.get.businessName))
         }
       }
