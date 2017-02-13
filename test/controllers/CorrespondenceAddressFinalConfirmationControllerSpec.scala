@@ -93,7 +93,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
     "the user is authorised correctly" should {
 
       "the cgt reference is retrieved correctly" should {
-        lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
+        lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
           Future.successful(Some(SubscriptionReference("CGT123456"))),
           Some(validBusinessData), actions)
@@ -109,7 +109,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       }
 
       "there is no keystore data available" should {
-        lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
+        lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(None, Future.successful(Some(SubscriptionReference("CGT123456"))), None, actions)
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
@@ -119,7 +119,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       }
 
       "no business data is returned" should {
-        lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
+        lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
           Future.successful(Some(SubscriptionReference("CGT123456"))), None, actions)
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
@@ -130,7 +130,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       }
 
       "no CGT reference is returned" should {
-        lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
+        lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
           Future.successful(None), Some(validBusinessData), actions)
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
@@ -141,7 +141,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       }
 
       "an error occurs during subscription" should {
-        lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
+        lazy val actions = createMockActions(valid = true)
         lazy val exception = new Exception("testMessage")
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
           Future.failed(exception),
