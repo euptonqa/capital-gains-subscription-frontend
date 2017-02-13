@@ -20,6 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 
 case class CompanySubmissionModel(
                                    sap: Option[String],
+                                   contactDetailsModel: Option[ContactDetailsModel],
                                    contactAddress: Option[CompanyAddressModel],
                                    registeredAddress: Option[CompanyAddressModel]
                                  )

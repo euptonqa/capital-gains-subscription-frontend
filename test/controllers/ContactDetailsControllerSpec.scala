@@ -17,10 +17,10 @@
 package controllers
 
 import assets.{ControllerTestSpec, MessageLookup}
-import auth.{AuthorisedActions, CgtIndividual, CgtNROrganisation}
+import auth.{AuthorisedActions, CgtNROrganisation}
 import builders.TestUserBuilder
 import connectors.KeystoreConnector
-import forms.{ContactDetailsForm, UserFactsForm}
+import forms.ContactDetailsForm
 import models.ContactDetailsModel
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -29,9 +29,9 @@ import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import types._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import play.api.test.Helpers._
 
 import scala.concurrent.Future
 

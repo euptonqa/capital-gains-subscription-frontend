@@ -142,8 +142,8 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
         status(result) shouldBe 303
       }
 
-      "redirect to the confirm correspondence address details page" in {
-        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/company/correspondence-address-confirm")
+      "redirect to the confirm contact details page" in {
+        redirectLocation(result) shouldBe Some(controllers.routes.ContactDetailsController.contactDetails().url)
       }
     }
 

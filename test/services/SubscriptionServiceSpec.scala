@@ -91,7 +91,7 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
     "return a SubscriptionReference model with a valid request" in {
 
 
-      val model = CompanySubmissionModel(Some("123456789"), None, None)
+      val model = CompanySubmissionModel(Some("123456789"), None, None, None)
       val service = mockedService(Some("CGT-2123"))
 
       val result = service.getSubscriptionResponseCompany(model)
@@ -101,7 +101,7 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar {
 
     "return None when called with an invalid request" in {
 
-      val model = CompanySubmissionModel(Some("123456789"), None, None)
+      val model = CompanySubmissionModel(Some("123456789"), None, None, None)
 
       val service = mockedService(None)
 
