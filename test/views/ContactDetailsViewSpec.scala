@@ -86,7 +86,7 @@ class ContactDetailsViewSpec extends ViewTestSpec {
       }
 
       "has a class of 'shim input grid-1-2'" in {
-        input.attr("class") shouldBe "shim input"
+        input.attr("class") shouldBe "shim input grid-1-2"
       }
     }
 
@@ -107,7 +107,7 @@ class ContactDetailsViewSpec extends ViewTestSpec {
       }
 
       "has a class of 'shim input grid-1-2'" in {
-        input.attr("class") shouldBe "shim input"
+        input.attr("class") shouldBe "shim input grid-1-2"
       }
     }
 
@@ -128,7 +128,7 @@ class ContactDetailsViewSpec extends ViewTestSpec {
       }
 
       "has a class of 'shim input grid-1-2'" in {
-        input.attr("class") shouldBe "shim input"
+        input.attr("class") shouldBe "shim input grid-1-2"
       }
     }
 

@@ -16,13 +16,46 @@
 
 package controllers
 
-import com.google.inject.{Inject, Singleton}
+import javax.inject.{Inject, Singleton}
+
+import auth.AuthorisedActions
+import common.Keys.KeystoreKeys
+import config.AppConfig
+import connectors.KeystoreConnector
+import forms.ContactDetailsForm
+import models.ContactDetailsModel
+import play.api.data.Form
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.Result
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
+import scala.concurrent.Future
+
 @Singleton
-class ContactDetailsController @Inject()() extends FrontendController {
+class ContactDetailsController @Inject()(appConfig: AppConfig,
+                                         contactDetailsForm: ContactDetailsForm,
+                                         val messagesApi: MessagesApi,
+                                         keystoreConnector: KeystoreConnector,
+                                         actions: AuthorisedActions) extends FrontendController with I18nSupport {
 
-  val contactDetails = TODO
+  val contactDetails = actions.authorisedNonResidentOrganisationAction { implicit user => implicit request =>
+    keystoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetailsKey).map {
+      case Some(data) => Ok(views.html.contactDetails(appConfig, contactDetailsForm.contactDetailsForm.fill(data)))
+      case _ => Ok(views.html.contactDetails(appConfig, contactDetailsForm.contactDetailsForm))
+    }
+  }
 
-  val submitContactDetails = TODO
+  val submitContactDetails = actions.authorisedNonResidentOrganisationAction { implicit user => implicit request =>
+
+    val errorAction: Form[ContactDetailsModel] => Future[Result] = form => {
+      Future.successful(BadRequest(views.html.contactDetails(appConfig, form)))
+    }
+
+    val successAction: ContactDetailsModel => Future[Result] = model => {
+      keystoreConnector.saveFormData[ContactDetailsModel](KeystoreKeys.contactDetailsKey, model)
+      Future.successful(Redirect(controllers.routes.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation()))
+    }
+
+    contactDetailsForm.contactDetailsForm.bindFromRequest.fold(errorAction, successAction)
+  }
 }
