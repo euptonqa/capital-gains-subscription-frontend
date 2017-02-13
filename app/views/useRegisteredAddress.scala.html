@@ -1,5 +1,6 @@
 @import models.{YesNoModel, CompanyAddressModel}
 @import uk.gov.hmrc.play.views.html.helpers.{form, inputRadioGroup}
+@import views.html.helpers.errorSummary
 
 @(appConfig: config.AppConfig, yesNoForm: Form[YesNoModel], companyAddress: CompanyAddressModel)(implicit request: Request[_], messages: Messages)
 
@@ -11,6 +12,8 @@
 }
 
 @views.html.main_template(title = Messages("useRegisteredAddress.title"), bodyClasses = None, appConfig = appConfig) {
+
+    @errorSummary(yesNoForm, "use-registered-address", "useRegisteredAddress")
 
     <h1 class="heading-xlarge">@Messages("useRegisteredAddress.title")</h1>
 

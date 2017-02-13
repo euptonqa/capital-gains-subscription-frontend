@@ -1,5 +1,6 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form, input}
 @import models.UserFactsModel
+@import views.html.helpers.errorSummary
 
 @(appConfig: config.AppConfig, userDetailsForm: Form[UserFactsModel])(implicit request: Request[_], messages: Messages)
 
@@ -26,6 +27,8 @@
 }
 
 @views.html.main_template(title = Messages("userDetails.title"), bodyClasses = None, appConfig = appConfig) {
+
+    @errorSummary(userDetailsForm, "enter-user-details", "userDetails")
 
     <h1 class="heading-xlarge">@Messages("userDetails.title")</h1>
 

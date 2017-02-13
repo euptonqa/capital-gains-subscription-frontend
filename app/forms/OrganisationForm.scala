@@ -21,6 +21,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import common.Constants.InvalidUserTypes
+import common.FormValidation._
 import models.OrganisationModel
 
 class OrganisationForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
@@ -28,7 +29,7 @@ class OrganisationForm @Inject()(val messagesApi: MessagesApi) extends I18nSuppo
   val organisationForm = Form(
     mapping(
       "organisationType" -> text
-        .verifying(Messages("errors.mandatory"), input => input.trim != "")
+        .verifying(Messages("errors.mandatory"), nonEmptyCheck)
         .verifying(Messages("errors.mandatory"), input => InvalidUserTypes.users.contains(input))
     )(OrganisationModel.apply)(OrganisationModel.unapply)
   )
