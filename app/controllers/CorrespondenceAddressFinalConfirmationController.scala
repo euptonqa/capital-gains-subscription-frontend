@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import auth.AuthorisedActions
 import common.Keys
+import common.Keys.KeystoreKeys
 import config.AppConfig
 import connectors.KeystoreConnector
 import models.{CompanyAddressModel, CompanySubmissionModel, ContactDetailsModel, ReviewDetails}
@@ -40,17 +41,17 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
 
     val businessData = keystoreConnector.fetchAndGetBusinessData()
 
-    val addressData: Future[Option[CompanyAddressModel]] = keystoreConnector.fetchAndGetFormData[CompanyAddressModel]("correspondenceAddress")
+    val addressData: Future[Option[CompanyAddressModel]] = keystoreConnector.fetchAndGetFormData[CompanyAddressModel](KeystoreKeys.correspondenceAddressKey)
 
-    //TODO: Obtain CGT contact details
+    val contactDetailsData:Future[Option[ContactDetailsModel]] = keystoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetailsKey)
 
     def yieldBusinessData = {
       for {
         data <- businessData
         address <- addressData
+        contactDetails <- contactDetailsData
       } yield {
-        //TODO: Pass in CGT contact details
-        Ok(views.html.reviewBusinessDetails(appConfig, Some(data.get.businessAddress), address, data.get.businessName))
+        Ok(views.html.reviewBusinessDetails(appConfig, data.get.businessAddress, address.get, data.get.businessName, contactDetails.get))
       }
     }
 

@@ -18,7 +18,7 @@ package views
 
 import assets.{FakeRequestHelper, MessageLookup}
 import config.AppConfig
-import models.{CompanyAddressModel}
+import models.{CompanyAddressModel, ContactDetailsModel}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -35,9 +35,10 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
 
   "The ReviewBusinessDetailsView" should {
 
-    val registeredModel = Some(CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None))
-    val contactModel = Some(CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None))
-    lazy val view = reviewBusinessDetails(appConfig, registeredModel, contactModel, "business name")
+    val registeredModel = CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None)
+    val contactModel = CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None)
+    val detailsModel = ContactDetailsModel("name", "telephone", "email")
+    lazy val view = reviewBusinessDetails(appConfig, registeredModel, contactModel, "business name", detailsModel)
     lazy val doc = Jsoup.parse(view.body)
 
     "contain a header" which {
@@ -93,8 +94,8 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
             "has a td with the relevant address details found in the registeredAddress model" which {
               lazy val tdOne = row.select("td:nth-of-type(1)")
               "with the innerHtml" in {
-                tdOne.html() shouldBe registeredModel.get.addressLine1.get + "<br> " +
-                  registeredModel.get.addressLine2.get + "<br>"
+                tdOne.html() shouldBe registeredModel.addressLine1.get + "<br> " +
+                  registeredModel.addressLine2.get + "<br>"
               }
             }
           }
@@ -113,8 +114,8 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
           "has a td with the relevant address details found in the correspondenceAddress model" which {
             lazy val tdOne = row.select("td:nth-of-type(1)")
             "with the innerHtml" in {
-              tdOne.html() shouldBe registeredModel.get.addressLine1.get + "<br> " +
-                registeredModel.get.addressLine2.get + "<br>"
+              tdOne.html() shouldBe registeredModel.addressLine1.get + "<br> " +
+                registeredModel.addressLine2.get + "<br>"
             }
             s"has a td for ${MessageLookup.Common.change}" in {
               lazy val tdTwo = row.select("td:nth-of-type(2)")

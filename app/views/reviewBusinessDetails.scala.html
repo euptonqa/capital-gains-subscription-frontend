@@ -1,7 +1,7 @@
-@import models.CompanySubmissionModel
+@import models._
 @import uk.gov.hmrc.play.views.html.helpers.form
 
-@(appConfig: config.AppConfig, registeredAddress: Option[CompanyAddressModel], contactAddress: Option[CompanyAddressModel], businessName: String)(implicit request: Request [_], messages: Messages)
+@(appConfig: config.AppConfig, registeredAddress: CompanyAddressModel, contactAddress: CompanyAddressModel, businessName: String, contactDetails: ContactDetailsModel)(implicit request: Request [_], messages: Messages)
 <!--TODO: Take in CGT contact details -->
 @insertAddress(addressTypeName: String, companyAddressModel: CompanyAddressModel, redirect: Option[String]) = {
 
@@ -52,15 +52,12 @@
                             <td>@businessName</td>
                             <td></td>
                         </tr>
-                        @if(registeredAddress.isDefined){
                             @insertAddress(Messages("reviewBusinessDetails.registeredAddress"),
-                            registeredAddress.get, None)
-                        }
-                        @if(contactAddress.isDefined){
+                            registeredAddress, None)
+
                             @insertAddress(Messages("reviewBusinessDetails.correspondenceAddress"),
-                            contactAddress.get, Some("google.com"))
+                            contactAddress, Some("google.com"))
                             <!--TODO: UPDATE REDIRECT URL!-->
-                        }
                         <tr>
                             <th style="vertical-align: top">@Messages("reviewBusinessDetails.contactDetails")</th>
                             <td>Blah blah blah <!--TODO: UPDATE WITH CGT CONTACT DETAILS (MARK'S NEW PROTOTYPE PAGE)-->
