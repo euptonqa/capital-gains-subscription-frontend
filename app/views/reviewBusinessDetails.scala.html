@@ -56,14 +56,15 @@
                             registeredAddress, None)
 
                             @insertAddress(Messages("reviewBusinessDetails.correspondenceAddress"),
-                            contactAddress, Some("google.com"))
-                            <!--TODO: UPDATE REDIRECT URL!-->
+                            contactAddress, Some(controllers.routes.EnterCorrespondenceAddressController.enterCorrespondenceAddress.url))
                         <tr>
                             <th style="vertical-align: top">@Messages("reviewBusinessDetails.contactDetails")</th>
-                            <td>Blah blah blah <!--TODO: UPDATE WITH CGT CONTACT DETAILS (MARK'S NEW PROTOTYPE PAGE)-->
+                            <td>
+                                @contactDetails.contactName<br/>
+                                @contactDetails.telephone<br/>
+                                @contactDetails.email<br/>
                             </td>
-                            <td><a href="google.com">@Messages("common.change")</a></td>
-                            <!--TODO:UPDATE REDIRECT URL!-->
+                            <td><a href="@controllers.routes.ContactDetailsController.contactDetails.url">@Messages("common.change")</a></td>
                         </tr>
                     </tbody>
                 </table>

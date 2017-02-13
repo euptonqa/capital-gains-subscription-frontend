@@ -136,8 +136,11 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
               tHeader.text() shouldBe messages.contactDetails
             }
           }
-          "has a td for CGT contact details" in {
-
+          "has a td for CGT contact details" which {
+            lazy val tdThree = row.select("td:nth-of-type(3)")
+            "with the innerHtml" in {
+              tdThree.html() shouldBe "name<br>telephone<br>email<br>"
+            }
           }
 
           "has a td for Change" in {
