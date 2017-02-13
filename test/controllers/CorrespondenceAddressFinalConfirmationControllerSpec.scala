@@ -40,7 +40,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
   val validBusinessData = ReviewDetails("", None, mock[CompanyAddressModel], "123456789", "123456789",
     isAGroup = false, directMatch = false, None)
 
-  def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithNINO): AuthorisedActions = {
+  def createMockActions(valid: Boolean = false): AuthorisedActions = {
 
     val mockActions = mock[AuthorisedActions]
 
@@ -50,7 +50,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
             val action = invocation.getArgument[AuthenticatedNROrganisationAction](0)
-            val organisation = CgtNROrganisation(authContext)
+            val organisation = CgtNROrganisation(mock[AuthContext])
             Action.async(action(organisation))
           }
         })
@@ -91,8 +91,6 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
   "Calling .submitCorrespondenceAddressFinalConfirmation" when {
 
     "the user is authorised correctly" should {
-
-
 
       "the cgt reference is retrieved correctly" should {
         lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
