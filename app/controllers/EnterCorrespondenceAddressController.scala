@@ -23,7 +23,7 @@ import common.Keys.{KeystoreKeys => keystoreKeys}
 import config.AppConfig
 import connectors.KeystoreConnector
 import forms.CorrespondenceAddressForm
-import models.CorrespondenceAddressModel
+import models.CompanyAddressModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -48,8 +48,8 @@ class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
     implicit user =>
       implicit request =>
 
-        def successAction(correspondenceAddressModel: CorrespondenceAddressModel): Future[Result] = {
-          keystoreConnector.saveFormData[CorrespondenceAddressModel](keystoreKeys.correspondenceAddressKey, correspondenceAddressModel)
+        def successAction(companyAddressModel: CompanyAddressModel): Future[Result] = {
+          keystoreConnector.saveFormData[CompanyAddressModel](keystoreKeys.correspondenceAddressKey, companyAddressModel)
           Future.successful(Redirect(routes.ContactDetailsController.contactDetails()))
         }
 

@@ -19,7 +19,7 @@ package forms
 import javax.inject.Inject
 
 import common.FormValidation._
-import models.CorrespondenceAddressModel
+import models.CompanyAddressModel
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -28,12 +28,12 @@ class CorrespondenceAddressForm @Inject()(val messagesApi: MessagesApi) extends 
 
   val correspondenceAddressForm = Form(
     mapping(
-      "addressLineOne" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
-      "addressLineTwo" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
+      "addressLineOne" -> text.verifying(Messages("errors.required"), nonEmptyCheck).transform(textToOptional, optionalToText),
+      "addressLineTwo" -> text.verifying(Messages("errors.required"), nonEmptyCheck).transform(textToOptional, optionalToText),
       "addressLineThree" -> text.transform(textToOptional, optionalToText),
       "addressLineFour" -> text.transform(textToOptional, optionalToText),
-      "country" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
-      "postcode" -> text.verifying(Messages("errors.required"), nonEmptyCheck)
-    )(CorrespondenceAddressModel.apply)(CorrespondenceAddressModel.unapply)
+      "country" -> text.verifying(Messages("errors.required"), nonEmptyCheck).transform(textToOptional, optionalToText),
+      "postcode" -> text.verifying(Messages("errors.required"), nonEmptyCheck).transform(textToOptional, optionalToText)
+    )(CompanyAddressModel.apply)(CompanyAddressModel.unapply)
   )
 }

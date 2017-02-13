@@ -1,7 +1,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form, input}
-@import models.CorrespondenceAddressModel
+@import models.CompanyAddressModel
 
-@(appConfig: config.AppConfig, correspondenceAddressForm: Form[CorrespondenceAddressModel])(implicit request: Request[_], messages: Messages)
+@(appConfig: config.AppConfig, correspondenceAddressForm: Form[CompanyAddressModel])(implicit request: Request[_], messages: Messages)
 
 @userInput(label: String, identifier: String, size: Int = 2) = {
     @input(
