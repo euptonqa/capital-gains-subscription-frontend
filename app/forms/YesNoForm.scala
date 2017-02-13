@@ -21,8 +21,11 @@ import models.YesNoModel
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.mvc.Request
 
 class YesNoForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
+
+  private val nonEmptyCheck: String => Boolean = !_.isEmpty
 
   private val textToBoolean: String => Boolean = {
     case "Yes" => true
@@ -34,13 +37,14 @@ class YesNoForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
     else "No"
   }
 
-  private val nonEmptyCheck: String => Boolean = !_.isEmpty
-
   val yesNoForm = Form(
-    mapping (
+    mapping(
       "response" -> text
         .verifying(Messages("errors.mandatory"), nonEmptyCheck)
         .transform(textToBoolean, booleanToText)
     )(YesNoModel.apply)(YesNoModel.unapply)
   )
+
+  def validate[R](hasErrors: Form[YesNoModel] => R, success: YesNoModel => R)(implicit request: Request[_]): R =
+    yesNoForm.bindFromRequest.fold(hasErrors, success)
 }

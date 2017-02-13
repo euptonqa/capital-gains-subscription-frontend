@@ -25,8 +25,7 @@ import connectors.KeystoreConnector
 import forms.YesNoForm
 import models.{CompanyAddressModel, YesNoModel}
 import play.api.Logger
-import play.api.data.Form
-import play.api.i18n.MessagesApi
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
@@ -36,12 +35,13 @@ import scala.concurrent.Future
 class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
                                                        val messagesApi: MessagesApi,
                                                        stateService: KeystoreConnector,
-                                                       actions: AuthorisedActions)
-  extends FrontendController {
+                                                       actions: AuthorisedActions,
+                                                       form: YesNoForm)
+  extends FrontendController with I18nSupport {
 
   val correspondenceAddressConfirm: Action[AnyContent] =
     actions.authorisedNonResidentOrganisationAction { implicit user =>
-      implicit request =>
+      implicit request => {
 
         for {
           registrationDetails <- stateService.fetchAndGetBusinessData()
@@ -51,7 +51,7 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
 
             case (_, None) =>
               Logger.warn("Failed to retrieved registration details from BusinessCustomer keystore")
-              InternalServerError(views.html.error_template)
+              InternalServerError
 
             case (None, Some(details)) =>
               val emptyForm = new YesNoForm(messagesApi).yesNoForm
@@ -62,33 +62,34 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
               Ok(views.html.useRegisteredAddress(appConfig, populatedForm, details.businessAddress))
           }
         }
+      }
     }
 
-  val submitCorrespondenceAddressConfirm: Form[YesNoModel] => Action[AnyContent] =
-    form => actions.authorisedNonResidentOrganisationAction { implicit user =>
-      implicit request =>
+  val submitCorrespondenceAddressConfirm: Action[AnyContent] =
+    actions.authorisedNonResidentOrganisationAction { implicit user =>
+      implicit request => {
+
+        def processRequest(address: CompanyAddressModel): Future[Result] = form.validate(
+          errors => Future.successful(BadRequest(views.html.useRegisteredAddress(appConfig, errors, address))),
+          success => {
+            for {
+              _ <- stateService.saveFormData(KeystoreKeys.useRegistrationAddressKey, success)
+              _ <- if (success.response) stateService.saveFormData(KeystoreKeys.correspondenceAddressKey, address) else Future(false)
+            } yield {
+              if (success.response) Redirect(controllers.routes.HelloWorld.helloWorld().url)
+              else Redirect(controllers.routes.HelloWorld.helloWorld().url)
+            }
+          }
+
+        )
 
         stateService.fetchAndGetBusinessData().flatMap {
           case None =>
             Logger.warn("Failed to retrieved registration details from BusinessCustomer keystore")
-            Future.successful(InternalServerError(views.html.error_template))
+            Future.successful(InternalServerError)
 
           case Some(details) => processRequest(details.businessAddress)
         }
-
-        def processRequest(address: CompanyAddressModel): Future[Result] = {
-          form.fold(
-            errors => Future.successful(BadRequest(views.html.useRegisteredAddress(appConfig, errors, address))),
-
-            model => {
-              for {
-                _ <- stateService.saveFormData(KeystoreKeys.useRegistrationAddressKey, model)
-                _ <- if (model.response) stateService.saveFormData(KeystoreKeys.correspondenceAddressKey, address) else Future()
-              } yield {
-                Ok(views.html.helloworld.hello_world(appConfig))
-              }
-            }
-          )
-        }
+      }
     }
 }
