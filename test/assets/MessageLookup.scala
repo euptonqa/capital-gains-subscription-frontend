@@ -25,6 +25,11 @@ object MessageLookup {
   object Errors {
     val errorMandatory = "Please select an option"
     val errorRequired = "This field is required"
+    val dummyError = "Dummy error message"
+  }
+
+  object ErrorSummary {
+    val errorSummaryHeading = "This page has errors"
   }
 
   object InvalidAffinityGroup {

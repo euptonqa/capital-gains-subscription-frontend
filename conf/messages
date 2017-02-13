@@ -63,6 +63,9 @@ organisationType.pensionTrust = Pension trust administrator
 errors.mandatory = Please select an option
 errors.required = This field is required
 
+## Error Summary Messages ##
+error.summary.heading = This page has errors
+
 ## Common Messages ##
 common.continue = Continue
 common.yes = Yes
