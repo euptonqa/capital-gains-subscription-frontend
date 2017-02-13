@@ -18,21 +18,22 @@ package controllers
 
 import javax.inject.Inject
 
+import auth.AuthorisedActions
 import config.AppConfig
 import connectors.KeystoreConnector
-import models.{CompanyAddressModel, CompanySubmissionModel, ReviewDetails}
+import models.CompanyAddressModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.InternalServerException
 
 import scala.concurrent.Future
 
-class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi,
-                                                                keystoreConnector: KeystoreConnector) extends FrontendController with I18nSupport {
+class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppConfig,
+                                                                 val messagesApi: MessagesApi,
+                                                                 keystoreConnector: KeystoreConnector,
+                                                                 actions: AuthorisedActions) extends FrontendController with I18nSupport {
 
-  val correspondenceAddressFinalConfirmation = Action.async {
-    implicit request =>
+  val correspondenceAddressFinalConfirmation = actions.authorisedNonResidentOrganisationAction { implicit user => implicit request =>
 
       val businessData = keystoreConnector.fetchAndGetBusinessData()
 
@@ -41,7 +42,7 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
       //TODO: Obtain CGT contact details
 
       def yieldBusinessData = {
-        for{
+        for {
           data <- businessData
           address <- addressData
         } yield {
@@ -50,7 +51,7 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
         }
       }
 
-      yieldBusinessData.recoverWith{
+      yieldBusinessData.recoverWith {
         case exception: Exception => Future.successful(BadRequest(exception.getMessage))
       }
   }

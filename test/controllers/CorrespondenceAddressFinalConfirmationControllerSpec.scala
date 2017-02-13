@@ -22,6 +22,48 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends UnitSpec {
 
   "Calling .correspondenceAddressFinalConfirmation" when {
 
+    "the business data, correspondence address and contact details are supplied" should {
+
+      "return a status of 200" in {
+
+      }
+
+      "load the final confirmation page" in {
+
+      }
+    }
+
+    "no business data is found" should {
+
+      "return a status of 400" in {
+
+      }
+    }
+
+    "no correspondence address is found" should {
+
+      "return a status of 400" in {
+
+      }
+    }
+
+    "no contact details are found" should {
+
+      "return a status of 400" in {
+
+      }
+    }
+
+    "the user is unauthorised" should {
+
+      "return a status of 300" in {
+
+      }
+
+      "redirect to 'some-url'" in {
+
+      }
+    }
   }
 
   "Calling .submitCorrespondenceAddressFinalConfirmation" when {
