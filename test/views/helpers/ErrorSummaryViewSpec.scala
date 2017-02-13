@@ -52,83 +52,93 @@ class ErrorSummaryViewSpec extends UnitSpec with WithFakeApplication with I18nSu
 
         "has an outer div that" should {
 
+          lazy val div = doc.select("div").get(0)
+
           "have the class 'flash'" in {
-            doc.select("div").get(0).hasClass("flash") shouldEqual true
+            div.hasClass("flash") shouldEqual true
           }
 
           "have the class 'error-summary'" in {
-            doc.select("div").get(0).hasClass("error-summary") shouldEqual true
+            div.hasClass("error-summary") shouldEqual true
           }
 
           "have the class 'error-summary--show'" in {
-            doc.select("div").get(0).hasClass("error-summary--show") shouldEqual true
+            div.hasClass("error-summary--show") shouldEqual true
           }
 
           "have the id 'error-summary-display'" in {
-            doc.select("div").get(0).id() shouldEqual "error-summary-display"
+            div.id() shouldEqual "error-summary-display"
           }
 
           "have the role 'alert'" in {
-            doc.select("div").get(0).attr("role") shouldEqual "alert"
+            div.attr("role") shouldEqual "alert"
           }
 
           "have the aria-labelledby attribute 'error-summary-heading'" in {
-            doc.select("div").get(0).attr("aria-labelledby") shouldEqual "error-summary-heading"
+            div.attr("aria-labelledby") shouldEqual "error-summary-heading"
           }
 
           "have the tab index of '-1'" in {
-            doc.select("div").get(0).attr("tabindex") shouldEqual "-1"
+            div.attr("tabindex") shouldEqual "-1"
           }
 
           "has children elements" which {
 
             "include a h2 tag that" should {
 
+              lazy val hTwo = div.select("h2").get(0)
+
               "have the id 'error-summary-heading'" in {
-                doc.select("h2").get(0).id() shouldEqual "error-summary-heading"
+                hTwo.id() shouldEqual "error-summary-heading"
               }
 
               "have the class 'h3-heading'" in {
-                doc.select("h2").get(0).hasClass("h3-heading") shouldEqual true
+                hTwo.hasClass("h3-heading") shouldEqual true
               }
 
               "has the text" in {
-                doc.select("h2").text shouldEqual messages.errorSummaryHeading
+                hTwo.text shouldEqual messages.errorSummaryHeading
               }
             }
 
             "include a ul element" which {
 
+              lazy val ul = div.select("ul").get(0)
+
               "has the class 'js-error-summary-messages'" in {
-                doc.select("ul").get(0).hasClass("js-error-summary-messages") shouldEqual true
+                ul.hasClass("js-error-summary-messages") shouldEqual true
               }
 
               "has a child 'li' element that" should {
 
+                lazy val li = ul.select("li").get(0)
+
                 "have the role 'tooltip'" in {
-                  doc.select("li").get(0).attr("role") shouldEqual "tooltip"
+                  li.attr("role") shouldEqual "tooltip"
                 }
 
                 "have the data-journey attribute of 'page:response:'" in {
-                  doc.select("li").get(0).attr("data-journey") shouldEqual "page:error:response"
+                  li.attr("data-journey") shouldEqual "page:error:response"
                 }
 
                 "contain a child 'a' element" which {
 
+                  lazy val a = li.select("a").get(0)
+
                   "should have the href '#response'" in {
-                    doc.select("a").get(0).attr("href") shouldEqual "#response"
+                    a.attr("href") shouldEqual "#response"
                   }
 
                   "should have the id 'response-error-summary'" in {
-                    doc.select("a").get(0).id() shouldEqual "response-error-summary"
+                    a.id() shouldEqual "response-error-summary"
                   }
 
                   "should have the data-focus 'response'" in {
-                    doc.select("a").get(0).attr("data-focuses") shouldEqual "response"
+                    a.attr("data-focuses") shouldEqual "response"
                   }
 
                   s"should have the error message ${errorMessages.dummyError}" in {
-                    doc.select("a").get(0).text shouldEqual errorMessages.dummyError
+                    a.text shouldEqual errorMessages.dummyError
                   }
                 }
               }
@@ -148,30 +158,34 @@ class ErrorSummaryViewSpec extends UnitSpec with WithFakeApplication with I18nSu
 
         "changes the 'li' element so that it" should {
 
+          lazy val li = doc.select("li").get(0)
+
           "have the role 'tooltip'" in {
-            doc.select("li").get(0).attr("role") shouldEqual "tooltip"
+            li.attr("role") shouldEqual "tooltip"
           }
 
           "have the data-journey attribute of 'page:response:'" in {
-            doc.select("li").get(0).attr("data-journey") shouldEqual "page:error:dummyKey"
+            li.attr("data-journey") shouldEqual "page:error:dummyKey"
           }
 
           "contain a child 'a' element" which {
 
+            lazy val a = li.select("a").get(0)
+
             "should have the href '#dummyKey'" in {
-              doc.select("a").get(0).attr("href") shouldEqual "#dummyKey"
+              a.attr("href") shouldEqual "#dummyKey"
             }
 
             "should have the id 'dummyKey-error-summary'" in {
-              doc.select("a").get(0).id() shouldEqual "dummyKey-error-summary"
+              a.id() shouldEqual "dummyKey-error-summary"
             }
 
             "should have the data-focus 'dummyKey'" in {
-              doc.select("a").get(0).attr("data-focuses") shouldEqual "dummyKey"
+              a.attr("data-focuses") shouldEqual "dummyKey"
             }
 
             s"should have the error message ${errorMessages.dummyError}" in {
-              doc.select("a").get(0).text shouldEqual errorMessages.dummyError
+              a.text shouldEqual errorMessages.dummyError
             }
           }
         }
