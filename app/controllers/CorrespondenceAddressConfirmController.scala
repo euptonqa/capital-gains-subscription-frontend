@@ -16,71 +16,79 @@
 
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-import config.{AppConfig, SubscriptionSessionCache}
+import auth.AuthorisedActions
+import common.Keys.KeystoreKeys
+import config.AppConfig
 import connectors.KeystoreConnector
-import models.{CompanyAddressModel, YesNoModel}
-import play.api.data.Form
-import play.api.mvc.{Action, Result}
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.frontend.controller.FrontendController
 import forms.YesNoForm
+import models.{CompanyAddressModel, YesNoModel}
+import play.api.Logger
+import play.api.data.Form
+import play.api.i18n.MessagesApi
+import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
 class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
-                                                       subscriptionSessionCache: SubscriptionSessionCache,
-                                                       servicesConfig: ServicesConfig,
-                                                       yesNoForm: YesNoForm) extends FrontendController {
+                                                       val messagesApi: MessagesApi,
+                                                       stateService: KeystoreConnector,
+                                                       actions: AuthorisedActions)
+  extends FrontendController {
 
+  val correspondenceAddressConfirm: Action[AnyContent] =
+    actions.authorisedNonResidentOrganisationAction { implicit user =>
+      implicit request =>
 
-  val keyStoreConnector = new KeystoreConnector(appConfig, subscriptionSessionCache, servicesConfig)
+        for {
+          registrationDetails <- stateService.fetchAndGetBusinessData()
+          existingAnswer <- stateService.fetchAndGetFormData[YesNoModel](KeystoreKeys.useRegistrationAddressKey)
+        } yield {
+          (existingAnswer, registrationDetails) match {
 
-  val keystoreKey = "stubKey"
-  //TODO: Find out actual key/create key
+            case (_, None) =>
+              Logger.warn("Failed to retrieved registration details from BusinessCustomer keystore")
+              InternalServerError(views.html.error_template)
 
-  val correspondenceAddressConfirm = Action.async {
-    implicit request =>
-      val containsData = Ok(views.html.helloworld.hello_world(appConfig))
-      val doesNotContainData = Ok(views.html.helloworld.hello_world(appConfig))
-      //TODO: Replace with correspondence address and fill for containsData with obtained KS data
-      keyStoreConnector.fetchAndGetFormData[CompanyAddressModel](keystoreKey).map {
-        case Some(data) => containsData
-        case None => doesNotContainData
-      }
-  }
+            case (None, Some(details)) =>
+              val emptyForm = new YesNoForm(messagesApi).yesNoForm
+              Ok(views.html.useRegisteredAddress(appConfig, emptyForm, details.businessAddress))
 
-  val submitCorrespondenceAddressConfirm = Action.async { implicit request =>
-    val yes = Redirect(routes.HelloWorld.helloWorld())
-    //TODO: Capital Gains Contact Details page
-    val no = Redirect(routes.HelloWorld.helloWorld())
-    //TODO: User details/enter correspondence details page
-
-    def errorAction(form: Form[YesNoModel]): Future[Result] ={
-      keyStoreConnector.fetchAndGetFormData[CompanyAddressModel](keystoreKey).map {
-        case Some(data) => BadRequest(views.html.useRegisteredAddress(appConfig, form, data))
-        case None => BadRequest(views.html.useRegisteredAddress(appConfig, form,
-          CompanyAddressModel(None, None, None, None, None, None)))
-      }
+            case (Some(data), Some(details)) =>
+              val populatedForm = new YesNoForm(messagesApi).yesNoForm.fill(data)
+              Ok(views.html.useRegisteredAddress(appConfig, populatedForm, details.businessAddress))
+          }
+        }
     }
 
-    def successAction(model: YesNoModel) = {
-      for {
-        save <- keyStoreConnector.saveFormData[YesNoModel](keystoreKey, model)
-        route <- routeRequest(model)
-      } yield route
+  val submitCorrespondenceAddressConfirm: Form[YesNoModel] => Action[AnyContent] =
+    form => actions.authorisedNonResidentOrganisationAction { implicit user =>
+      implicit request =>
+
+        stateService.fetchAndGetBusinessData().flatMap {
+          case None =>
+            Logger.warn("Failed to retrieved registration details from BusinessCustomer keystore")
+            Future.successful(InternalServerError(views.html.error_template))
+
+          case Some(details) => processRequest(details.businessAddress)
+        }
+
+        def processRequest(address: CompanyAddressModel): Future[Result] = {
+          form.fold(
+            errors => Future.successful(BadRequest(views.html.useRegisteredAddress(appConfig, errors, address))),
+
+            model => {
+              for {
+                _ <- stateService.saveFormData(KeystoreKeys.useRegistrationAddressKey, model)
+                _ <- if (model.response) stateService.saveFormData(KeystoreKeys.correspondenceAddressKey, address) else Future()
+              } yield {
+                Ok(views.html.helloworld.hello_world(appConfig))
+              }
+            }
+          )
+        }
     }
-
-    def routeRequest(data: YesNoModel): Future[Result] = {
-      if(data.response)
-        Future.successful(Redirect(routes.HelloWorld.helloWorld()))
-      else
-        Future.successful(no)
-    }
-
-    yesNoForm.yesNoForm.bindFromRequest.fold(errorAction, successAction)
-  }
-
 }
