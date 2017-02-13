@@ -20,7 +20,7 @@ import assets.{ControllerTestSpec, MessageLookup}
 import auth.{AuthorisedActions, CgtNROrganisation}
 import common.Keys.KeystoreKeys
 import connectors.KeystoreConnector
-import models.{CompanyAddressModel, ContactDetailsModel, ReviewDetails, SubscriptionReference}
+import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTestSpec {
 
   val unauthorisedLoginUri = "dummy-unauthorised-url"
-  val validBusinessData = ReviewDetails("", None, CompanyAddressModel(None, None, None, None, None, None), "123456789", "123456789",
+  val validBusinessData = ReviewDetails("", None, Address("", "", None, None, None, ""), "123456789", "123456789",
     isAGroup = false, directMatch = false, None)
 
   def createMockActions(valid: Boolean = false): AuthorisedActions = {
