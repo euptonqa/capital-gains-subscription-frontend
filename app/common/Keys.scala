@@ -23,6 +23,7 @@ object Keys {
   object KeystoreKeys {
 
     val correspondenceAddressKey = "correspondenceAddress"
+    val contactDetailsKey = "contactDetails"
 
   }
 }

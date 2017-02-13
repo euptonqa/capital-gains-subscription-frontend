@@ -19,8 +19,9 @@ package controllers
 import assets.ControllerTestSpec
 import auth.{AuthorisedActions, CgtNROrganisation}
 import builders.TestUserBuilder
+import common.Keys.KeystoreKeys
 import connectors.KeystoreConnector
-import models.{CompanyAddressModel, ReviewDetails, SubscriptionReference}
+import models.{CompanyAddressModel, ContactDetailsModel, ReviewDetails, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
@@ -66,13 +67,19 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
   def createMockPostController(companyAddressModel: Option[CompanyAddressModel],
                                referenceResponse: Future[Option[SubscriptionReference]],
                                businessData: Option[ReviewDetails],
-                               mockedActions: AuthorisedActions): CorrespondenceAddressFinalConfirmationController = {
+                               mockedActions: AuthorisedActions,
+                               contactDetailsModel: Option[ContactDetailsModel]): CorrespondenceAddressFinalConfirmationController = {
 
     val mockService = mock[SubscriptionService]
     val mockKeystoreConnector = mock[KeystoreConnector]
 
-    when(mockKeystoreConnector.fetchAndGetFormData[CompanyAddressModel](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockKeystoreConnector.fetchAndGetFormData[CompanyAddressModel](ArgumentMatchers.eq(KeystoreKeys.correspondenceAddressKey))(ArgumentMatchers.any(),
+      ArgumentMatchers.any()))
       .thenReturn(Future.successful(companyAddressModel))
+
+    when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](ArgumentMatchers.eq(KeystoreKeys.contactDetailsKey))(ArgumentMatchers.any(),
+      ArgumentMatchers.any()))
+      .thenReturn(Future.successful(contactDetailsModel))
 
     when(mockKeystoreConnector.fetchAndGetBusinessData()(ArgumentMatchers.any()))
       .thenReturn(Future.successful(businessData))
@@ -96,7 +103,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
         lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
           Future.successful(Some(SubscriptionReference("CGT123456"))),
-          Some(validBusinessData), actions)
+          Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
         "have a status of 303" in {
@@ -110,7 +117,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
       "there is no keystore data available" should {
         lazy val actions = createMockActions(valid = true)
-        lazy val controller = createMockPostController(None, Future.successful(Some(SubscriptionReference("CGT123456"))), None, actions)
+        lazy val controller = createMockPostController(None, Future.successful(Some(SubscriptionReference("CGT123456"))), None, actions, None)
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
         "have a status of 400" in {
@@ -121,7 +128,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       "no business data is returned" should {
         lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
-          Future.successful(Some(SubscriptionReference("CGT123456"))), None, actions)
+          Future.successful(Some(SubscriptionReference("CGT123456"))), None, actions, Some(ContactDetailsModel("", "", "")))
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
         "have a status of 500" in {
@@ -132,7 +139,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       "no CGT reference is returned" should {
         lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
-          Future.successful(None), Some(validBusinessData), actions)
+          Future.successful(None), Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
         "have a status of 500" in {
@@ -145,7 +152,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
         lazy val exception = new Exception("testMessage")
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
           Future.failed(exception),
-          Some(validBusinessData), actions)
+          Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
         "have a status of 500" in {
@@ -159,7 +166,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       lazy val actions = createMockActions()
       lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
-        Some(validBusinessData), actions)
+        Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
       lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
       "return a status of 303" in {

@@ -149,7 +149,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
   "SubscriptionConnecter .getSubscriptionResponseCompany with a valid request" should {
     val dummyRef = "CGT-2134"
 
-    val model = CompanySubmissionModel(Some("123456789"), None, None)
+    val model = CompanySubmissionModel(Some("123456789"), None, None, None)
 
     when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
@@ -168,7 +168,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
 
   "SubscriptionConnector .getSubscriptionResponseCompany with an invalid request" should {
 
-    val model = CompanySubmissionModel(Some("123456789"), None, None)
+    val model = CompanySubmissionModel(Some("123456789"), None, None, None)
 
     when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).

@@ -21,7 +21,7 @@ import javax.inject.{Inject, Singleton}
 import auth.AuthorisedActions
 import common.Keys
 import connectors.KeystoreConnector
-import models.{CompanyAddressModel, CompanySubmissionModel, ReviewDetails}
+import models.{CompanyAddressModel, CompanySubmissionModel, ContactDetailsModel, ReviewDetails}
 import play.api.mvc.{Action, AnyContent, Result}
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -39,12 +39,13 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(actions: Author
     implicit user =>
       implicit request =>
 
-        def successAction(companyAddressModel: CompanyAddressModel): Future[Result] = {
+        def successAction(companyAddressModel: CompanyAddressModel, contactDetailsModel: ContactDetailsModel): Future[Result] = {
           val result = {
 
             def handleBusinessData(reviewDetails: Option[ReviewDetails], companyAddressModel: CompanyAddressModel) = {
               reviewDetails match {
-                case Some(details) => Future.successful(CompanySubmissionModel(Some(details.safeId), Some(companyAddressModel), Some(details.businessAddress)))
+                case Some(details) => Future.successful(CompanySubmissionModel(Some(details.safeId),
+                  Some(contactDetailsModel), Some(companyAddressModel), Some(details.businessAddress)))
                 case _ => Future.failed(new Exception("Details not found"))
               }
             }
@@ -64,10 +65,19 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(actions: Author
         }
 
         val companyAddress = keystoreConnector.fetchAndGetFormData[CompanyAddressModel](Keys.KeystoreKeys.correspondenceAddressKey)
+        val contactDetails = keystoreConnector.fetchAndGetFormData[ContactDetailsModel](Keys.KeystoreKeys.contactDetailsKey)
 
-        companyAddress.flatMap {
-          case Some(data) => successAction(data)
-          case None => Future.successful(BadRequest(""))
+        def getResult(companyAddressModel: Option[CompanyAddressModel], contactDetailsModel: Option[ContactDetailsModel]): Future[Result] = {
+          (companyAddressModel, contactDetailsModel) match {
+            case (Some(address), Some(details)) => successAction(address, details)
+            case _ => Future.successful(BadRequest(""))
+          }
         }
+
+        for {
+          address <- companyAddress
+          details <- contactDetails
+          result <- getResult(address, details)
+        } yield result
   }
 }
