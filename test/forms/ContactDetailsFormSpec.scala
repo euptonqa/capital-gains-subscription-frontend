@@ -43,6 +43,40 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite {
       }
     }
 
+    "provided with a telephone number starting with a '+'" should {
+      val map = Map("contactName" -> "Name", "telephone" -> "+11111111111", "email" -> "example@email.com")
+      lazy val result = form.contactDetailsForm.bind(map)
+
+      "return a valid model" in {
+        result.value.isDefined shouldBe true
+      }
+
+      "return a model containing the stored data" in {
+        result.value.get shouldBe ContactDetailsModel("Name", "+11111111111", "example@email.com")
+      }
+
+      "contain no errors" in {
+        result.errors.isEmpty shouldBe true
+      }
+    }
+
+    "provided with a telephone number including spaces" should {
+      val map = Map("contactName" -> "Name", "telephone" -> "11111 111111", "email" -> "example@email.com")
+      lazy val result = form.contactDetailsForm.bind(map)
+
+      "return a valid model" in {
+        result.value.isDefined shouldBe true
+      }
+
+      "return a model containing the stored data" in {
+        result.value.get shouldBe ContactDetailsModel("Name", "11111 111111", "example@email.com")
+      }
+
+      "contain no errors" in {
+        result.errors.isEmpty shouldBe true
+      }
+    }
+
     "provided with no contact name" should {
       val map = Map("contactName" -> "", "telephone" -> "11111111111", "email" -> "example@email.com")
       lazy val result = form.contactDetailsForm.bind(map)
@@ -127,6 +161,22 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite {
         result.errors.head.message shouldBe Errors.errorEmail
       }
     }
-  }
 
+    "provided with an invalid email without an '@'" should {
+      val map = Map("contactName" -> "Name", "telephone" -> "11111111111", "email" -> "test.com")
+      lazy val result = form.contactDetailsForm.bind(map)
+
+      "return an invalid model" in {
+        result.value.isDefined shouldBe false
+      }
+
+      "contain one error" in {
+        result.errors.size shouldBe 1
+      }
+
+      "contain an error message for a required field" in {
+        result.errors.head.message shouldBe Errors.errorEmail
+      }
+    }
+  }
 }

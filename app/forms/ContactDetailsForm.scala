@@ -29,9 +29,9 @@ class ContactDetailsForm @Inject()(val messagesApi: MessagesApi) extends I18nSup
   val nonEmptyCheck: String => Boolean = input => !input.trim.isEmpty
 
   val verifyPhoneNumber: String => Boolean = number => {
-    val regex = """^+?[0-9]{0,24}$""".r
+    val regex = """^\+?[0-9]{0,24}$""".r
     if (nonEmptyCheck(number)) {
-      regex.findFirstMatchIn(number.trim).isDefined
+      regex.findFirstMatchIn(number.replaceAll(" ", "")).isDefined
     } else true
   }
 
