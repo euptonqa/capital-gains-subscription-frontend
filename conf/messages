@@ -24,6 +24,15 @@ invalidAffinityGroup.paragraph.three.trust.link = Trusts and Capital Gains tax
 invalidAffinityGroup.paragraph.three.pensionTrust = pension trust, see
 invalidAffinityGroup.paragraph.three.pensionTrust.link = Pension trustees: investments and tax
 
+## Enter Correspondence Address Messages ##
+enterCorrespondenceAddress.title = Your correspondence address
+enterCorrespondenceAddress.addressLineOne = Address line 1
+enterCorrespondenceAddress.addressLineTwo = Address line 2
+enterCorrespondenceAddress.addressLineThree = Address line 3 (optional)
+enterCorrespondenceAddress.addressLineFour = Address line 4 (optional)
+enterCorrespondenceAddress.country = Country
+enterCorrespondenceAddress.postcode = Postcode
+
 ## User Details Messages ##
 userDetails.title = Enter your name and address
 userDetails.secondaryHeading = Contact address
@@ -35,6 +44,13 @@ userDetails.townOrCity = Town or city
 userDetails.county = County
 userDetails.postCode = Postcode
 userDetails.country = Country
+
+##Contact Details Messages ##
+contactDetails.title = Capital Gains Tax contact details
+contactDetails.text = The person responsible for Capital Gains Tax related queries.
+contactDetails.contactName = Contact name
+contactDetails.telephone = Telephone
+contactDetails.email = Email
 
 ## Use Registered Address ##
 useRegisteredAddress.title = Your correspondence address
@@ -53,6 +69,8 @@ organisationType.pensionTrust = Pension trust administrator
 ## Error Messages ##
 errors.mandatory = Please select an option
 errors.required = This field is required
+errors.telephone = Please enter a valid telephone number
+errors.email = Please enter a valid email
 
 ## Common Messages ##
 common.continue = Continue

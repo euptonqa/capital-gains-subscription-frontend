@@ -21,23 +21,22 @@ import java.util.UUID
 import assets.ControllerTestSpec
 import config.{AppConfig, BusinessCustomerSessionCache, SubscriptionSessionCache, WSHttp}
 import models.ReviewDetails
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.logging.SessionId
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.logging.SessionId
 
 import scala.concurrent.Future
 
 class KeystoreConnectorSpec extends ControllerTestSpec {
 
-  lazy val sessionId = UUID.randomUUID.toString
-  lazy val http = mock[WSHttp]
-  lazy val config = mock[AppConfig]
-  lazy val subscriptionSessionCache = mock[SubscriptionSessionCache]
-  lazy val businessCustomerSessionCache = mock[BusinessCustomerSessionCache]
+  lazy val sessionId: String = UUID.randomUUID.toString
+  lazy val http: WSHttp = mock[WSHttp]
+  lazy val config: AppConfig = mock[AppConfig]
+  lazy val subscriptionSessionCache: SubscriptionSessionCache = mock[SubscriptionSessionCache]
+  lazy val businessCustomerSessionCache: BusinessCustomerSessionCache = mock[BusinessCustomerSessionCache]
 
   lazy implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 

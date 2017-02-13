@@ -29,7 +29,6 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig, key
 
   val correspondenceAddressConfirm = Action.async { implicit request =>
     keystoreConnector.fetchAndGetBusinessData().flatMap { data =>
-      println(s"#############$data####################")
       Future.successful(Ok(""))
     }
   }

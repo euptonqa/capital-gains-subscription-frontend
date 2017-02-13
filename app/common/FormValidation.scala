@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package controllers
+package common
 
-import uk.gov.hmrc.play.test.UnitSpec
+object FormValidation {
 
-class AmendCorrespondenceControllerSpec extends UnitSpec {
+  val nonEmptyCheck: String => Boolean = input => !input.isEmpty
 
-  "Calling .amendCorrespondenceAddress" when {
+  val textToOptional: String => Option[String] = input =>
+    if (input.isEmpty) None
+    else Some(input)
 
-  }
-
-  "Calling .submitCorrespondenceAddress" when {
-
+  val optionalToText: Option[String] => String = {
+    case Some(data) => data
+    case _ => ""
   }
 
 }

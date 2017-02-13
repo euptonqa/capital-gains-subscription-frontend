@@ -18,14 +18,13 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class CompanySubmissionModel(
-                                   sap: Option[String],
-                                   contactDetailsModel: Option[ContactDetailsModel],
-                                   contactAddress: Option[CompanyAddressModel],
-                                   registeredAddress: Option[CompanyAddressModel]
-                                 )
+case class CorrespondenceAddressModel(addressLineOne: String,
+                                      addressLineTwo: String,
+                                      addressLineThree: Option[String],
+                                      addressLineFour: Option[String],
+                                      country: String,
+                                      postcode: String)
 
-object CompanySubmissionModel {
-  implicit val formats: OFormat[CompanySubmissionModel] = Json.format[CompanySubmissionModel]
+object CorrespondenceAddressModel {
+  implicit val formats: OFormat[CorrespondenceAddressModel] = Json.format[CorrespondenceAddressModel]
 }
-

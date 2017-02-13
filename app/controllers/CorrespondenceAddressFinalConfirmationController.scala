@@ -16,46 +16,92 @@
 
 package controllers
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
 import auth.AuthorisedActions
+import common.Keys
 import config.AppConfig
 import connectors.KeystoreConnector
-import models.CompanyAddressModel
+import models.{CompanyAddressModel, CompanySubmissionModel, ContactDetailsModel, ReviewDetails}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent, Result}
+import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
+@Singleton
 class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppConfig,
                                                                  val messagesApi: MessagesApi,
-                                                                 keystoreConnector: KeystoreConnector,
-                                                                 actions: AuthorisedActions) extends FrontendController with I18nSupport {
-
+                                                                 actions: AuthorisedActions,
+                                                                 subscriptionService: SubscriptionService,
+                                                                 keystoreConnector: KeystoreConnector) extends FrontendController with I18nSupport {
   val correspondenceAddressFinalConfirmation = actions.authorisedNonResidentOrganisationAction { implicit user => implicit request =>
 
-      val businessData = keystoreConnector.fetchAndGetBusinessData()
+    val businessData = keystoreConnector.fetchAndGetBusinessData()
 
-      val addressData: Future[Option[CompanyAddressModel]] = keystoreConnector.fetchAndGetFormData[CompanyAddressModel]("correspondenceAddress")
+    val addressData: Future[Option[CompanyAddressModel]] = keystoreConnector.fetchAndGetFormData[CompanyAddressModel]("correspondenceAddress")
 
-      //TODO: Obtain CGT contact details
+    //TODO: Obtain CGT contact details
 
-      def yieldBusinessData = {
-        for {
-          data <- businessData
-          address <- addressData
-        } yield {
-          //TODO: Pass in CGT contact details
-          Ok(views.html.reviewBusinessDetails(appConfig, Some(data.get.businessAddress), address, data.get.businessName))
-        }
+    def yieldBusinessData = {
+      for {
+        data <- businessData
+        address <- addressData
+      } yield {
+        //TODO: Pass in CGT contact details
+        Ok(views.html.reviewBusinessDetails(appConfig, Some(data.get.businessAddress), address, data.get.businessName))
       }
+    }
 
-      yieldBusinessData.recoverWith {
-        case exception: Exception => Future.successful(BadRequest(exception.getMessage))
-      }
+    yieldBusinessData.recoverWith {
+      case exception: Exception => Future.successful(BadRequest(exception.getMessage))
+    }
   }
 
-  val submitCorrespondenceAddressFinalConfirmation = TODO
+  val submitCorrespondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction {
+    implicit user =>
+      implicit request =>
 
+        def successAction(companyAddressModel: CompanyAddressModel, contactDetailsModel: ContactDetailsModel): Future[Result] = {
+          val result = {
+
+            def handleBusinessData(reviewDetails: Option[ReviewDetails], companyAddressModel: CompanyAddressModel) = {
+              reviewDetails match {
+                case Some(details) => Future.successful(CompanySubmissionModel(Some(details.safeId),
+                  Some(contactDetailsModel), Some(companyAddressModel), Some(details.businessAddress)))
+                case _ => Future.failed(new Exception("Details not found"))
+              }
+            }
+
+            for {
+              businessData <- keystoreConnector.fetchAndGetBusinessData()
+              submissionModel <- handleBusinessData(businessData, companyAddressModel)
+              cgtRef <- subscriptionService.getSubscriptionResponseCompany(submissionModel)
+            } yield cgtRef
+          }
+
+          result.map { reference =>
+            Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(reference.get.cgtRef))
+          } recoverWith {
+            case error => Future.successful(InternalServerError(error.getMessage))
+          }
+        }
+
+        val companyAddress = keystoreConnector.fetchAndGetFormData[CompanyAddressModel](Keys.KeystoreKeys.correspondenceAddressKey)
+        val contactDetails = keystoreConnector.fetchAndGetFormData[ContactDetailsModel](Keys.KeystoreKeys.contactDetailsKey)
+
+        def getResult(companyAddressModel: Option[CompanyAddressModel], contactDetailsModel: Option[ContactDetailsModel]): Future[Result] = {
+          (companyAddressModel, contactDetailsModel) match {
+            case (Some(address), Some(details)) => successAction(address, details)
+            case _ => Future.successful(BadRequest(""))
+          }
+        }
+
+        for {
+          address <- companyAddress
+          details <- contactDetails
+          result <- getResult(address, details)
+        } yield result
+  }
 }

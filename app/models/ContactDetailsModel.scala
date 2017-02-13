@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package models
 
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import play.api.libs.json.Json
 
-class AmendCorrespondenceAddressController extends FrontendController {
+case class ContactDetailsModel(contactName: String, telephone: String, email: String)
 
-  val amendCorrespondenceAddress = TODO
-
-  val submitAmendCorrespondenceAddress =TODO
-
+object ContactDetailsModel {
+  implicit val formats = Json.format[ContactDetailsModel]
 }

@@ -26,6 +26,8 @@ object MessageLookup {
   object Errors {
     val errorMandatory = "Please select an option"
     val errorRequired = "This field is required"
+    val errorTelephone = "Please enter a valid telephone number"
+    val errorEmail = "Please enter a valid email"
   }
 
   object InvalidAffinityGroup {
@@ -47,6 +49,16 @@ object MessageLookup {
     val linkTextPensionTrust = "Pension trustees: investments and tax"
   }
 
+  object EnterCorrespondenceAddress {
+    val title = "Your correspondence address"
+    val addressLineOne = "Address line 1"
+    val addressLineTwo = "Address line 2"
+    val addressLineThree = "Address line 3 (optional)"
+    val addressLineFour = "Address line 4 (optional)"
+    val country = "Country"
+    val postcode = "Postcode"
+  }
+
   object UserDetails {
     val title = "Enter your name and address"
     val secondHeader = "Contact address"
@@ -58,6 +70,14 @@ object MessageLookup {
     val county = "County"
     val postCode = "Postcode"
     val country = "Country"
+  }
+
+  object ContactDetails {
+    val title = "Capital Gains Tax contact details"
+    val text = "The person responsible for Capital Gains Tax related queries."
+    val contactName = "Contact name"
+    val telephone = "Telephone"
+    val email = "Email"
   }
 
   object UseRegisteredAddress {
