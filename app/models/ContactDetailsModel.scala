@@ -16,16 +16,10 @@
 
 package models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Json
 
-case class CompanySubmissionModel(
-                                   sap: Option[String],
-                                   contactDetailsModel: Option[ContactDetailsModel],
-                                   contactAddress: Option[CompanyAddressModel],
-                                   registeredAddress: Option[CompanyAddressModel]
-                                 )
+case class ContactDetailsModel(contactName: String, telephone: String, email: String)
 
-object CompanySubmissionModel {
-  implicit val formats: OFormat[CompanySubmissionModel] = Json.format[CompanySubmissionModel]
+object ContactDetailsModel {
+  implicit val formats = Json.format[ContactDetailsModel]
 }
-

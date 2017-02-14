@@ -50,7 +50,7 @@ class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
 
         def successAction(correspondenceAddressModel: CorrespondenceAddressModel): Future[Result] = {
           keystoreConnector.saveFormData[CorrespondenceAddressModel](keystoreKeys.correspondenceAddressKey, correspondenceAddressModel)
-          Future.successful(Redirect(routes.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()))
+          Future.successful(Redirect(routes.ContactDetailsController.contactDetails()))
         }
 
         correspondenceAddressForm.correspondenceAddressForm.bindFromRequest.fold(errors =>
