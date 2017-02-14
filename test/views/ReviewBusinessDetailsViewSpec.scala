@@ -189,9 +189,9 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
         }
 
         "have a button" which {
-          lazy val button = doc.select("input")
+          lazy val button = doc.select("button")
           s"has the text ${messages.registerConfirm}" in {
-            button.attr("value") shouldBe messages.registerConfirm
+            button.text() shouldBe messages.registerConfirm
           }
 
           "has the class 'button'" in {
