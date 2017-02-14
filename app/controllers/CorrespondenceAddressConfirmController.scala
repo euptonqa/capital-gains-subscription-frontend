@@ -80,7 +80,6 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
               else Redirect(controllers.routes.HelloWorld.helloWorld().url)
             }
           }
-
         )
 
         stateService.fetchAndGetBusinessData().flatMap {
