@@ -35,8 +35,8 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
 
   "The ReviewBusinessDetailsView" should {
 
-    val registeredModel = CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None)
-    val contactModel = CompanyAddressModel(Some("hello"), Some("hello"), None, None, None, None)
+    val registeredModel = CompanyAddressModel(Some("hello"), Some("hello2"), None, None, None, None)
+    val contactModel = CompanyAddressModel(Some("hello"), Some("hello2"), None, None, None, None)
     val detailsModel = ContactDetailsModel("name", "telephone", "email")
     lazy val view = reviewBusinessDetails(appConfig, registeredModel, contactModel, "business name", detailsModel)
     lazy val doc = Jsoup.parse(view.body)
@@ -92,10 +92,18 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
                 tHeader.text() shouldBe messages.registeredAddress
               }
             "has a td with the relevant address details found in the registeredAddress model" which {
-              lazy val tdOne = row.select("td:nth-of-type(1)")
-              "with the innerHtml" in {
-                tdOne.html() shouldBe registeredModel.addressLine1.get + "<br> " +
-                  registeredModel.addressLine2.get + "<br>"
+              lazy val tdOne = row.select("td:nth-of-type(1) ul")
+
+              "have two list elements" in {
+                tdOne.select("li").size() shouldBe 2
+              }
+
+              s"with a first element of ${registeredModel.addressLine1}" in {
+                tdOne.select("li").get(0).text() shouldBe registeredModel.addressLine1.get
+              }
+
+              s"with a second element of ${registeredModel.addressLine2}" in {
+                tdOne.select("li").get(1).text() shouldBe registeredModel.addressLine2.get
               }
             }
           }
@@ -112,20 +120,35 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
             }
           }
           "has a td with the relevant address details found in the correspondenceAddress model" which {
-            lazy val tdOne = row.select("td:nth-of-type(1)")
-            "with the innerHtml" in {
-              tdOne.html() shouldBe registeredModel.addressLine1.get + "<br> " +
-                registeredModel.addressLine2.get + "<br>"
+            lazy val tdOne = row.select("td:nth-of-type(1) ul")
+
+            "have two list elements" in {
+              tdOne.select("li").size() shouldBe 2
             }
-            s"has a td for ${MessageLookup.Common.change}" in {
+
+            s"with a first element of ${registeredModel.addressLine1}" in {
+              tdOne.select("li").get(0).text() shouldBe registeredModel.addressLine1.get
+            }
+
+            s"with a second element of ${registeredModel.addressLine2}" in {
+              tdOne.select("li").get(1).text() shouldBe registeredModel.addressLine2.get
+            }
+
+            s"has a td for ${MessageLookup.Common.change}" which {
               lazy val tdTwo = row.select("td:nth-of-type(2)")
-              tdTwo.text() shouldBe MessageLookup.Common.change
+
+              "has the change link text" in {
+                tdTwo.text() shouldBe MessageLookup.Common.change
+              }
+
+              "has the link to the correspondence address entry page" in {
+                tdTwo.select("a").attr("href") shouldBe controllers.routes.EnterCorrespondenceAddressController.enterCorrespondenceAddress().url
+              }
             }
           }
         }
 
         "have a fourth table row" which {
-          //TODO: needs further updating when view updated to take in CGT contact details
           lazy val row = table.select("tr:nth-of-type(4)")
           "has a table header" which {
             lazy val tHeader = row.select("th")
@@ -137,15 +160,31 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
             }
           }
           "has a td for CGT contact details" which {
-            lazy val tdThree = row.select("td:nth-of-type(3)")
-            "with the innerHtml" in {
-              tdThree.html() shouldBe "name<br>telephone<br>email<br>"
+            lazy val tdOne = row.select("td:nth-of-type(1) ul")
+
+            "has a first element of 'name'" in {
+              tdOne.select("li").get(0).text() shouldBe "name"
+            }
+
+            "has a second element of 'telephone'" in {
+              tdOne.select("li").get(1).text() shouldBe "telephone"
+            }
+
+            "has a third element of 'email'" in {
+              tdOne.select("li").get(2).text() shouldBe "email"
             }
           }
 
-          "has a td for Change" in {
+          s"has a td for ${MessageLookup.Common.change}" which {
             lazy val tdTwo = row.select("td:nth-of-type(2)")
-            tdTwo.text() shouldBe MessageLookup.Common.change
+
+            "has the change link text" in {
+              tdTwo.text() shouldBe MessageLookup.Common.change
+            }
+
+            "has the link to the contact details page" in {
+              tdTwo.select("a").attr("href") shouldBe controllers.routes.ContactDetailsController.contactDetails().url
+            }
           }
         }
 

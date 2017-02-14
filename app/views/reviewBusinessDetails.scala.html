@@ -8,24 +8,26 @@
     <tr>
         <th style="vertical-align: top">@addressTypeName</th>
         <td>
-            @if(companyAddressModel.addressLine1.isDefined){
-                @companyAddressModel.addressLine1.get<br/>
-            }
-            @if(companyAddressModel.addressLine2.isDefined){
-                @companyAddressModel.addressLine2.get<br/>
-            }
-            @if(companyAddressModel.addressLine3.isDefined){
-                @companyAddressModel.addressLine3.get<br/>
-            }
-            @if(companyAddressModel.addressLine4.isDefined){
-                @companyAddressModel.addressLine4.get<br/>
-            }
-            @if(companyAddressModel.postCode.isDefined){
-                @companyAddressModel.postCode.get<br/>
-            }
-            @if(companyAddressModel.country.isDefined){
-                @companyAddressModel.country.get<br/>
-            }
+            <ul>
+                @if(companyAddressModel.addressLine1.isDefined){
+                    <li>@companyAddressModel.addressLine1.get</li>
+                }
+                @if(companyAddressModel.addressLine2.isDefined){
+                    <li>@companyAddressModel.addressLine2.get</li>
+                }
+                @if(companyAddressModel.addressLine3.isDefined){
+                    <li>@companyAddressModel.addressLine3.get</li>
+                }
+                @if(companyAddressModel.addressLine4.isDefined){
+                    <li>@companyAddressModel.addressLine4.get</li>
+                }
+                @if(companyAddressModel.postCode.isDefined){
+                    <li>@companyAddressModel.postCode.get</li>
+                }
+                @if(companyAddressModel.country.isDefined){
+                    <li>@companyAddressModel.country.get</li>
+                }
+            </ul>
         </td>
         <td style="vertical-align: top">
             @if(redirect.isDefined){
@@ -60,9 +62,11 @@
                         <tr>
                             <th style="vertical-align: top">@Messages("reviewBusinessDetails.contactDetails")</th>
                             <td>
-                                @contactDetails.contactName<br/>
-                                @contactDetails.telephone<br/>
-                                @contactDetails.email<br/>
+                                <ul>
+                                    <li>@contactDetails.contactName</li>
+                                    <li>@contactDetails.telephone</li>
+                                    <li>@contactDetails.email</li>
+                                </ul>
                             </td>
                             <td><a href="@controllers.routes.ContactDetailsController.contactDetails.url">@Messages("common.change")</a></td>
                         </tr>
