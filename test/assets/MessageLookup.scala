@@ -27,6 +27,11 @@ object MessageLookup {
     val errorRequired = "This field is required"
     val errorTelephone = "Please enter a valid telephone number"
     val errorEmail = "Please enter a valid email"
+    val dummyError = "Dummy error message"
+  }
+
+  object ErrorSummary {
+    val errorSummaryHeading = "This page has errors"
   }
 
   object InvalidAffinityGroup {

@@ -33,7 +33,7 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
   lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
   implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
-  "The Enter Correspondence Address view" should {
+  "The Enter Correspondence Address view with a form with no errors" should {
     lazy val form = new CorrespondenceAddressForm(messagesApi)
     lazy val view = enterCorrespondenceAddress(appConfig, form.correspondenceAddressForm)
     lazy val doc = Jsoup.parse(view.body)
@@ -205,6 +205,17 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
       "has the id 'continue-button'" in {
         button.attr("id") shouldBe "continue-button"
       }
+    }
+  }
+
+  "The Enter Correspondence Address view with a form with errors" should {
+    lazy val form = new CorrespondenceAddressForm(messagesApi)
+    lazy val map = Map("addressLineOne" -> "Something", "addressLineTwo" -> "Something else")
+    lazy val view = enterCorrespondenceAddress(appConfig, form.correspondenceAddressForm.bind(map))
+    lazy val doc = Jsoup.parse(view.body).toString
+
+    "display an error summary" in {
+      doc should include("id=\"error-summary-display\"")
     }
   }
 }

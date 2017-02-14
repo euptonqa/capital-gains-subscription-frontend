@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package forms
+package assets
 
-import javax.inject.Inject
 import play.api.data.Form
-import play.api.data.Forms._
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import common.Constants.InvalidUserTypes
+import play.api.data.Forms.{mapping, text}
 import common.FormValidation._
-import models.OrganisationModel
 
-class OrganisationForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
+object TestForm {
 
-  val organisationForm = Form(
-    mapping(
-      "organisationType" -> text
-        .verifying(Messages("errors.mandatory"), nonEmptyCheck)
-        .verifying(Messages("errors.mandatory"), input => InvalidUserTypes.users.contains(input))
-    )(OrganisationModel.apply)(OrganisationModel.unapply)
+  private val bindingError: TestModel => Boolean = model => model.anotherField == ""
+
+  val testForm = Form(
+    mapping (
+      "response" -> text
+        .verifying(MessageLookup.Errors.dummyError, nonEmptyCheck),
+      "anotherField" -> text
+    )(TestModel.apply)(TestModel.unapply)
+    .verifying(MessageLookup.Errors.dummyError, model => bindingError(model))
   )
 }
+
+case class TestModel(response: String, anotherField: String)
