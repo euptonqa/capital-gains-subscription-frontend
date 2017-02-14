@@ -212,8 +212,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
       }
 
       "redirect the user to the correct location" in {
-        //TODO: replace with the correct URL
-        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/hello-world")
+        redirectLocation(result) shouldBe Some(controllers.routes.ContactDetailsController.contactDetails().url)
       }
 
       "save the user response" in {
@@ -245,7 +244,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
 
       "redirect the user to the correct location" in {
         //TODO: replace with the correct URL
-        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/hello-world")
+        redirectLocation(result) shouldBe Some(controllers.routes.EnterCorrespondenceAddressController.enterCorrespondenceAddress().url)
       }
 
       "save the user response" in {

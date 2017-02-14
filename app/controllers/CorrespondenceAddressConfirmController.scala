@@ -76,8 +76,8 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
               _ <- stateService.saveFormData(KeystoreKeys.useRegistrationAddressKey, success)
               _ <- if (success.response) stateService.saveFormData(KeystoreKeys.correspondenceAddressKey, address) else Future(false)
             } yield {
-              if (success.response) Redirect(controllers.routes.HelloWorld.helloWorld().url)
-              else Redirect(controllers.routes.HelloWorld.helloWorld().url)
+              if (success.response) Redirect(controllers.routes.ContactDetailsController.contactDetails().url)
+              else Redirect(controllers.routes.EnterCorrespondenceAddressController.enterCorrespondenceAddress().url)
             }
           }
         )
