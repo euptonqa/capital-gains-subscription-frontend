@@ -75,7 +75,7 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
 
   def getSubscriptionResponseCompany(companySubmissionModel: CompanySubmissionModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
 
-    val postUrl = s"""$serviceUrl/$companyUrl"""
+    val postUrl = s"""$serviceUrl$companyUrl"""
     http.POST[JsValue, HttpResponse](postUrl, Json.toJson(companySubmissionModel)).map {
       response =>
         response.status match {
