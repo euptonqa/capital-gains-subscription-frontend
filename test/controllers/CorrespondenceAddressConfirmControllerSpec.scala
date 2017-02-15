@@ -22,7 +22,7 @@ import auth.{AuthorisedActions, CgtNROrganisation}
 import common.Keys.KeystoreKeys
 import connectors.KeystoreConnector
 import forms.YesNoForm
-import models.{CompanyAddressModel, ReviewDetails, YesNoModel}
+import models.{Address, ReviewDetails, YesNoModel}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
@@ -39,22 +39,6 @@ import uk.gov.hmrc.play.frontend.auth.AuthContext
 import scala.concurrent.Future
 
 class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
-
-  object TestData {
-    val businessAddress = CompanyAddressModel(addressLine1 = None,
-      addressLine2 = None,
-      addressLine3 = None,
-      addressLine4 = None,
-      postCode = None,
-      country = None)
-
-    val businessDetails = ReviewDetails(businessName = "",
-      businessAddress = businessAddress,
-      sapNumber = "",
-      safeId = "",
-      businessType = None,
-      agentReferenceNumber = None)
-  }
 
   val unauthorisedLoginUri = "dummy-unauthorised-url"
 
@@ -81,13 +65,28 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
     mockActions
   }
 
+  object TestData {
+    val businessAddress = Address(line_1 = "",
+      line_2 = "",
+      line_3 = None,
+      line_4 = None,
+      country = "")
+
+    val businessDetails = ReviewDetails(businessName = "",
+      businessAddress = businessAddress,
+      sapNumber = "",
+      safeId = "",
+      businessType = None,
+      agentReferenceNumber = None)
+  }
+
   "Calling .correspondenceAddressConfirm" when {
 
     "user is not authorised" should {
 
       val request = FakeRequest("", "")
       val stateService = mock[KeystoreConnector]
-      val actions = createMockActions(false)
+      val actions = createMockActions()
       val form = new YesNoForm(messagesApi)
       lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
       lazy val result = target.correspondenceAddressConfirm(request)
@@ -174,7 +173,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
 
       val request = FakeRequest("", "")
       val stateService = mock[KeystoreConnector]
-      val actions = createMockActions(false)
+      val actions = createMockActions()
       val form = new YesNoForm(messagesApi)
       lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
       lazy val result = target.submitCorrespondenceAddressConfirm(request)
@@ -232,7 +231,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
 
     "user answers with 'Yes'" should {
 
-      val request = FakeRequest("","").withFormUrlEncodedBody(("response", "Yes"))
+      val request = FakeRequest("", "").withFormUrlEncodedBody(("response", "Yes"))
       val stateService = mock[KeystoreConnector]
       val actions = createMockActions(true)
       val form = new YesNoForm(messagesApi)
@@ -263,7 +262,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
 
     "user answers with 'No'" should {
 
-      val request = FakeRequest("","").withFormUrlEncodedBody(("response", "No"))
+      val request = FakeRequest("", "").withFormUrlEncodedBody(("response", "No"))
       val stateService = mock[KeystoreConnector]
       val actions = createMockActions(true)
       val form = new YesNoForm(messagesApi)
