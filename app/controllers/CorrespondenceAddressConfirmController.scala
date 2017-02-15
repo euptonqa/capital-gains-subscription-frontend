@@ -34,7 +34,7 @@ import scala.concurrent.Future
 @Singleton
 class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
                                                        val messagesApi: MessagesApi,
-                                                       sessionervice: KeystoreConnector,
+                                                       sessionService: KeystoreConnector,
                                                        actions: AuthorisedActions,
                                                        form: YesNoForm)
   extends FrontendController with I18nSupport {
@@ -44,8 +44,8 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
       implicit request => {
 
         for {
-          registrationDetails <- sessionervice.fetchAndGetBusinessData()
-          existingAnswer <- sessionervice.fetchAndGetFormData[YesNoModel](KeystoreKeys.useRegistrationAddressKey)
+          registrationDetails <- sessionService.fetchAndGetBusinessData()
+          existingAnswer <- sessionService.fetchAndGetFormData[YesNoModel](KeystoreKeys.useRegistrationAddressKey)
         } yield {
           (existingAnswer, registrationDetails) match {
 
@@ -73,8 +73,8 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
           errors => Future.successful(BadRequest(views.html.useRegisteredAddress(appConfig, errors, address))),
           success => {
             for {
-              _ <- sessionervice.saveFormData(KeystoreKeys.useRegistrationAddressKey, success)
-              _ <- if (success.response) sessionervice.saveFormData(KeystoreKeys.correspondenceAddressKey, address) else Future(false)
+              _ <- sessionService.saveFormData(KeystoreKeys.useRegistrationAddressKey, success)
+              _ <- if (success.response) sessionService.saveFormData(KeystoreKeys.correspondenceAddressKey, address) else Future(false)
             } yield {
               if (success.response) Redirect(controllers.routes.ContactDetailsController.contactDetails().url)
               else Redirect(controllers.routes.EnterCorrespondenceAddressController.enterCorrespondenceAddress().url)
@@ -82,7 +82,7 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
           }
         )
 
-        sessionervice.fetchAndGetBusinessData().flatMap {
+        sessionService.fetchAndGetBusinessData().flatMap {
           case None =>
             Logger.warn("Failed to retrieved registration details from BusinessCustomer keystore")
             Future.successful(InternalServerError)
