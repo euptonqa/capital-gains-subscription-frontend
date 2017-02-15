@@ -72,6 +72,9 @@ errors.required = This field is required
 errors.telephone = Please enter a valid telephone number
 errors.email = Please enter a valid email
 
+## Error Summary Messages ##
+error.summary.heading = This page has errors
+
 ## Common Messages ##
 common.continue = Continue
 common.yes = Yes

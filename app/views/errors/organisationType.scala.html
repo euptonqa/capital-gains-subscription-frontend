@@ -1,9 +1,11 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers.formInputRadioGroup
+@import views.html.helpers._
 
 @(appConfig: config.AppConfig, organisationForm: Form[OrganisationModel])(implicit request: Request[_], messages: Messages)
 
 @views.html.main_template(title = Messages("organisationType.title"), bodyClasses = None, appConfig = appConfig) {
+
+    @errorSummary(organisationForm, "select-organisation-types", "organisationType")
 
     <h1>@Messages("organisationType.question")</h1>
 

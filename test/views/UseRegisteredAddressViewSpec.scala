@@ -25,7 +25,7 @@ import models.CompanyAddressModel
 
 class UseRegisteredAddressViewSpec extends ViewTestSpec {
 
-  "The useRegisteredAddress view" should {
+  "The useRegisteredAddress view when supplied with a valid form" should {
     lazy val form = new YesNoForm(messagesApi)
     val addressModel = CompanyAddressModel(
       Some("line1"),
@@ -170,7 +170,7 @@ class UseRegisteredAddressViewSpec extends ViewTestSpec {
     }
   }
 
-  "The useRegisteredAddress view with no optional data" should {
+  "The useRegisteredAddress view with no optional data but a valid form" should {
     lazy val form = new YesNoForm(messagesApi)
     val addressModel = CompanyAddressModel(None, None, None, None, None, None)
     lazy val view = useRegisteredAddress(appConfig, form.yesNoForm, addressModel)
@@ -182,6 +182,19 @@ class UseRegisteredAddressViewSpec extends ViewTestSpec {
       "has no elements" in {
         list.select("li").size() shouldBe 0
       }
+    }
+  }
+
+  "The useRegisteredAddress view when supplied with a form with errors" should {
+
+    lazy val form = new YesNoForm(messagesApi)
+    lazy val map = Map("response" -> "")
+    val addressModel = CompanyAddressModel(None, None, None, None, None, None)
+    lazy val view = useRegisteredAddress(appConfig, form.yesNoForm.bind(map), addressModel)
+    lazy val doc = Jsoup.parse(view.body).toString
+
+    "display an error summary" in {
+      doc should include("id=\"error-summary-display\"")
     }
   }
 }

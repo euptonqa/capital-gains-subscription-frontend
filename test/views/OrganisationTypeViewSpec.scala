@@ -38,7 +38,7 @@ class OrganisationTypeViewSpec extends UnitSpec with WithFakeApplication with Fa
 
   implicit val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
-  "The organisation type view" should {
+  "The organisation type view when supplied with a form with no errors" should {
 
     lazy val view = views.html.errors.organisationType(appConfig, orgForm.organisationForm)
     lazy val doc = Jsoup.parse(view.body)
@@ -102,6 +102,17 @@ class OrganisationTypeViewSpec extends UnitSpec with WithFakeApplication with Fa
       "have the class 'button'" in {
         continueButton.hasClass("button") shouldBe true
       }
+    }
+  }
+
+  "The organisation type view when supplied with a form with no errors" should {
+
+    lazy val map = Map("organisationType" -> "")
+    lazy val view = views.html.errors.organisationType(appConfig, orgForm.organisationForm.bind(map))
+    lazy val doc = Jsoup.parse(view.body).toString
+
+    "display an error summary" in {
+      doc should include("id=\"error-summary-display\"")
     }
   }
 }

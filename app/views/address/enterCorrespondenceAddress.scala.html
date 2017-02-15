@@ -1,5 +1,6 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form, input}
 @import models.CompanyAddressModel
+@import views.html.helpers.errorSummary
 
 @(appConfig: config.AppConfig, correspondenceAddressForm: Form[CompanyAddressModel])(implicit request: Request[_], messages: Messages)
 
@@ -14,6 +15,8 @@
 }
 
 @views.html.main_template(title = Messages("enterCorrespondenceAddress.title"), bodyClasses = None, appConfig = appConfig) {
+
+    @errorSummary(correspondenceAddressForm, "enter-correspondence-address", "enterCorrespondenceAddress")
 
     <h1 class="heading-xlarge">@Messages("enterCorrespondenceAddress.title")</h1>
 

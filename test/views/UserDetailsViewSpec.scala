@@ -34,7 +34,7 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
   lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
   implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
-  "The User Details view" should {
+  "The User Details view when supplied with a form with no errors" should {
     lazy val form = new UserFactsForm(messagesApi)
     lazy val view = userDetails(appConfig, form.fullDetailsForm)
     lazy val doc = Jsoup.parse(view.body)
@@ -264,6 +264,18 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
       "has the id 'continue-button'" in {
         button.attr("id") shouldBe "continue-button"
       }
+    }
+  }
+
+  "The User Details view when supplied with a form with errors" should {
+
+    lazy val form = new UserFactsForm(messagesApi)
+    lazy val map = Map("firstName" -> "", "lastName" -> "")
+    lazy val view = userDetails(appConfig, form.fullDetailsForm.bind(map))
+    lazy val doc = Jsoup.parse(view.body).toString
+
+    "display an error summary" in {
+      doc should include("id=\"error-summary-display\"")
     }
   }
 }
