@@ -83,6 +83,24 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
 
   "Calling .correspondenceAddressConfirm" when {
 
+    "user is not authorised" should {
+
+      val request = FakeRequest("", "")
+      val stateService = mock[KeystoreConnector]
+      val actions = createMockActions(false)
+      val form = new YesNoForm(messagesApi)
+      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+      lazy val result = target.correspondenceAddressConfirm(request)
+
+      "return a return a 303 response code" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to a login page" in {
+        redirectLocation(result) shouldBe Some(unauthorisedLoginUri)
+      }
+    }
+
     "no details for the business exist in keystore" should {
 
       "return a return a 500 response code" in {
@@ -151,6 +169,24 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
   }
 
   "Calling .submitCorrespondenceAddressConfirm" when {
+
+    "user is not authorised" should {
+
+      val request = FakeRequest("", "")
+      val stateService = mock[KeystoreConnector]
+      val actions = createMockActions(false)
+      val form = new YesNoForm(messagesApi)
+      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+      lazy val result = target.submitCorrespondenceAddressConfirm(request)
+
+      "return a return a 303 response code" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to a login page" in {
+        redirectLocation(result) shouldBe Some(unauthorisedLoginUri)
+      }
+    }
 
     "no details for the business exist in keystore" should {
 
