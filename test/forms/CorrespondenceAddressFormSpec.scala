@@ -17,9 +17,9 @@
 package forms
 
 import assets.MessageLookup.Errors
+import models.CompanyAddressModel
 import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
-import models.CorrespondenceAddressModel
 
 class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
@@ -36,7 +36,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "return a model containing the stored data" in {
-        result.value.get shouldBe CorrespondenceAddressModel("XX Fake Lane", "Fake Town", None, None, "Fakeland", "XX22 1XX")
+        result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), None, None, Some("Fakeland"), Some("XX22 1XX"))
       }
 
       "contain no errors" in {
@@ -54,7 +54,8 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "return a model containing the stored data" in {
-        result.value.get shouldBe CorrespondenceAddressModel("XX Fake Lane", "Fake Town", Some("Fake City"), Some("Fake County"), "Fakeland", "XX22 1XX")
+        result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), Some("Fake City"),
+          Some("Fake County"), Some("Fakeland"), Some("XX22 1XX"))
       }
 
       "contain no errors" in {

@@ -79,6 +79,16 @@ error.summary.heading = This page has errors
 common.continue = Continue
 common.yes = Yes
 common.no = No
+common.change = Change
+
+##Review BusinessDetails Page ##
+reviewBusinessDetails.title = Review business details
+reviewBusinessDetails.subtitle = Your Capital Gains Tax account will be created with these details.
+reviewBusinessDetails.colHeading = Name
+reviewBusinessDetails.registeredAddress = Registered address
+reviewBusinessDetails.correspondenceAddress = Correspondence address
+reviewBusinessDetails.contactDetails = Capital Gains Tax contact details
+reviewBusinessDetails.registerConfirm = Register and confirm
 
 ## Confirmation View Messages ##
 

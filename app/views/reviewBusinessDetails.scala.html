@@ -1,0 +1,86 @@
+@import models._
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@(appConfig: config.AppConfig, registeredAddress: CompanyAddressModel, contactAddress: CompanyAddressModel, businessName: String, contactDetails: ContactDetailsModel)(implicit request: Request [_], messages: Messages)
+<!--TODO: Take in CGT contact details -->
+@insertAddress(addressTypeName: String, companyAddressModel: CompanyAddressModel, redirect: Option[String]) = {
+
+    <tr>
+        <th style="vertical-align: top">@addressTypeName</th>
+        <td>
+            <ul>
+                @if(companyAddressModel.addressLine1.isDefined){
+                    <li>@companyAddressModel.addressLine1.get</li>
+                }
+                @if(companyAddressModel.addressLine2.isDefined){
+                    <li>@companyAddressModel.addressLine2.get</li>
+                }
+                @if(companyAddressModel.addressLine3.isDefined){
+                    <li>@companyAddressModel.addressLine3.get</li>
+                }
+                @if(companyAddressModel.addressLine4.isDefined){
+                    <li>@companyAddressModel.addressLine4.get</li>
+                }
+                @if(companyAddressModel.postCode.isDefined){
+                    <li>@companyAddressModel.postCode.get</li>
+                }
+                @if(companyAddressModel.country.isDefined){
+                    <li>@companyAddressModel.country.get</li>
+                }
+            </ul>
+        </td>
+        <td style="vertical-align: top">
+            @if(redirect.isDefined){
+            <a href='@redirect.get'>@Messages("common.change")</a>
+            }
+        </td>
+    </tr>
+}
+
+@views.html.main_template(title = Messages("reviewBusinessDetails.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <div class="grid-row">
+        <div class="colum-two-thirds">
+
+            <h1 class="heading-xlarge">@Messages("reviewBusinessDetails.title")</h1>
+
+            <h2 class="heading" style="font-weight:normal">@Messages("reviewBusinessDetails.subtitle")</h2>
+
+            <div class="form-group">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th style="width:60%">@Messages("reviewBusinessDetails.colHeading")</th>
+                            <td>@businessName</td>
+                            <td></td>
+                        </tr>
+                            @insertAddress(Messages("reviewBusinessDetails.registeredAddress"),
+                            registeredAddress, None)
+
+                            @insertAddress(Messages("reviewBusinessDetails.correspondenceAddress"),
+                            contactAddress, Some(controllers.routes.EnterCorrespondenceAddressController.enterCorrespondenceAddress.url))
+                        <tr>
+                            <th style="vertical-align: top">@Messages("reviewBusinessDetails.contactDetails")</th>
+                            <td>
+                                <ul>
+                                    <li>@contactDetails.contactName</li>
+                                    <li>@contactDetails.telephone</li>
+                                    <li>@contactDetails.email</li>
+                                </ul>
+                            </td>
+                            <td><a href="@controllers.routes.ContactDetailsController.contactDetails.url">@Messages("common.change")</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group">
+                @form(action = controllers.routes.CorrespondenceAddressFinalConfirmationController.submitCorrespondenceAddressFinalConfirmation) {
+                    <button class="button" type="submit" id="registerConfirm">
+                        @Messages("reviewBusinessDetails.registerConfirm")
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+}

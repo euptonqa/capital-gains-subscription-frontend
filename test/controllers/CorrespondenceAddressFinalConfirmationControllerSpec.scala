@@ -16,12 +16,12 @@
 
 package controllers
 
-import assets.ControllerTestSpec
+import assets.{ControllerTestSpec, MessageLookup}
 import auth.{AuthorisedActions, CgtNROrganisation}
-import builders.TestUserBuilder
 import common.Keys.KeystoreKeys
 import connectors.KeystoreConnector
-import models.{CompanyAddressModel, ContactDetailsModel, ReviewDetails, SubscriptionReference}
+import models._
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTestSpec {
 
   val unauthorisedLoginUri = "dummy-unauthorised-url"
-  val validBusinessData = ReviewDetails("", None, mock[CompanyAddressModel], "123456789", "123456789",
+  val validBusinessData = ReviewDetails("", None, Address("", "", None, None, None, ""), "123456789", "123456789",
     isAGroup = false, directMatch = false, None)
 
   def createMockActions(valid: Boolean = false): AuthorisedActions = {
@@ -87,12 +87,80 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
     when(mockService.getSubscriptionResponseCompany(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(referenceResponse)
 
-    new CorrespondenceAddressFinalConfirmationController(mockedActions, mockService, mockKeystoreConnector)
+    new CorrespondenceAddressFinalConfirmationController(mockConfig, messagesApi, mockedActions, mockService, mockKeystoreConnector)
   }
 
 
   "Calling .correspondenceAddressFinalConfirmation" when {
 
+    "the business data, correspondence address and contact details are supplied" should {
+      lazy val actions = createMockActions(valid = true)
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""), Some(""))),
+        Future.successful(Some(SubscriptionReference("CGT123456"))),
+        Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
+      lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
+      lazy val doc = Jsoup.parse(bodyOf(result))
+
+      "return a status of 200" in {
+        status(result) shouldBe 200
+      }
+
+      "load the final confirmation page" in {
+        doc.title() shouldBe MessageLookup.ReviewBusinessDetails.title
+      }
+    }
+
+    "no business data is found" should {
+      lazy val actions = createMockActions(valid = true)
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+        Future.successful(Some(SubscriptionReference("CGT123456"))),
+        None, actions, Some(ContactDetailsModel("", "", "")))
+      lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+    }
+
+    "no correspondence address is found" should {
+      lazy val actions = createMockActions(valid = true)
+      lazy val controller = createMockPostController(None,
+        Future.successful(Some(SubscriptionReference("CGT123456"))),
+        Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
+      lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+    }
+
+    "no contact details are found" should {
+      lazy val actions = createMockActions(valid = true)
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""), Some(""))),
+        Future.successful(Some(SubscriptionReference("CGT123456"))),
+        Some(validBusinessData), actions, None)
+      lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+    }
+
+    "the user is unauthorised" should {
+      lazy val actions = createMockActions(valid = false)
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""), Some(""))),
+        Future.successful(Some(SubscriptionReference("CGT123456"))),
+        Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
+      lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to 'dummy-unauthorised-url'" in {
+        redirectLocation(result) shouldBe Some("dummy-unauthorised-url")
+      }
+    }
   }
 
   "Calling .submitCorrespondenceAddressFinalConfirmation" when {

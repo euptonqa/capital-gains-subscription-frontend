@@ -20,8 +20,11 @@ import javax.inject.{Inject, Singleton}
 
 import auth.AuthorisedActions
 import common.Keys
+import common.Keys.KeystoreKeys
+import config.AppConfig
 import connectors.KeystoreConnector
 import models.{CompanyAddressModel, CompanySubmissionModel, ContactDetailsModel, ReviewDetails}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -29,11 +32,33 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import scala.concurrent.Future
 
 @Singleton
-class CorrespondenceAddressFinalConfirmationController @Inject()(actions: AuthorisedActions,
+class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppConfig,
+                                                                 val messagesApi: MessagesApi,
+                                                                 actions: AuthorisedActions,
                                                                  subscriptionService: SubscriptionService,
-                                                                 keystoreConnector: KeystoreConnector) extends FrontendController {
+                                                                 keystoreConnector: KeystoreConnector) extends FrontendController with I18nSupport {
+  val correspondenceAddressFinalConfirmation = actions.authorisedNonResidentOrganisationAction { implicit user => implicit request =>
 
-  val correspondenceAddressFinalConfirmation = TODO
+    val businessData = keystoreConnector.fetchAndGetBusinessData()
+
+    val addressData: Future[Option[CompanyAddressModel]] = keystoreConnector.fetchAndGetFormData[CompanyAddressModel](KeystoreKeys.correspondenceAddressKey)
+
+    val contactDetailsData:Future[Option[ContactDetailsModel]] = keystoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetailsKey)
+
+    def yieldBusinessData = {
+      for {
+        data <- businessData
+        address <- addressData
+        contactDetails <- contactDetailsData
+      } yield {
+        Ok(views.html.reviewBusinessDetails(appConfig, data.get.businessAddress, address.get, data.get.businessName, contactDetails.get))
+      }
+    }
+
+    yieldBusinessData.recoverWith {
+      case exception: Exception => Future.successful(BadRequest(exception.getMessage))
+    }
+  }
 
   val submitCorrespondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction {
     implicit user =>
