@@ -49,4 +49,6 @@ class EnrolmentToCGTCheckSpec extends UnitSpec with WithFakeApplication {
       await(enrolmentToCGTCheck.checkEnrolments(None)) shouldBe false
     }
   }
+
+  //"Calling .checkAgentEnrolments"
 }
