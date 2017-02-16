@@ -51,7 +51,13 @@
                     <tbody>
                         <tr>
                             <th style="width:60%">@Messages("reviewBusinessDetails.colHeading")</th>
-                            <td>@businessName</td>
+                            <td>
+                                <ul>
+                                    <li>
+                                        @businessName
+                                    </li>
+                                </ul>
+                            </td>
                             <td></td>
                         </tr>
                             @insertAddress(Messages("reviewBusinessDetails.registeredAddress"),
