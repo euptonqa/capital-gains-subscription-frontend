@@ -4,8 +4,8 @@ GET        /hello-world                                             controllers.
 
 GET        /individual/invalid-user                                 controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
 
-GET        /individual/confirmation                                 controllers.CGTSubscriptionController.confirmationOfSubscription(cgtReference: String)
-POST       /individual/confirmation                                 controllers.CGTSubscriptionController.submitConfirmationOfSubscription
+GET        /confirmation                                            controllers.CGTSubscriptionController.confirmationOfSubscription(cgtReference: String)
+POST       /confirmation                                            controllers.CGTSubscriptionController.submitConfirmationOfSubscription
 
 GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
 
