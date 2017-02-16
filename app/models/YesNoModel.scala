@@ -16,4 +16,10 @@
 
 package models
 
+import play.api.libs.json.{Json, OFormat}
+
 case class YesNoModel (response: Boolean)
+
+object YesNoModel {
+  implicit val formats: OFormat[YesNoModel] = Json.format[YesNoModel]
+}
