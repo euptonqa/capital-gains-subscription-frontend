@@ -57,6 +57,7 @@ class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with WithF
     val notAuthorisedRedirectURI = "http://not-authorised-example.com"
     val twoFactorURI = appConfig.twoFactorUrl
     val enrolmentURI = "http://sample-enrolment-uri.com"
+    val affinityGroup = "http://affinitygroup.com"
 
     implicit val fakeRequest = FakeRequest()
 
@@ -73,7 +74,7 @@ class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with WithF
     val enrolmentsFail = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
 
     def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]], affinityGroup: String): AgentVisibilityPredicate =
-      new AgentVisibilityPredicate(appConfig, mockedService(dataModel, enrolments), enrolmentToCGTCheck)(postSignUri,
+      new AgentVisibilityPredicate(appConfig, mockedService(dataModel, enrolments, affinityGroup), enrolmentToCGTCheck)(postSignUri,
         notAuthorisedRedirectURI,
         twoFactorURI,
         affinityGroup,
@@ -81,7 +82,7 @@ class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with WithF
 
     "return true for page visibility when the conditions of the predicate are satisfied" in {
       lazy val authContext = TestUserBuilder.visibilityPredicateUserPass
-      val result = predicate(Some(authorisationDataModelPass), Some(enrolmentsPass), "Agent")(authContext, fakeRequest)
+      val result = predicate(Some(authorisationDataModelPass), Some(enrolmentsPass), authorisationDataModelPass.affinityGroup)(authContext, fakeRequest)
 
       lazy val pageVisibility = await(result)
 
@@ -90,13 +91,11 @@ class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with WithF
 
     "return false for page visibility when predicate conditions are not satisfied" in {
       lazy val authContext = TestUserBuilder.visibilityPredicateUserFail
-      val result = predicate(Some(authorisationDataModelFail), Some(enrolmentsFail), "Agent")(authContext, fakeRequest)
+      val result = predicate(Some(authorisationDataModelFail), Some(enrolmentsFail), authorisationDataModelFail.affinityGroup)(authContext, fakeRequest)
 
       lazy val pageVisibility = await(result)
 
       pageVisibility.isVisible shouldBe false
     }
-
-    //TODO: Additional test for when affinity group check added in for predicate supplied with a non-agent AG type
   }
 }

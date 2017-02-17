@@ -30,12 +30,13 @@ class AgentVisibilityPredicate @Inject()(applicationConfig: AppConfig,
                               (postSignInRedirectUrl: String,
                                notAuthorisedRedirectUrl: String,
                                twoFactorUrl: String,
-                               affinityGroup: String,
+                               affinityGroupUrl: String,
                                enrolmentUri: String) extends CompositePageVisibilityPredicate {
 
   override def children: Seq[PageVisibilityPredicate] = Seq(
     new TwoFAPredicate(twoFactorURI),
-    //TODO: add in affinity group predicate when completed
+    //TODO: add in affinity group predicate when completed,
+    new AffinityGroupAgentPredicate(authorisationService)(new URI(affinityGroupUrl)),
     new AgentEnrolmentPredicate(new URI(enrolmentUri), authorisationService, enrolmentToCGTCheck)
   )
 
