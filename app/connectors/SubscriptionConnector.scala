@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import config.{AppConfig, WSHttp}
 import models.{CompanySubmissionModel, SubscriptionReference, UserFactsModel}
+import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import play.api.http.Status._
@@ -27,6 +28,7 @@ import play.api.libs.json.{JsValue, Json}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.{Success, Try}
 
 @Singleton
 class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extends ServicesConfig {
@@ -43,7 +45,11 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
       response =>
         response.status match {
           case OK =>
-            Some(response.json.as[SubscriptionReference])
+            Try(response.json.as[SubscriptionReference]) match {
+              case Success(value) => Some(value)
+              case _ => logSubscriptionResponseError(subscriptionNonResidentUrl)
+                None
+            }
           case _ => None
         }
     }
@@ -55,7 +61,11 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
       response =>
         response.status match {
           case OK =>
-            Some(response.json.as[SubscriptionReference])
+            Try(response.json.as[SubscriptionReference]) match {
+              case Success(value) => Some(value)
+              case _ => logSubscriptionResponseError(subscriptionNonResidentNinoUrl)
+                None
+            }
           case _ => None
         }
     }
@@ -67,7 +77,11 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
       response =>
         response.status match {
           case OK =>
-            Some(response.json.as[SubscriptionReference])
+            Try(response.json.as[SubscriptionReference]) match {
+              case Success(value) => Some(value)
+              case _ => logSubscriptionResponseError(subscriptionNonResidentUrl)
+                None
+            }
           case _ => None
         }
     }
@@ -80,10 +94,16 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
       response =>
         response.status match {
           case OK =>
-            Some(response.json.as[SubscriptionReference])
+            Try(response.json.as[SubscriptionReference]) match {
+              case Success(value) => Some(value)
+              case _ => logSubscriptionResponseError(companyUrl)
+                None
+            }
           case _ => None
         }
     }
   }
 
+  private def logSubscriptionResponseError(url: String) =
+    Logger.warn(s"Error converting subscription response body to SubscriptionReference model. Url: $url")
 }

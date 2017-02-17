@@ -40,7 +40,7 @@ class CGTSubscriptionControllerSpec extends UnitSpec with MockitoSugar with With
 
   implicit val mat: akka.stream.Materializer = mock[akka.stream.Materializer]
 
-  "GET /resident/individual/confirmation" should {
+  "GET /resident/confirmation" should {
 
     lazy val result = target.confirmationOfSubscription("testString")(fakeRequest)
     lazy val view = Jsoup.parse(bodyOf(result))
@@ -54,7 +54,7 @@ class CGTSubscriptionControllerSpec extends UnitSpec with MockitoSugar with With
     }
   }
 
-  "POST /resident/individual/confirmation" should {
+  "POST /resident/confirmation" should {
 
     lazy val result = target.submitConfirmationOfSubscription(fakeRequest)
 
