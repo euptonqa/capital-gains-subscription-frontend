@@ -49,4 +49,18 @@ class AffinityGroupCheckSpec extends UnitSpec{
       await(AffinityGroupCheck.affinityGroupCheckCompany(Individual)) shouldBe false
     }
   }
+
+  "Calling .affinityGroupCheckAgent" should {
+    "return true when supplied with an agent user" in {
+      await(AffinityGroupCheck.affinityGroupCheckAgent(Agent)) shouldBe true
+    }
+
+    "return false when supplied with an organisation user" in {
+      await(AffinityGroupCheck.affinityGroupCheckAgent(Organisation)) shouldBe false
+    }
+
+    "return false when supplied with an individual user" in {
+      await(AffinityGroupCheck.affinityGroupCheckAgent(Individual)) shouldBe false
+    }
+  }
 }
