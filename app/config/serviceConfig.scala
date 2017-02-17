@@ -17,7 +17,8 @@
 package config
 
 import javax.inject.{Inject, Singleton}
-import play.api.Configuration
+
+import play.api.{Application, Configuration}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 trait AppConfig extends ServicesConfig {
@@ -39,7 +40,7 @@ trait AppConfig extends ServicesConfig {
 }
 
 @Singleton
-class ApplicationConfig @Inject()(configuration: Configuration) extends AppConfig {
+class ApplicationConfig @Inject()(configuration: Configuration, val app: Application) extends AppConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
   private def constructUrl(key: String) = baseUrl(key) + configuration.getString(s"microservice.services.$key.path").getOrElse("")
