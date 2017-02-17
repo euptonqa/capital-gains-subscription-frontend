@@ -35,7 +35,6 @@ class AgentVisibilityPredicate @Inject()(applicationConfig: AppConfig,
 
   override def children: Seq[PageVisibilityPredicate] = Seq(
     new TwoFAPredicate(twoFactorURI),
-    //TODO: add in affinity group predicate when completed,
     new AffinityGroupAgentPredicate(authorisationService)(new URI(affinityGroupUrl)),
     new AgentEnrolmentPredicate(new URI(enrolmentUri), authorisationService, enrolmentToCGTCheck)
   )
