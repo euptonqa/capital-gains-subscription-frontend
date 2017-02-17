@@ -63,7 +63,7 @@ class CGTSubscriptionControllerSpec extends UnitSpec with MockitoSugar with With
     }
 
     "redirect to the hello world page" in {
-      redirectLocation(result).get should include("/hello-world")
+      redirectLocation(result).get should include("http://www.gov.uk")
     }
   }
 }

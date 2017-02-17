@@ -53,7 +53,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
 
 
   def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-    if (isEnrolled) Future.successful(Redirect(controllers.routes.HelloWorld.helloWorld()))
+    if (isEnrolled) Future.successful(Redirect("http://www.gov.uk"))
     //TODO: you're already enrolled to CGT!
     else checkForCgtRefAndRedirectToConfirmation(user)
   }
@@ -62,7 +62,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
 
     subscriptionService.getSubscriptionResponse(user.nino.get).map{
       case Some(response) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(response.cgtRef))
-      case _ => Redirect(controllers.routes.HelloWorld.helloWorld())
+      case _ => Redirect("http://www.gov.uk")
     }
   }
 }

@@ -131,7 +131,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
 
       //TODO: Update this to the actual link later
       "redirect to the I-form screen" in {
-        redirectLocation(result).get.toString shouldBe Some(routes.HelloWorld.helloWorld()).get.url
+        redirectLocation(result).get.toString shouldBe "http://www.gov.uk"
       }
     }
 
