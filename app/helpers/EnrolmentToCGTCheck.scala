@@ -28,4 +28,9 @@ class EnrolmentToCGTCheck @Inject()() {
     case Some(data) => Future.successful(data.exists(_.key == Keys.cGTEnrolmentKey))
     case None => Future.successful(false)
   }
+
+  def checkAgentEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = enrolments match {
+    case Some(data) => Future.successful(data.exists(_.key == Keys.cgtAgentEnrolmentKey))
+    case None => Future.successful(false)
+  }
 }

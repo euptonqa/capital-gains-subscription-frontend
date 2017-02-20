@@ -19,6 +19,7 @@ package common
 object Keys {
 
   val cGTEnrolmentKey: String = "HMRC-CGTS-INDV"
+  val cgtAgentEnrolmentKey: String = "HMRC-AGENT-AGENT"
 
   object KeystoreKeys {
 

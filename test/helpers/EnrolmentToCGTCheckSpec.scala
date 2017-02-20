@@ -49,4 +49,28 @@ class EnrolmentToCGTCheckSpec extends UnitSpec with WithFakeApplication {
       await(enrolmentToCGTCheck.checkEnrolments(None)) shouldBe false
     }
   }
+
+  "Calling .checkAgentEnrolments" should {
+    "return true when supplied with a single element Sequence of Enrolments that includes the Agent CGT enrolment" in {
+      val enrolments = Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")),""))
+      await(enrolmentToCGTCheck.checkAgentEnrolments(Some(enrolments))) shouldBe true
+    }
+
+    "return true when supplied with a multiple element Sequence of Enrolments that includes the Agent CGT enrolment" in {
+      val enrolments = Seq(
+        Enrolment("Not the Agent CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""),
+        Enrolment(Keys.cgtAgentEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), "")
+      )
+      await(enrolmentToCGTCheck.checkAgentEnrolments(Some(enrolments))) shouldBe true
+    }
+
+    "return false when supplied with a Sequence of Enrolments that does not include the Agent CGT enrolment" in {
+      val enrolments = Seq(Enrolment("Not the Agent CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""))
+      await(enrolmentToCGTCheck.checkAgentEnrolments(Some(enrolments))) shouldBe false
+    }
+
+    "return false when supplied with a None" in {
+      await(enrolmentToCGTCheck.checkAgentEnrolments(None)) shouldBe false
+    }
+  }
 }
