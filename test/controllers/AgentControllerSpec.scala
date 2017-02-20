@@ -17,7 +17,7 @@
 package controllers
 
 import assets.ControllerTestSpec
-import auth.{AuthorisedActions, CgtNROrganisation}
+import auth.{AuthorisedActions, CgtAgent, CgtNROrganisation}
 import builders.TestUserBuilder
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -38,18 +38,18 @@ class AgentControllerSpec extends ControllerTestSpec {
     val mockActions = mock[AuthorisedActions]
 
     if (valid) {
-      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedAgentAction(ArgumentMatchers.any()))
         .thenAnswer(new Answer[Action[AnyContent]] {
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedNROrganisationAction](0)
-            val organisation = CgtNROrganisation(authContext)
-            Action.async(action(organisation))
+            val action = invocation.getArgument[AuthenticatedAgentAction](0)
+            val agent = CgtAgent(authContext)
+            Action.async(action(agent))
           }
         })
     }
     else {
-      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedAgentAction(ArgumentMatchers.any()))
         .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
     }
 

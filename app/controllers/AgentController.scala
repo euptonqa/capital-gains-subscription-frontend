@@ -29,7 +29,7 @@ class AgentController @Inject()(appConfig: AppConfig, authorisedActions: Authori
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 
-  val agent = authorisedActions.authorisedNonResidentOrganisationAction {
+  val agent = authorisedActions.authorisedAgentAction {
     implicit user =>
       implicit request =>
         Future.successful(Redirect(businessCustomerFrontendUrl))
