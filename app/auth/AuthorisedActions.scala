@@ -21,18 +21,42 @@ import javax.inject.Inject
 import config.ApplicationConfig
 import connectors.FrontendAuthorisationConnector
 import play.api.mvc.{Action, AnyContent}
-import predicates.{NonResidentIndividualVisibilityPredicate, NonResidentOrganisationVisibilityPredicate, ResidentIndividualVisibilityPredicate}
+import predicates._
 import services.AuthorisationService
-import types.{AuthenticatedIndividualAction, AuthenticatedNROrganisationAction}
+import types.{AuthenticatedAgentAction, AuthenticatedIndividualAction, AuthenticatedNROrganisationAction}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 
 class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
-                                 authorisationService: AuthorisationService,
-                                 frontendAuthorisationConnector: FrontendAuthorisationConnector)
+                                  authorisationService: AuthorisationService,
+                                  frontendAuthorisationConnector: FrontendAuthorisationConnector)
   extends Actions {
 
   override val authConnector: FrontendAuthorisationConnector = frontendAuthorisationConnector
+
+  private val composeAuthorisedAgentAction: AuthenticatedAgentAction => Action[AnyContent] = {
+    val postSignInRedirectUrl = ""
+    val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
+    val regime = new CgtRegime {
+      override def authenticationType: AuthenticationProvider = ggProvider
+    }
+
+    lazy val visibilityPredicate = new AgentVisibilityPredicate(applicationConfig, authorisationService)(postSignInRedirectUrl,
+      applicationConfig.notAuthorisedRedirectUrl,
+      applicationConfig.agentBadAffinity)
+
+    lazy val guardedAction: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
+
+    val authenticatedAction: AuthenticatedAgentAction => Action[AnyContent] = action => {
+      guardedAction.async {
+        authContext: AuthContext =>
+          implicit request =>
+            action(CgtAgent(authContext))(request)
+      }
+    }
+
+    authenticatedAction
+  }
 
   private val composeAuthorisedResidentIndividualAction: AuthenticatedIndividualAction => Action[AnyContent] = {
 
@@ -112,7 +136,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
       guardedAction.async {
         authContext: AuthContext =>
           implicit request =>
-          action(CgtNROrganisation(authContext))(request)
+            action(CgtNROrganisation(authContext))(request)
       }
     }
     authenticatedAction
@@ -125,6 +149,8 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   def authorisedNonResidentOrganisationAction(action: AuthenticatedNROrganisationAction): Action[AnyContent] =
     composeAuthorisedNonResidentOrganisationAction(action)
 
+  def authorisedAgentAgentAction(action: AuthenticatedAgentAction): Action[AnyContent] = composeAuthorisedAgentAction(action)
+
   trait CgtRegime extends TaxRegime {
     override def isAuthorised(accounts: Accounts): Boolean = true
 
@@ -132,4 +158,5 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
 
     override def unauthorisedLandingPage: Option[String] = Some(applicationConfig.notAuthorisedRedirectUrl)
   }
+
 }
