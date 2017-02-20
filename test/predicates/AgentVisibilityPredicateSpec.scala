@@ -20,24 +20,24 @@ import builders.TestUserBuilder
 import common.Constants.AffinityGroup
 import common.Keys
 import config.AppConfig
-import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment, Identifier}
 import org.mockito.ArgumentMatchers
-import org.scalatest.mock.MockitoSugar
-import services.AuthorisationService
 import org.mockito.Mockito._
+import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.inject.Injector
 import play.api.test.FakeRequest
+import services.AuthorisationService
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength, PayeAccount}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
+class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
   def mockedService(authorisationDataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]],
-                   enrolmentUri: String = "http://enrolments-uri.com",
+                    enrolmentUri: String = "http://enrolments-uri.com",
                     affinityGroup: String = "Agent"): AuthorisationService = {
     val mockService = mock[AuthorisationService]
 
@@ -49,20 +49,17 @@ class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with WithF
   }
 
   "Calling the AgentVisibilityPredicate when supplied with appropriate URIs" should {
-    val injector: Injector = fakeApplication.injector
+    val injector: Injector = app.injector
+
     def appConfig: AppConfig = injector.instanceOf[AppConfig]
-    def enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
 
     val postSignUri = "http://post-sign-in-example.com"
     val notAuthorisedRedirectURI = "http://not-authorised-example.com"
-    val twoFactorURI = appConfig.twoFactorUrl
     val enrolmentURI = "http://sample-enrolment-uri.com"
-    val affinityGroup = "http://affinitygroup.com"
 
     implicit val fakeRequest = FakeRequest()
 
     val nino = TestUserBuilder.createRandomNino
-
 
     val authorisationDataModelPass = AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Agent,
       ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$nino", Nino(nino)))))
@@ -70,15 +67,13 @@ class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with WithF
     val authorisationDataModelFail = AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
       ConfidenceLevel.L50, "example.com", Accounts())
 
-    val enrolmentsPass = Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(Identifier("test","test")), ""), Enrolment("key", Seq(), ""))
+    val enrolmentsPass = Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(Identifier("test", "test")), ""), Enrolment("key", Seq(), ""))
     val enrolmentsFail = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
 
     def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]], affinityGroup: String): AgentVisibilityPredicate =
-      new AgentVisibilityPredicate(appConfig, mockedService(dataModel, enrolments, affinityGroup), enrolmentToCGTCheck)(postSignUri,
+      new AgentVisibilityPredicate(appConfig, mockedService(dataModel, enrolments, affinityGroup))(postSignUri,
         notAuthorisedRedirectURI,
-        twoFactorURI,
-        affinityGroup,
-        enrolmentURI)
+        affinityGroup)
 
     "return true for page visibility when the conditions of the predicate are satisfied" in {
       lazy val authContext = TestUserBuilder.visibilityPredicateUserPass

@@ -20,19 +20,16 @@ import javax.inject.Inject
 
 import config.ApplicationConfig
 import connectors.FrontendAuthorisationConnector
-import helpers.EnrolmentToCGTCheck
 import play.api.mvc.{Action, AnyContent}
-import auth.CgtAgent
-import predicates.{AgentVisibilityPredicate, NonResidentIndividualVisibilityPredicate, NonResidentOrganisationVisibilityPredicate, ResidentIndividualVisibilityPredicate}
+import predicates._
 import services.AuthorisationService
 import types.{AuthenticatedAgentAction, AuthenticatedIndividualAction, AuthenticatedNROrganisationAction}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 
 class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
-                                 authorisationService: AuthorisationService,
-                                  enrolmentToCGTCheck: EnrolmentToCGTCheck,
-                                 frontendAuthorisationConnector: FrontendAuthorisationConnector)
+                                  authorisationService: AuthorisationService,
+                                  frontendAuthorisationConnector: FrontendAuthorisationConnector)
   extends Actions {
 
   override val authConnector: FrontendAuthorisationConnector = frontendAuthorisationConnector
@@ -44,11 +41,9 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
       override def authenticationType: AuthenticationProvider = ggProvider
     }
 
-    lazy val visibilityPredicate = new AgentVisibilityPredicate(applicationConfig, authorisationService, enrolmentToCGTCheck)(postSignInRedirectUrl,
+    lazy val visibilityPredicate = new AgentVisibilityPredicate(applicationConfig, authorisationService)(postSignInRedirectUrl,
       applicationConfig.notAuthorisedRedirectUrl,
-      applicationConfig.twoFactorUrl,
-      applicationConfig.agentBadAffinity,
-      "") //TODO: enrolmentUri redirect?
+      applicationConfig.agentBadAffinity)
 
     lazy val guardedAction: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
 
@@ -56,7 +51,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
       guardedAction.async {
         authContext: AuthContext =>
           implicit request =>
-          action(CgtAgent(authContext))(request)
+            action(CgtAgent(authContext))(request)
       }
     }
 
@@ -141,7 +136,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
       guardedAction.async {
         authContext: AuthContext =>
           implicit request =>
-          action(CgtNROrganisation(authContext))(request)
+            action(CgtNROrganisation(authContext))(request)
       }
     }
     authenticatedAction
@@ -163,4 +158,5 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
 
     override def unauthorisedLandingPage: Option[String] = Some(applicationConfig.notAuthorisedRedirectUrl)
   }
+
 }
