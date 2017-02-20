@@ -55,7 +55,6 @@ class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with OneAp
 
     val postSignUri = "http://post-sign-in-example.com"
     val notAuthorisedRedirectURI = "http://not-authorised-example.com"
-    val enrolmentURI = "http://sample-enrolment-uri.com"
 
     implicit val fakeRequest = FakeRequest()
 
