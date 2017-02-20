@@ -118,4 +118,13 @@ object MessageLookup {
     val contactDetails = "Capital Gains Tax contact details"
     val registerConfirm = "Register and confirm"
   }
+
+  object AgentConfirmation {
+    val title = "Your agent registration number"
+    val setUp = "You have successfully set up"
+    val forCgt = "for Capital Gains Tax"
+    val yourArn = "Your agent registration number (ARN) is"
+    val whatHappensNext = "What happens next?"
+    val addClients = "You can now add your clients."
+  }
 }
