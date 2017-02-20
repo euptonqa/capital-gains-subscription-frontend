@@ -137,7 +137,7 @@ class AgentSubscriptionConfirmationViewSpec extends ViewTestSpec {
           }
         }
 
-        "has a first paragraph that" should {
+        "has a second paragraph that" should {
 
           lazy val p2 = content.select("p").get(1)
 
