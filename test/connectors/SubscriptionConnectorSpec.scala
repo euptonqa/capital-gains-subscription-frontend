@@ -17,7 +17,7 @@
 package connectors
 
 import builders.TestUserBuilder
-import models.{CompanySubmissionModel, SubscriptionReference, UserFactsModel}
+import models.{AgentSubmissionModel, CompanySubmissionModel, SubscriptionReference, UserFactsModel}
 import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}
@@ -175,6 +175,41 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
       thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.toJson("invalid:n")))))
 
     val result = await(target.getSubscriptionResponseCompany(model))
+
+    "return None" in {
+      result shouldBe None
+    }
+  }
+
+  "SubscriptionConnecter .enrolAgent() with a valid request" should {
+    val dummyRef = "CGT-2134"
+
+    val model = AgentSubmissionModel("123456789", "ARN123456")
+
+    when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
+      thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse(dummyRef)))))
+
+    val result = await(target.enrolAgent(model))
+
+    "return a valid SubscriptionReference" in {
+      result.get shouldBe a[SubscriptionReference]
+    }
+
+    s"return a SubscriptionReference containing the reference $dummyRef" in {
+      result.get.cgtRef shouldBe dummyRef
+    }
+  }
+
+  "SubscriptionConnector .enrolAgent() with an invalid request" should {
+
+    val model = AgentSubmissionModel("123456789", "ARN123456")
+
+    when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
+      thenReturn(Future.successful(HttpResponse(BAD_REQUEST, Some(Json.toJson("invalid:n")))))
+
+    val result = await(target.enrolAgent(model))
 
     "return None" in {
       result shouldBe None

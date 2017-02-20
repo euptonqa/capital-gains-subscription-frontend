@@ -19,7 +19,7 @@ package connectors
 import javax.inject.{Inject, Singleton}
 
 import config.{AppConfig, WSHttp}
-import models.{CompanySubmissionModel, SubscriptionReference, UserFactsModel}
+import models.{AgentSubmissionModel, CompanySubmissionModel, SubscriptionReference, UserFactsModel}
 import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -35,6 +35,7 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
 
   lazy val serviceUrl: String = appConfig.subscription
   val companyUrl: String = "/subscribe/company"
+  val agentUrl: String = "/subscribe/agent"
   val subscriptionResidentUrl: String = "subscribe/resident/individual"
   val subscriptionNonResidentUrl: String = "subscribe/non-resident/individual"
   val subscriptionNonResidentNinoUrl: String = "subscribe/non-resident/individual-nino"
@@ -97,6 +98,23 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
             Try(response.json.as[SubscriptionReference]) match {
               case Success(value) => Some(value)
               case _ => logSubscriptionResponseError(companyUrl)
+                None
+            }
+          case _ => None
+        }
+    }
+  }
+
+  def enrolAgent(agentSubmissionModel: AgentSubmissionModel)(implicit hc: HeaderCarrier): Future[Option[SubscriptionReference]] = {
+
+    val postUrl = s"$serviceUrl$agentUrl"
+    http.POST[JsValue, HttpResponse](postUrl, Json.toJson(agentSubmissionModel)).map {
+      response =>
+        response.status match {
+          case OK =>
+            Try(response.json.as[SubscriptionReference]) match {
+              case Success(value) => Some(value)
+              case _ => logSubscriptionResponseError(agentUrl)
                 None
             }
           case _ => None
