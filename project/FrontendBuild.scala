@@ -30,14 +30,14 @@ private object AppDependencies {
 
   val compile = Seq(
     ws,
-    "uk.gov.hmrc" %% "frontend-bootstrap" % "7.10.0",
+    "uk.gov.hmrc" %% "frontend-bootstrap" % "7.11.0",
     "uk.gov.hmrc" %% "play-partials" % "5.2.0",
     "uk.gov.hmrc" %% "play-authorised-frontend" % "6.2.0",
     "uk.gov.hmrc" %% "play-config" % "3.0.0",
     "uk.gov.hmrc" %% "logback-json-logger" % "3.1.0",
     "uk.gov.hmrc" %% "govuk-template" % "5.0.0",
     "uk.gov.hmrc" %% "play-health" % "2.0.0",
-    "uk.gov.hmrc" %% "play-ui" % "5.4.0",
+    "uk.gov.hmrc" %% "play-ui" % "6.0.0",
     "uk.gov.hmrc" %% "emailaddress" % "2.0.0",
     "uk.gov.hmrc" %% "http-caching-client" % "6.1.0"
   )
@@ -56,7 +56,7 @@ private object AppDependencies {
         "org.jsoup" % "jsoup" % "1.8.3" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % scope,
-        "org.mockito" % "mockito-core" % "2.2.29" % "test"
+        "org.mockito" % "mockito-core" % "2.6.2" % "test"
       )
     }.test
   }
