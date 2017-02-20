@@ -32,6 +32,6 @@ class CGTSubscriptionController @Inject()(appConfig: AppConfig, val messagesApi:
   }
 
   val submitConfirmationOfSubscription: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Redirect(routes.HelloWorld.helloWorld()))
+    Future.successful(Redirect("http://www.gov.uk"))
   }
 }

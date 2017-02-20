@@ -147,8 +147,8 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
         status(result) shouldBe 303
       }
 
-      "redirect to the you are already enrolled on CGT error page/hello world stub" in {
-        redirectLocation(result).get.toString shouldBe routes.HelloWorld.helloWorld().toString
+      "redirect to the iForm page" in {
+        redirectLocation(result).get.toString shouldBe "http://www.gov.uk"
       }
     }
 
@@ -167,8 +167,8 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
         status(result) shouldBe 303
       }
 
-      "redirect to the hello world page/error page stub" in {
-        redirectLocation(result).get.toString shouldBe Some(routes.HelloWorld.helloWorld()).get.url
+      "redirect to the iForm page" in {
+        redirectLocation(result).get.toString shouldBe "http://www.gov.uk"
       }
     }
 
@@ -187,8 +187,8 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
         status(result) shouldBe 303
       }
 
-      "redirect to the hello world page" in {
-        redirectLocation(result).get.toString shouldBe Some(routes.HelloWorld.helloWorld()).get.url
+      "redirect to the iForm page" in {
+        redirectLocation(result).get.toString shouldBe "http://www.gov.uk"
       }
     }
 

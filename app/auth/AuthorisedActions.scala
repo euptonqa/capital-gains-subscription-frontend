@@ -102,7 +102,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     }
 
     lazy val visibilityPredicate = new NonResidentOrganisationVisibilityPredicate(
-      authorisationService)(controllers.routes.HelloWorld.helloWorld().url //TODO: add url for error page
+      authorisationService)("http://www.gov.uk" //TODO: add url for error page
     )
 
     lazy val guardedAction: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)

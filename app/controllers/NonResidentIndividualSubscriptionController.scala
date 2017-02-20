@@ -47,7 +47,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
 
   def routeRequest(alreadyEnrolled: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
     //TODO: Update the route here to point to the actual Iform (on success)
-    if (alreadyEnrolled) Future.successful(Redirect(routes.HelloWorld.helloWorld()))
+    if (alreadyEnrolled) Future.successful(Redirect("http://www.gov.uk"))
     else notEnrolled()
   }
 
