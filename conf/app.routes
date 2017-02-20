@@ -28,3 +28,7 @@ POST       /company/contact-details                                 controllers.
 
 GET        /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation()
 POST       /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.submitCorrespondenceAddressFinalConfirmation()
+
+GET        /agent/subscribe                                         controllers.AgentController.agent()
+
+GET        /agent/registered/subscribe                              controllers.AgentController.registeredAgent()

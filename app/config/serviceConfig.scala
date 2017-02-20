@@ -37,6 +37,7 @@ trait AppConfig extends ServicesConfig {
   val individualBadAffinity: String
   val subscription: String
   val businessCompanyFrontendRegister: String
+  val agentServiceUrl: String
 }
 
 @Singleton
@@ -63,4 +64,5 @@ class ApplicationConfig @Inject()(configuration: Configuration, val app: Applica
   override lazy val individualBadAffinity: String = configuration.getString(s"resident-individual-bad-affinity.url").getOrElse("")
   override lazy val subscription: String = configuration.getString(s"subscription.url").getOrElse("")
   override lazy val businessCompanyFrontendRegister: String = constructUrl("business-customer")
+  override lazy val agentServiceUrl: String = constructUrl("agent-service-frontend")
 }
