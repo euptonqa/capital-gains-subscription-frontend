@@ -62,7 +62,7 @@ class CGTSubscriptionControllerSpec extends UnitSpec with MockitoSugar with With
       status(result) shouldBe Status.SEE_OTHER
     }
 
-    "redirect to the hello world page" in {
+    "redirect to the iForm page" in {
       redirectLocation(result).get should include("http://www.gov.uk")
     }
   }
