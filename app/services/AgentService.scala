@@ -18,7 +18,7 @@ package services
 
 import javax.inject.Inject
 
-import connectors.{AgentEnrolmentResponse, SubscriptionConnector}
+import connectors.{AgentEnrolmentResponse, SubscriptionConnector, SuccessAgentEnrolmentResponse}
 import models.AgentSubmissionModel
 import uk.gov.hmrc.play.http.HeaderCarrier
 

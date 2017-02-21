@@ -273,7 +273,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
 
       lazy val result = target.submitCorrespondenceAddressConfirm(request)
 
-      "return a return a 303 response code" in {
+      "return a 303 response code" in {
         status(result) shouldBe 303
       }
 

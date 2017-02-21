@@ -19,15 +19,22 @@ package controllers
 import assets.ControllerTestSpec
 import auth.{AuthorisedActions, CgtAgent, CgtNROrganisation}
 import builders.TestUserBuilder
+import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
+import models.{Address, ReviewDetails}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.AgentService
 import types._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
+
+import scala.concurrent.Future
 
 class AgentControllerSpec extends ControllerTestSpec {
 
@@ -56,13 +63,37 @@ class AgentControllerSpec extends ControllerTestSpec {
     mockActions
   }
 
-  "Calling .registerAgent" when {
+  object TestData {
+    val businessAddress = Address(line_1 = "",
+      line_2 = "",
+      line_3 = None,
+      line_4 = None,
+      country = "")
+
+    val validBusinessDetails = ReviewDetails(businessName = "Agency Name",
+      businessAddress = businessAddress,
+      sapNumber = "",
+      safeId = "SAP number",
+      businessType = None,
+      agentReferenceNumber = Some("ARN123456"))
+
+    val invalidBusinessDetails = ReviewDetails(businessName = "Agency Name",
+      businessAddress = businessAddress,
+      sapNumber = "",
+      safeId = "SAP number",
+      businessType = None,
+      agentReferenceNumber = None)
+  }
+
+  "Calling .agent" when {
 
     "the agent is authorised" should {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val action = createMockActions(valid = true)
-      lazy val agentController: AgentController = new AgentController(mockConfig, action)
+      lazy val sessionService = mock[KeystoreConnector]
+      lazy val service = mock[AgentService]
+      lazy val agentController: AgentController = new AgentController(mockConfig, action, service, sessionService, messagesApi)
       lazy val result = await(agentController.agent(fakeRequest))
 
       "return a status of 303" in {
@@ -77,7 +108,9 @@ class AgentControllerSpec extends ControllerTestSpec {
     "the agent is unauthorised" should {
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val action = createMockActions()
-      lazy val agentController: AgentController = new AgentController(mockConfig, action)
+      lazy val sessionService = mock[KeystoreConnector]
+      lazy val service = mock[AgentService]
+      lazy val agentController: AgentController = new AgentController(mockConfig, action, service, sessionService, messagesApi)
       lazy val result = await(agentController.agent(fakeRequest))
 
       "return a status of 303" in {
@@ -86,6 +119,87 @@ class AgentControllerSpec extends ControllerTestSpec {
 
       "redirect to the test route" in {
         redirectLocation(result).get.toString shouldBe "just-a-test"
+      }
+    }
+  }
+
+  "Calling .registeredAgent" when {
+
+    "the agent is not authorised" should {
+
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      lazy val action = createMockActions()
+      lazy val sessionService = mock[KeystoreConnector]
+      lazy val service = mock[AgentService]
+      lazy val agentController: AgentController = new AgentController(mockConfig, action, service, sessionService, messagesApi)
+
+      lazy val result = await(agentController.registeredAgent(fakeRequest))
+
+      "return a return a 303 response code" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the test route" in {
+        redirectLocation(result).get.toString shouldBe "just-a-test"
+      }
+    }
+
+    "no details for the business exist in keystore" should {
+
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      lazy val action = createMockActions(valid = true)
+      lazy val sessionService = mock[KeystoreConnector]
+      lazy val service = mock[AgentService]
+      lazy val agentController: AgentController = new AgentController(mockConfig, action, service, sessionService, messagesApi)
+
+      when(sessionService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(None))
+
+      lazy val result = await(agentController.registeredAgent(fakeRequest))
+
+      "return a 500 response code" in {
+        status(result) shouldBe 500
+      }
+    }
+
+    "no ARN is returned from keystore" should {
+
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      lazy val action = createMockActions(valid = true)
+      lazy val sessionService = mock[KeystoreConnector]
+      lazy val service = mock[AgentService]
+      lazy val agentController: AgentController = new AgentController(mockConfig, action, service, sessionService, messagesApi)
+
+      when(sessionService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(Some(TestData.invalidBusinessDetails)))
+
+      lazy val result = await(agentController.registeredAgent(fakeRequest))
+
+      "return a 500 response code" in {
+        status(result) shouldBe 500
+      }
+    }
+
+    "supplied with a valid request" should {
+
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      lazy val action = createMockActions(valid = true)
+      lazy val sessionService = mock[KeystoreConnector]
+      lazy val service = mock[AgentService]
+      lazy val agentController: AgentController = new AgentController(mockConfig, action, service, sessionService, messagesApi)
+
+      when(sessionService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(Some(TestData.validBusinessDetails)))
+      when(service.getAgentEnrolmentResponse(any())(any())).thenReturn(Future.successful(SuccessAgentEnrolmentResponse))
+
+      lazy val result = await(agentController.registeredAgent(fakeRequest))
+
+      "return a 200 response code" in {
+        status(result) shouldBe 200
+      }
+
+      "load the correct view" which {
+
+        lazy val document = Jsoup.parse(bodyOf(result))
+
+       
       }
     }
   }

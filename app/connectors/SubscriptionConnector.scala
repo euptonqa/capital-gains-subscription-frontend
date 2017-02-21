@@ -22,7 +22,7 @@ import config.{AppConfig, WSHttp}
 import models.{AgentSubmissionModel, CompanySubmissionModel, SubscriptionReference, UserFactsModel}
 import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, InternalServerException}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import play.api.http.Status._
 import play.api.libs.json.{JsValue, Json}
 
