@@ -16,11 +16,19 @@
 
 package SubscriptionApiSpec
 
+import assets.MessageLookup.{ContactDetails, UseRegisteredAddress}
 import com.github.tomakehurst.wiremock.client.WireMock._
 import itutil.{IntegrationSpecBase, WiremockHelper}
+import models.{CompanyAddressModel, CompanySubmissionModel, ContactDetailsModel}
+import play.api.libs.json.Json
+import org.scalatest.mock.MockitoSugar
+
 import play.api.test.FakeApplication
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 class SubscriptionApiSpec extends IntegrationSpecBase {
+
+  implicit val hc = HeaderCarrier()
 
   val mockHost = WiremockHelper.wiremockHost
   val mockPort = WiremockHelper.wiremockPort
@@ -32,9 +40,10 @@ class SubscriptionApiSpec extends IntegrationSpecBase {
 
   "Calling subscribe/company" should {
 
-    val subscribeCompanyUrl = "/subscribe/company"
+    val subscribeCompanyUrl = "capital-gains-subscription/subscribe/company"
 
     "return a 200 response" in {
+
       stubFor(post(urlMatching(subscribeCompanyUrl))
         .willReturn(
           aResponse()
@@ -43,8 +52,47 @@ class SubscriptionApiSpec extends IntegrationSpecBase {
         )
       )
 
+      val response = buildClient("/company").get.futureValue
+      response.status shouldBe 303
     }
-
   }
 
+  "Calling subscribe/resident/individual" should {
+
+    val subscribeIndividualUrl = "capital-gains-subscription/subscribe/individual"
+    val cgtRef = "TestRef"
+
+    "return a 303 response" in {
+
+      stubFor(post(urlMatching(subscribeIndividualUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(cgtRef)
+        )
+      )
+
+      val response = buildClient("/resident/individual").get.futureValue
+      response.status shouldBe 303
+    }
+  }
+
+  "Calling /non-resident/individual" should {
+
+    val subscribeNonIndividualUrl = "/capital-gains-subscription/subscribe/non-individual"
+
+    "return a 303 response" in {
+      stubFor(post(urlMatching(subscribeNonIndividualUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody("body")
+        )
+      )
+
+      val response = buildClient("/non-resident/individual").get.futureValue
+      response.status shouldBe 303
+      response.body shouldBe "body"
+    }
+  }
 }
