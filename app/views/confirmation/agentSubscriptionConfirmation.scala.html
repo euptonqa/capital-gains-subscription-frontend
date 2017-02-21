@@ -1,0 +1,43 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import java.time.LocalDate
+@import common.Dates._
+
+@(appConfig: config.AppConfig, arn: String, subscriptionDate: LocalDate, agencyName: String)(implicit request: Request[_], messages: Messages)
+
+@views.html.main_template(title = Messages("agent.confirmation.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <h1 class="visuallyhidden">@Messages("agent.confirmation.title")</h1>
+
+    <div id="confirmation-banner" class="transaction-banner--complete">
+        <p>
+            <strong class="heading-large">
+                @Messages("agent.confirmation.successfullySetUp")
+                @agencyName
+                @Messages("agent.confirmation.forCgt")
+            </strong>
+        </p>
+        <p class="confirm-padding-below">
+            <strong class="heading-medium">
+                @Messages("agent.confirmation.on")
+                @dateSummaryFormat.format(subscriptionDate)
+            </strong>
+        </p>
+        <p>
+            <strong class="heading-medium">
+                @Messages("agent.confirmation.yourArn")
+                @arn
+            </strong>
+        </p>
+    </div>
+
+    <div id="instruction-information" class="form-group">
+        <p>
+            <strong class="heading-medium">@Messages("agent.confirmation.whatNext")</strong>
+        </p>
+        <p>
+            @Messages("agent.confirmation.addClients")
+        </p>
+    </div>
+
+    <a id="continue" href="@appConfig.agentServiceUrl" class="button">@Messages("common.continue")</a>
+}

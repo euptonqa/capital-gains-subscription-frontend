@@ -1,5 +1,8 @@
 # microservice specific routes
 
+#Assets routes
+GET        /assets/*file                                            controllers.Assets.at(path="/public", file)
+
 GET        /individual/invalid-user                                 controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
 
 GET        /confirmation                                            controllers.CGTSubscriptionController.confirmationOfSubscription(cgtReference: String)
