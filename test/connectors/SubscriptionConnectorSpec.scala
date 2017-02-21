@@ -181,23 +181,19 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
     }
   }
 
-  "SubscriptionConnecter .enrolAgent() with a valid request" should {
+  "SubscriptionConnector .enrolAgent() with a valid request" should {
     val dummyRef = "CGT-2134"
 
     val model = AgentSubmissionModel("123456789", "ARN123456")
 
     when(mockHttp.POST[JsValue, HttpResponse](ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       (ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).
-      thenReturn(Future.successful(HttpResponse(OK, Some(cgtSubscriptionResponse(dummyRef)))))
+      thenReturn(Future.successful(HttpResponse(NO_CONTENT, Some(cgtSubscriptionResponse(dummyRef)))))
 
     val result = await(target.enrolAgent(model))
 
-    "return a valid SubscriptionReference" in {
-      result.get shouldBe a[SubscriptionReference]
-    }
-
-    s"return a SubscriptionReference containing the reference $dummyRef" in {
-      result.get.cgtRef shouldBe dummyRef
+    "return a valid SuccessAgentEnrolmentResponse" in {
+      result shouldBe SuccessAgentEnrolmentResponse
     }
   }
 
@@ -211,9 +207,8 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with WithFake
 
     val result = await(target.enrolAgent(model))
 
-    "return None" in {
-      result shouldBe None
+    "return a valid FailedAgentEnrolmentResponse" in {
+      result shouldBe FailedAgentEnrolmentResponse
     }
   }
-
 }
