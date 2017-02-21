@@ -65,6 +65,11 @@ organisationType.partnership = Partnerships
 organisationType.trust = Trusts
 organisationType.pensionTrust = Pension trust administrator
 
+## Setup Your Agency Messages ##
+setupYourAgency.title = Set up your agency
+setupYourAgency.leadParagraph = Before you can submit Capital Gains Tax returns for your clients you''ll need to set up your agency for this service. You only need to do this once.
+setupYourAgency.listOne = Enter your agency''s registered name and unique tax reference (UTR).
+setupYourAgency.listTwo = After setting up your agency, you can add your clients.
 
 ## Error Messages ##
 errors.mandatory = Please select an option
