@@ -55,6 +55,18 @@ class setupYourAgencyViewSpec extends ViewTestSpec {
       }
     }
 
+    "contain a secondary header" which {
+      lazy val header = doc.select("h2")
+
+      "has the class 'heading-xlarge'" in {
+        header.attr("class") shouldBe "heading-small"
+      }
+
+      s"has the message '$listTitle'" in {
+        header.text() shouldBe listTitle
+      }
+    }
+
     "contain a list" which {
       lazy val list = doc.select("ol")
 
