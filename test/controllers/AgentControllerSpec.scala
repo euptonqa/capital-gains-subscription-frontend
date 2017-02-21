@@ -16,9 +16,10 @@
 
 package controllers
 
-import assets.ControllerTestSpec
+import assets.{ControllerTestSpec, MessageLookup}
 import auth.{AuthorisedActions, CgtAgent, CgtNROrganisation}
 import builders.TestUserBuilder
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
@@ -62,22 +63,23 @@ class AgentControllerSpec extends ControllerTestSpec {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val action = createMockActions(valid = true)
-      lazy val agentController: AgentController = new AgentController(mockConfig, action)
+      lazy val agentController: AgentController = new AgentController(mockConfig, action, messagesApi)
       lazy val result = await(agentController.agent(fakeRequest))
+      lazy val document = Jsoup.parse(bodyOf(result))
 
-      "return a status of 303" in {
-        status(result) shouldBe 303
+      "return a status of 200" in {
+        status(result) shouldBe 200
       }
 
-      "redirect to the business customer frontend" in {
-        redirectLocation(result).get.toString shouldBe mockConfig.businessCompanyFrontendRegister
+      "load the setup your agency page" in {
+        document.title() shouldBe MessageLookup.SetupYourAgency.title
       }
     }
 
     "the agent is unauthorised" should {
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val action = createMockActions()
-      lazy val agentController: AgentController = new AgentController(mockConfig, action)
+      lazy val agentController: AgentController = new AgentController(mockConfig, action, messagesApi)
       lazy val result = await(agentController.agent(fakeRequest))
 
       "return a status of 303" in {

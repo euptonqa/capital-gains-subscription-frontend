@@ -20,19 +20,20 @@ import javax.inject.{Inject, Singleton}
 
 import auth.AuthorisedActions
 import config.AppConfig
+import play.api.i18n.{I18nSupport, MessagesApi}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
-class AgentController @Inject()(appConfig: AppConfig, authorisedActions: AuthorisedActions) extends FrontendController {
-
-  val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
+class AgentController @Inject()(appConfig: AppConfig,
+                                authorisedActions: AuthorisedActions,
+                                val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   val agent = authorisedActions.authorisedAgentAction {
     implicit user =>
       implicit request =>
-        Future.successful(Redirect(businessCustomerFrontendUrl))
+        Future.successful(Ok(views.html.setupYourAgency(appConfig)))
   }
 
   val registeredAgent = TODO
