@@ -17,8 +17,11 @@
 package SubscriptionApiSpec
 
 import com.github.tomakehurst.wiremock.client.WireMock._
-import builders.TestUserBuilder._
+import config.{AppConfig, WSHttp}
+import connectors.SubscriptionConnector
 import itutil.{IntegrationSpecBase, WiremockHelper}
+import models.SubscriptionReference
+import play.api.libs.json.Json
 import play.api.test.FakeApplication
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -26,135 +29,36 @@ class SubscriptionApiSpec extends IntegrationSpecBase {
 
   implicit val hc = HeaderCarrier()
 
-  val mockHost = WiremockHelper.wiremockHost
-  val mockPort = WiremockHelper.wiremockPort
-  val mockUrl = s"http://$mockHost:$mockPort"
+  val mockHost: String = WiremockHelper.wiremockHost
+  val mockPort: Int = WiremockHelper.wiremockPort
+  val mockUrl = s"http://$mockHost:$mockPort/capital-gains-subscription"
 
   override implicit lazy val app = FakeApplication(additionalConfiguration = Map(
-    "subscription.url" -> mockUrl
+    "subscription.url" -> s"$mockUrl"
   ))
 
-  "Calling subscribe/company" should {
+  "Calling the subscription subscribe/resident/individual" should {
 
-    val subscribeCompanyUrl = "/capital-gains-subscription/subscribe/company"
-    val cgtRef = "TestRef"
+    lazy val nino = "AA100100A"
 
-    "return a 303 response" in {
+    lazy val subscribeIndividualUrl = s"/capital-gains-subscription/subscribe/resident/individual/"
+    lazy val subscriptionReferenceModel = SubscriptionReference("dummyReference")
 
-      stubFor(post(urlMatching(subscribeCompanyUrl))
+    lazy val subscriptionConnector = new SubscriptionConnector(app.injector.instanceOf[WSHttp], app.injector.instanceOf[AppConfig])
+
+    def subscriptionResponse = subscriptionConnector.getSubscriptionResponse(nino)
+
+    "return the dummyReference" in {
+      stubFor(post(urlPathEqualTo(subscribeIndividualUrl))
         .willReturn(
           aResponse()
             .withStatus(200)
-            .withBody(cgtRef)
+            .withBody(Json.toJson(subscriptionReferenceModel).toString())
         )
       )
 
-      val response = buildClient("/company").get.futureValue
-      response.status shouldBe 303
-    }
-
-    "return a 303 response when an error is returned" in {
-
-      stubFor(post(urlMatching(subscribeCompanyUrl))
-        .willReturn(
-          aResponse()
-            .withStatus(500)
-            .withBody("")
-        )
-      )
-
-      val response = buildClient("/company").get.futureValue
-      response.status shouldBe 303
-    }
-  }
-
-  "Calling subscribe/resident/individual" should {
-
-    def subscribeIndividualUrl(nino: String) = s"/capital-gains-subscription/subscribe/individual/?nino=$nino"
-    val cgtRef = "TestRef"
-
-    "return a 303 response" in {
-
-      stubFor(post(urlMatching(subscribeIndividualUrl(createRandomNino)))
-        .willReturn(
-          aResponse()
-            .withStatus(200)
-            .withBody(cgtRef)
-        )
-      )
-
-      val response = buildClient("/resident/individual").get.futureValue
-      response.status shouldBe 303
-    }
-
-    "return a 303 response when an error is returned" in {
-
-      stubFor(post(urlMatching(subscribeIndividualUrl(createRandomNino)))
-        .willReturn(
-          aResponse()
-            .withStatus(500)
-        )
-      )
-
-      val response = buildClient("/resident/individual").get.futureValue
-      response.status shouldBe 303
-    }
-  }
-
-  "Calling /non-resident/individual" should {
-
-    val subscribeNonIndividualUrl = "/capital-gains-subscription/subscribe/non-individual"
-    def subscribeNonResidentIndividualWithNinoUrl(nino: String) = s"/capital-gains-subscription/subscribe/non-resident/individual-nino/?nino=$nino"
-    val cgtRef = "TestRef"
-
-    "return a 303 response" in {
-      stubFor(post(urlMatching(subscribeNonIndividualUrl))
-        .willReturn(
-          aResponse()
-            .withStatus(200)
-            .withBody("body")
-        )
-      )
-
-      val response = buildClient("/non-resident/individual").get.futureValue
-      response.status shouldBe 303
-    }
-
-    "return a 303 response when an error is returned" in {
-      stubFor(post(urlMatching(subscribeNonIndividualUrl))
-        .willReturn(
-          aResponse()
-            .withStatus(500)
-            .withBody("")
-        )
-      )
-
-      val response = buildClient("/non-resident/individual").get.futureValue
-      response.status shouldBe 303
-    }
-
-    "return a 303 response is returned when a nino is passed" in {
-      stubFor(post(urlMatching(subscribeNonResidentIndividualWithNinoUrl(createRandomNino)))
-        .willReturn(
-          aResponse()
-            .withStatus(200)
-        )
-      )
-
-      val response = buildClient("/non-resident/individual").get.futureValue
-      response.status shouldBe 303
-    }
-
-    "return a 500 response when an error is returned when a nino is passed" in {
-      stubFor(post(urlMatching(subscribeNonResidentIndividualWithNinoUrl(createRandomNino)))
-        .willReturn(
-          aResponse()
-            .withStatus(500)
-        )
-      )
-
-      val response = buildClient("/non-resident/individual").get.futureValue
-      response.status shouldBe 500
+      await(subscriptionResponse) shouldBe Some(SubscriptionReference("dummyReference"))
     }
   }
 }
+

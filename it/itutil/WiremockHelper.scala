@@ -17,9 +17,10 @@ package itutil
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.core.Options
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.ws.WS
+import play.api.libs.ws.{WS, WSRequest}
 
 object WiremockHelper {
   val wiremockPort = 11111
@@ -32,17 +33,17 @@ trait WiremockHelper {
 
   import WiremockHelper._
 
-  val wmConfig = wireMockConfig().port(wiremockPort)
+  val wmConfig: Options = wireMockConfig().port(wiremockPort)
   val wireMockServer = new WireMockServer(wmConfig)
 
-  def startWiremock() = {
+  def startWiremock(): Unit = {
     wireMockServer.start()
     WireMock.configureFor(wiremockHost, wiremockPort)
   }
 
-  def stopWiremock() = wireMockServer.stop()
+  def stopWiremock(): Unit = wireMockServer.stop()
 
-  def resetWiremock() = WireMock.reset()
+  def resetWiremock(): Unit = WireMock.reset()
 
-  def buildClient(path: String) = WS.url(s"http://localhost:$port/capital-gains-tax/subscription$path").withFollowRedirects(false)
+  def buildClient(path: String): WSRequest = WS.url(s"http://localhost:$port/capital-gains-tax/subscription$path").withFollowRedirects(false).withHeaders()
 }

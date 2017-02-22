@@ -56,11 +56,27 @@ private object AppDependencies {
         "org.jsoup" % "jsoup" % "1.8.3" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % scope,
-        "org.mockito" % "mockito-core" % "2.6.2" % "test",
-        "com.github.tomakehurst" % "wiremock" % "2.5.0" % "it"
+        "org.mockito" % "mockito-core" % "2.6.2" % scope
       )
     }.test
   }
 
-  def apply(): Seq[ModuleID] = compile ++ Test()
+  object IntegrationTest {
+    def apply(): Seq[ModuleID] = new TestDependencies {
+      override lazy val scope = "it"
+
+      override lazy val test = Seq(
+        "uk.gov.hmrc" %% "hmrctest" % "2.2.0" % scope,
+        "org.scalatest" %% "scalatest" % "2.2.6" % scope,
+        "org.pegdown" % "pegdown" % "1.6.0" % scope,
+        "org.jsoup" % "jsoup" % "1.8.3" % scope,
+        "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
+        "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % scope,
+        "org.mockito" % "mockito-core" % "2.6.2" % scope,
+        "com.github.tomakehurst" % "wiremock" % "2.5.0" % scope
+      )
+    }.test
+  }
+
+  def apply(): Seq[ModuleID] = compile ++ Test() ++ IntegrationTest()
 }
