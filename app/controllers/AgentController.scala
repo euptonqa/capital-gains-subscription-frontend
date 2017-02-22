@@ -27,6 +27,8 @@ import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{AnyContent, Request, Result}
 import services.AgentService
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,10 +47,10 @@ class AgentController @Inject()(appConfig: AppConfig,
   private val arnNotFoundError: String = "Agent Details retrieved did not contain an ARN"
   private val failedToEnrolError: String = "Error returned from backend while attempting to enrol agent"
 
-  val agent = authorisedActions.authorisedAgentAction {
+  val agent: Action[AnyContent] = authorisedActions.authorisedAgentAction {
     implicit user =>
       implicit request =>
-        Future.successful(Redirect(businessCustomerFrontendUrl))
+        Future.successful(Ok(views.html.setupYourAgency(appConfig)))
   }
 
   private[controllers] def handleBusinessData()(implicit hc: HeaderCarrier): Future[ReviewDetails] = {
@@ -79,7 +81,7 @@ class AgentController @Inject()(appConfig: AppConfig,
     }
   }
 
-  val registeredAgent = authorisedActions.authorisedAgentAction { implicit user =>
+  val registeredAgent: Action[AnyContent] = authorisedActions.authorisedAgentAction { implicit user =>
     implicit request =>
       val result = {
         for {

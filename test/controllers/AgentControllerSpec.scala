@@ -23,6 +23,9 @@ import auth.{AuthorisedActions, CgtAgent}
 import builders.TestUserBuilder
 import connectors.{AgentEnrolmentResponse, FailedAgentEnrolmentResponse, KeystoreConnector, SuccessAgentEnrolmentResponse}
 import models.{Address, AgentSubmissionModel, ReviewDetails}
+import assets.{ControllerTestSpec, MessageLookup}
+import auth.{AuthorisedActions, CgtAgent}
+import builders.TestUserBuilder
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
@@ -103,15 +106,16 @@ class AgentControllerSpec extends ControllerTestSpec {
     "the agent is authorised" should {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
-      lazy val controller = setupController(valid = true)
-      lazy val result = await(controller.agent(fakeRequest))
+      lazy val agentController = setupController(valid = true)
+      lazy val result = await(agentController.agent(fakeRequest))
+      lazy val document = Jsoup.parse(bodyOf(result))
 
-      "return a status of 303" in {
-        status(result) shouldBe 303
+      "return a status of 200" in {
+        status(result) shouldBe 200
       }
 
-      "redirect to the business customer frontend" in {
-        redirectLocation(result).get.toString shouldBe mockConfig.businessCompanyFrontendRegister
+      "load the setup your agency page" in {
+        document.title() shouldBe MessageLookup.SetupYourAgency.title
       }
     }
 
