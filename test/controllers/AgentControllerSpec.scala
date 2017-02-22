@@ -18,9 +18,6 @@ package controllers
 
 import java.time.LocalDate
 
-import assets.ControllerTestSpec
-import auth.{AuthorisedActions, CgtAgent}
-import builders.TestUserBuilder
 import connectors.{AgentEnrolmentResponse, FailedAgentEnrolmentResponse, KeystoreConnector, SuccessAgentEnrolmentResponse}
 import models.{Address, AgentSubmissionModel, ReviewDetails}
 import assets.{ControllerTestSpec, MessageLookup}

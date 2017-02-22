@@ -24,8 +24,6 @@ import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
 import models.{AgentSubmissionModel, ReviewDetails}
 import java.time.LocalDate
 import play.api.Logger
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{AnyContent, Request, Result}
 import services.AgentService
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
