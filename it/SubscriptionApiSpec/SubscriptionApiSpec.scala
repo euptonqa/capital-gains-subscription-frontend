@@ -16,13 +16,9 @@
 
 package SubscriptionApiSpec
 
-import assets.MessageLookup.{ContactDetails, UseRegisteredAddress}
 import com.github.tomakehurst.wiremock.client.WireMock._
+import builders.TestUserBuilder._
 import itutil.{IntegrationSpecBase, WiremockHelper}
-import models.{CompanyAddressModel, CompanySubmissionModel, ContactDetailsModel}
-import play.api.libs.json.Json
-import org.scalatest.mock.MockitoSugar
-
 import play.api.test.FakeApplication
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -40,15 +36,30 @@ class SubscriptionApiSpec extends IntegrationSpecBase {
 
   "Calling subscribe/company" should {
 
-    val subscribeCompanyUrl = "capital-gains-subscription/subscribe/company"
+    val subscribeCompanyUrl = "/capital-gains-subscription/subscribe/company"
+    val cgtRef = "TestRef"
 
-    "return a 200 response" in {
+    "return a 303 response" in {
 
       stubFor(post(urlMatching(subscribeCompanyUrl))
         .willReturn(
           aResponse()
             .withStatus(200)
-            .withBody("body")
+            .withBody(cgtRef)
+        )
+      )
+
+      val response = buildClient("/company").get.futureValue
+      response.status shouldBe 303
+    }
+
+    "return a 303 response when an error is returned" in {
+
+      stubFor(post(urlMatching(subscribeCompanyUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(500)
+            .withBody("")
         )
       )
 
@@ -59,16 +70,29 @@ class SubscriptionApiSpec extends IntegrationSpecBase {
 
   "Calling subscribe/resident/individual" should {
 
-    val subscribeIndividualUrl = "capital-gains-subscription/subscribe/individual"
+    def subscribeIndividualUrl(nino: String) = s"/capital-gains-subscription/subscribe/individual/?nino=$nino"
     val cgtRef = "TestRef"
 
     "return a 303 response" in {
 
-      stubFor(post(urlMatching(subscribeIndividualUrl))
+      stubFor(post(urlMatching(subscribeIndividualUrl(createRandomNino)))
         .willReturn(
           aResponse()
             .withStatus(200)
             .withBody(cgtRef)
+        )
+      )
+
+      val response = buildClient("/resident/individual").get.futureValue
+      response.status shouldBe 303
+    }
+
+    "return a 303 response when an error is returned" in {
+
+      stubFor(post(urlMatching(subscribeIndividualUrl(createRandomNino)))
+        .willReturn(
+          aResponse()
+            .withStatus(500)
         )
       )
 
@@ -80,6 +104,8 @@ class SubscriptionApiSpec extends IntegrationSpecBase {
   "Calling /non-resident/individual" should {
 
     val subscribeNonIndividualUrl = "/capital-gains-subscription/subscribe/non-individual"
+    def subscribeNonResidentIndividualWithNinoUrl(nino: String) = s"/capital-gains-subscription/subscribe/non-resident/individual-nino/?nino=$nino"
+    val cgtRef = "TestRef"
 
     "return a 303 response" in {
       stubFor(post(urlMatching(subscribeNonIndividualUrl))
@@ -92,7 +118,43 @@ class SubscriptionApiSpec extends IntegrationSpecBase {
 
       val response = buildClient("/non-resident/individual").get.futureValue
       response.status shouldBe 303
-      response.body shouldBe "body"
+    }
+
+    "return a 303 response when an error is returned" in {
+      stubFor(post(urlMatching(subscribeNonIndividualUrl))
+        .willReturn(
+          aResponse()
+            .withStatus(500)
+            .withBody("")
+        )
+      )
+
+      val response = buildClient("/non-resident/individual").get.futureValue
+      response.status shouldBe 303
+    }
+
+    "return a 303 response is returned when a nino is passed" in {
+      stubFor(post(urlMatching(subscribeNonResidentIndividualWithNinoUrl(createRandomNino)))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+        )
+      )
+
+      val response = buildClient("/non-resident/individual").get.futureValue
+      response.status shouldBe 303
+    }
+
+    "return a 500 response when an error is returned when a nino is passed" in {
+      stubFor(post(urlMatching(subscribeNonResidentIndividualWithNinoUrl(createRandomNino)))
+        .willReturn(
+          aResponse()
+            .withStatus(500)
+        )
+      )
+
+      val response = buildClient("/non-resident/individual").get.futureValue
+      response.status shouldBe 500
     }
   }
 }
