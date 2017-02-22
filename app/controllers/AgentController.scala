@@ -31,6 +31,8 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 authorisedActions: AuthorisedActions,
                                 val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
+  val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
+
   val agent: Action[AnyContent] = authorisedActions.authorisedAgentAction {
     implicit user =>
       implicit request =>

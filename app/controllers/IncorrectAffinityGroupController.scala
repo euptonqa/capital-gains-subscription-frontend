@@ -16,12 +16,13 @@
 
 package controllers
 
-import play.api.mvc.{Action, AnyContent}
 import javax.inject.{Inject, Singleton}
+
+import common.Constants._
 import config.AppConfig
 import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import common.Constants._
 
 import scala.concurrent.Future
 

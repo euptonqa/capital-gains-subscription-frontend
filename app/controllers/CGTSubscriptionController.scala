@@ -17,6 +17,7 @@
 package controllers
 
 import javax.inject.{Inject, Singleton}
+
 import config.AppConfig
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
@@ -28,7 +29,7 @@ import scala.concurrent.Future
 class CGTSubscriptionController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   val confirmationOfSubscription: String => Action[AnyContent] = cgtReference => Action.async { implicit request =>
-      Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference)))
+    Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference)))
   }
 
   val submitConfirmationOfSubscription: Action[AnyContent] = Action.async { implicit request =>

@@ -44,28 +44,30 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
     }
   }
 
-  val userDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
-    Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.fullDetailsForm)))
+  val userDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction { implicit user =>
+    implicit request =>
+      Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.fullDetailsForm)))
   }
 
-  val submitUserDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction { implicit user => implicit request =>
+  val submitUserDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction { implicit user =>
+    implicit request =>
 
-    val successAction: UserFactsModel => Future[Result] = model => {
+      val successAction: UserFactsModel => Future[Result] = model => {
 
-      def action(cgtRef: Try[String]) = {
-        cgtRef match {
-          case Success(ref) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(ref)))
-          case Failure(error) => Future.successful(InternalServerError(Json.toJson(error.getMessage)))
+        def action(cgtRef: Try[String]) = {
+          cgtRef match {
+            case Success(ref) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(ref)))
+            case Failure(error) => Future.successful(InternalServerError(Json.toJson(error.getMessage)))
+          }
         }
+
+        for {
+          ref <- subscribeUser(model)
+          action <- action(ref)
+        } yield action
       }
 
-      for {
-        ref <- subscribeUser(model)
-        action <- action(ref)
-      } yield action
-    }
-
-    fullDetailsForm.fullDetailsForm.bindFromRequest.fold(errors => Future.successful(BadRequest(views.html.userDetails(appConfig, errors))),
-      successAction)
+      fullDetailsForm.fullDetailsForm.bindFromRequest.fold(errors => Future.successful(BadRequest(views.html.userDetails(appConfig, errors))),
+        successAction)
   }
 }
