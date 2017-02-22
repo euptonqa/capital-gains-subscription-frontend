@@ -23,14 +23,15 @@ import config.AppConfig
 import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
 import models.{AgentSubmissionModel, ReviewDetails}
 import java.time.LocalDate
+
 import play.api.Logger
 import services.AgentService
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Singleton
