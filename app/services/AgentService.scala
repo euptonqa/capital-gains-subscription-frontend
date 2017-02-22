@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package models
+package services
 
-import play.api.libs.json.Json
+import javax.inject.Inject
 
-case class AgentSubmissionModel (sap: String,
-                                 arn: String)
+import connectors.{AgentEnrolmentResponse, SubscriptionConnector, SuccessAgentEnrolmentResponse}
+import models.AgentSubmissionModel
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-object AgentSubmissionModel {
-  implicit val formats = Json.format[AgentSubmissionModel]
+import scala.concurrent.Future
+
+class AgentService @Inject()(connector: SubscriptionConnector) {
+
+  def getAgentEnrolmentResponse(agentSubmissionModel: AgentSubmissionModel)(implicit hc: HeaderCarrier): Future[AgentEnrolmentResponse] = {
+    connector.enrolAgent(agentSubmissionModel)
+  }
 }

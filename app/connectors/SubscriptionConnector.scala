@@ -19,7 +19,7 @@ package connectors
 import javax.inject.{Inject, Singleton}
 
 import config.{AppConfig, WSHttp}
-import models.{CompanySubmissionModel, SubscriptionReference, UserFactsModel}
+import models.{AgentSubmissionModel, CompanySubmissionModel, SubscriptionReference, UserFactsModel}
 import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -30,11 +30,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.{Success, Try}
 
+sealed trait AgentEnrolmentResponse
+
+case object SuccessAgentEnrolmentResponse extends AgentEnrolmentResponse
+case object FailedAgentEnrolmentResponse extends AgentEnrolmentResponse
+
 @Singleton
 class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extends ServicesConfig {
 
   lazy val serviceUrl: String = appConfig.subscription
   val companyUrl: String = "/subscribe/company"
+  val agentUrl: String = "/subscribe/agent"
   val subscriptionResidentUrl: String = "subscribe/resident/individual"
   val subscriptionNonResidentUrl: String = "subscribe/non-resident/individual"
   val subscriptionNonResidentNinoUrl: String = "subscribe/non-resident/individual-nino"
@@ -100,6 +106,20 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
                 None
             }
           case _ => None
+        }
+    }
+  }
+
+  def enrolAgent(agentSubmissionModel: AgentSubmissionModel)(implicit hc: HeaderCarrier): Future[AgentEnrolmentResponse] = {
+
+    val postUrl = s"$serviceUrl$agentUrl"
+    http.POST[JsValue, HttpResponse](postUrl, Json.toJson(agentSubmissionModel)).map {
+      response =>
+        response.status match {
+          case NO_CONTENT => SuccessAgentEnrolmentResponse
+          case r =>
+            Logger.warn(s"$r response returned from backend while attempting to enrol agent")
+            FailedAgentEnrolmentResponse
         }
     }
   }
