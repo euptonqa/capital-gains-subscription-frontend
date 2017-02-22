@@ -39,6 +39,7 @@ trait AppConfig extends ServicesConfig {
   val agentPostSignIn: String
   val subscription: String
   val businessCompanyFrontendRegister: String
+  val businessCompanyFrontendAgentRegister: String
   val agentServiceUrl: String
 }
 
@@ -68,5 +69,6 @@ class ApplicationConfig @Inject()(configuration: Configuration, val app: Applica
   override lazy val agentPostSignIn: String = configuration.getString(s"agent-post-siginin.url").getOrElse("")
   override lazy val subscription: String = configuration.getString(s"subscription.url").getOrElse("")
   override lazy val businessCompanyFrontendRegister: String = constructUrl("business-customer")
+  override lazy val businessCompanyFrontendAgentRegister: String = constructUrl("business-customer-agents")
   override lazy val agentServiceUrl: String = constructUrl("agent-service-frontend")
 }

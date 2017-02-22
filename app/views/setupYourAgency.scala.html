@@ -1,0 +1,17 @@
+@(appConfig: config.AppConfig)(implicit request: Request[_], messages: Messages)
+
+@views.html.main_template(title = Messages("setupYourAgency.title"), bodyClasses = None, appConfig = appConfig) {
+
+    <h1 class="heading-xlarge">@Messages("setupYourAgency.title")</h1>
+
+    <p class="lede">@Messages("setupYourAgency.leadParagraph")</p>
+
+    <h2 class="heading-small">@Messages("setupYourAgency.listTitle")</h2>
+
+    <ol class="list-number form-group">
+        <li>@Messages("setupYourAgency.listOne")</li>
+        <li>@Messages("setupYourAgency.listTwo")</li>
+    </ol>
+
+    <a class="button" href="@appConfig.businessCompanyFrontendAgentRegister">@Messages("common.continue")</a>
+}

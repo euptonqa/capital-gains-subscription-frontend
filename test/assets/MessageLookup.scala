@@ -119,6 +119,15 @@ object MessageLookup {
     val registerConfirm = "Register and confirm"
   }
 
+  object SetupYourAgency {
+    val title = "Set up your agency"
+    val leadParagraph = "Before you can submit Capital Gains Tax returns for your clients you'll need to set up your agency" +
+      " for this service. You only need to do this once."
+    val listTitle = "What you need to do "
+    val listOne = "Enter your agency's registered name and unique tax reference (UTR)."
+    val listTwo = "After setting up your agency, you can add your clients."
+  }
+  
   object AgentConfirmation {
     val title = "Your agent registration number"
     val setUp = "You have successfully set up"
