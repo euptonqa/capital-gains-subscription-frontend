@@ -18,25 +18,30 @@ package controllers
 
 import java.time.LocalDate
 
-import connectors.{AgentEnrolmentResponse, FailedAgentEnrolmentResponse, KeystoreConnector, SuccessAgentEnrolmentResponse}
-import models.{Address, AgentSubmissionModel, ReviewDetails}
-import assets.{ControllerTestSpec, MessageLookup}
+import assets.ControllerTestSpec
+import assets.MessageLookup.{AgentConfirmation => messages}
 import auth.{AuthorisedActions, CgtAgent}
 import builders.TestUserBuilder
+import common.Constants.AffinityGroup
+import common.{Dates, Keys}
+import config.WSHttp
+import connectors._
+import helpers.EnrolmentToCGTCheck
+import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
+import play.api.inject.Injector
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.AgentService
+import services.{AgentService, AuthorisationService, SubscriptionService}
 import types._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import assets.MessageLookup.{AgentConfirmation => messages}
-import common.Dates
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -45,36 +50,8 @@ class AgentControllerSpec extends ControllerTestSpec {
 
   val testOnlyUnauthorisedLoginUri = "just-a-test"
 
-  def setupController(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.strongUserAuthContext,
-                      businessDetails: Option[ReviewDetails] = Some(TestData.validBusinessDetails),
-                      enrolmentResponse: AgentEnrolmentResponse = SuccessAgentEnrolmentResponse): AgentController = {
-
-    val mockActions = mock[AuthorisedActions]
-
-    if (valid) {
-      when(mockActions.authorisedAgentAction(ArgumentMatchers.any()))
-        .thenAnswer(new Answer[Action[AnyContent]] {
-
-          override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedAgentAction](0)
-            val agent = CgtAgent(authContext)
-            Action.async(action(agent))
-          }
-        })
-    }
-    else {
-      when(mockActions.authorisedAgentAction(ArgumentMatchers.any()))
-        .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
-    }
-
-    val sessionService = mock[KeystoreConnector]
-    val service = mock[AgentService]
-
-    when(sessionService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(businessDetails))
-    when(service.getAgentEnrolmentResponse(any())(any())).thenReturn(Future.successful(enrolmentResponse))
-
-    new AgentController(mockConfig, mockActions, service, sessionService, messagesApi)
-  }
+  val injector: Injector = app.injector
+  val enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
 
   object TestData {
     val businessAddress = Address(line_1 = "",
@@ -98,27 +75,101 @@ class AgentControllerSpec extends ControllerTestSpec {
       agentReferenceNumber = None)
   }
 
+  def createMockSubscriptionService(response: Option[String]): SubscriptionService = {
+    implicit val mockHttp = mock[WSHttp]
+
+    val mockConnector = mock[SubscriptionConnector]
+
+    when(mockConnector.getSubscriptionResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
+
+    when(mockConnector.getSubscriptionNonResidentNinoResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
+
+    when(mockConnector.getSubscriptionResponseGhost(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(response.map(SubscriptionReference(_))))
+
+    new SubscriptionService(mockConnector)
+  }
+
+  def createMockAuthorisationService(enrolmentsResponse: Option[Seq[Enrolment]], authResponse: Option[AuthorisationDataModel]): AuthorisationService = {
+    implicit val mockHttp = mock[WSHttp]
+
+    val mockConnector = mock[AuthorisationConnector]
+
+    when(mockConnector.getAuthResponse()(ArgumentMatchers.any())).thenReturn(Future.successful(authResponse))
+
+    when(mockConnector.getEnrolmentsResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(enrolmentsResponse)
+
+    new AuthorisationService(mockConnector)
+  }
+
+  def setupController(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.strongUserAuthContext,
+                      businessDetails: Option[ReviewDetails] = Some(TestData.validBusinessDetails),
+                      enrolmentResponse: AgentEnrolmentResponse = SuccessAgentEnrolmentResponse,
+                      enrolmentsResponse: Option[Seq[Enrolment]] = None,
+                      authResponse: Option[AuthorisationDataModel] = None): AgentController = {
+
+    val mockActions = mock[AuthorisedActions]
+
+    if (valid) {
+      when(mockActions.authorisedAgentAction(ArgumentMatchers.any()))
+        .thenAnswer(new Answer[Action[AnyContent]] {
+
+          override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
+            val action = invocation.getArgument[AuthenticatedAgentAction](0)
+            val agent = CgtAgent(authContext)
+            Action.async(action(agent))
+          }
+        })
+    }
+    else {
+      when(mockActions.authorisedAgentAction(ArgumentMatchers.any()))
+        .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
+    }
+
+    val sessionService = mock[KeystoreConnector]
+    val service = mock[AgentService]
+
+    val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
+    val mockAuthorisationService = createMockAuthorisationService(enrolmentsResponse, authResponse)
+
+    when(sessionService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(businessDetails))
+    when(service.getAgentEnrolmentResponse(any())(any())).thenReturn(Future.successful(enrolmentResponse))
+
+    new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService, enrolmentToCGTCheck, mockSubscriptionService, messagesApi)
+
+  }
+
+
   "Calling .agent" when {
 
-    "the agent is authorised" should {
+    val authorisationDataModelPass = Some(AuthorisationDataModel(CredentialStrength.Weak, AffinityGroup.Agent,
+      ConfidenceLevel.L50, "example.com", Accounts()))
+
+    "the agent is authorised and enrolled" should {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
-      lazy val agentController = setupController(valid = true)
-      lazy val result = await(agentController.agent(fakeRequest))
-      lazy val document = Jsoup.parse(bodyOf(result))
+      val enrolments = Option(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
+      lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
 
-      "return a status of 200" in {
-        status(result) shouldBe 200
+      lazy val result = await(agentController.agent(fakeRequest))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
       }
 
-      "load the setup your agency page" in {
-        document.title() shouldBe MessageLookup.SetupYourAgency.title
+      "load the iForm page" in {
+        redirectLocation(result).get.toString shouldBe "http://www.gov.uk"
       }
     }
 
     "the agent is unauthorised" should {
       lazy val fakeRequest = FakeRequest("GET", "/")
-      lazy val agentController = setupController()
+      val enrolments = Some(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
+      lazy val agentController = setupController(enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
+
       lazy val result = await(agentController.agent(fakeRequest))
 
       "return a status of 303" in {
