@@ -127,4 +127,13 @@ object MessageLookup {
     val listOne = "Enter your agency's registered name and unique tax reference (UTR)."
     val listTwo = "After setting up your agency, you can add your clients."
   }
+  
+  object AgentConfirmation {
+    val title = "Your agent registration number"
+    val setUp = "You have successfully set up"
+    val forCgt = "for Capital Gains Tax"
+    val yourArn = "Your agent registration number (ARN) is"
+    val whatHappensNext = "What happens next?"
+    val addClients = "You can now add your clients."
+  }
 }

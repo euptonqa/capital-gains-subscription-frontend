@@ -105,3 +105,12 @@ confirmation.writeThisDown.reasonToWriteDown = If you forget your Government Gat
 confirmation.whatNext = What happens next?
 confirmation.continue = Continue to report your Capital Gains Tax using our online form.
 confirmation.whatNext.informationForForm = You should have already done your Capital Gains Tax calculation and have your figures ready.
+
+## Agent Confirmation View messages ##
+agent.confirmation.title = Your agent registration number
+agent.confirmation.successfullySetUp = You have successfully set up
+agent.confirmation.forCgt = for Capital Gains Tax
+agent.confirmation.on = on
+agent.confirmation.yourArn = Your agent registration number (ARN) is
+agent.confirmation.whatNext = What happens next?
+agent.confirmation.addClients = You can now add your clients.
