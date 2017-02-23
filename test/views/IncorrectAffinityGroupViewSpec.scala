@@ -50,23 +50,23 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
     "have the content" which {
 
       s"Should have a first paragraph with the text ${messages.textOne}" in {
-        doc.select("p").get(1).text shouldEqual messages.textOne
+        doc.select("p").get(2).text shouldEqual messages.textOne
       }
 
       "should have a second paragraph" which {
 
         s"should have the text ${messages.textTwo}" in {
-          doc.select("p").get(2).text shouldEqual messages.textTwo
+          doc.select("p").get(3).text shouldEqual messages.textTwo
         }
 
         "should have a link" which {
 
           s"has the text ${messages.signOut}" in {
-            doc.select("p").get(2).select("a").text shouldEqual messages.signOut
+            doc.select("p").get(3).select("a").text shouldEqual messages.signOut
           }
 
           "has a href to https://www.tax.service.gov.uk/gg/sign-in?continue=/account" in {
-            doc.select("p").get(2).select("a").attr("href") shouldEqual "https://www.tax.service.gov.uk/gg/sign-in?continue=/account"
+            doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.tax.service.gov.uk/gg/sign-in?continue=/account"
           }
         }
       }
@@ -74,17 +74,17 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
       "should have a third paragraph" which {
 
         s"should have the text ${messages.textThreeAgent}" in {
-          doc.select("p").get(3).text shouldEqual messages.textThreeAgent
+          doc.select("p").get(4).text shouldEqual messages.textThreeAgent
         }
 
         "should have a link" which {
 
           s"has the text ${messages.linkTextAgent}" in {
-            doc.select("p").get(3).select("a").text shouldEqual messages.linkTextAgent
+            doc.select("p").get(4).select("a").text shouldEqual messages.linkTextAgent
           }
 
           "has a href to https://www.gov.uk/guidance/self-assessment-for-agents-online-service" in {
-            doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/guidance/self-assessment-for-agents-online-service"
+            doc.select("p").get(4).select("a").attr("href") shouldEqual "https://www.gov.uk/guidance/self-assessment-for-agents-online-service"
           }
         }
 
@@ -100,17 +100,17 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
     "should have a third paragraph" which {
 
       s"should have the text ${messages.textThreeCompany}" in {
-        doc.select("p").get(3).text shouldEqual messages.textThreeCompany
+        doc.select("p").get(4).text shouldEqual messages.textThreeCompany
       }
 
       "should have a link" which {
 
         s"has the text ${messages.linkTextCompany}" in {
-          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextCompany
+          doc.select("p").get(4).select("a").text shouldEqual messages.linkTextCompany
         }
 
         "has a href to https://www.gov.uk/tax-when-your-company-sells-assets" in {
-          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/tax-when-your-company-sells-assets"
+          doc.select("p").get(4).select("a").attr("href") shouldEqual "https://www.gov.uk/tax-when-your-company-sells-assets"
         }
       }
     }
@@ -124,17 +124,17 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
     "should have a third paragraph" which {
 
       s"should have the text ${messages.textThreeCharity}" in {
-        doc.select("p").get(3).text shouldEqual messages.textThreeCharity
+        doc.select("p").get(4).text shouldEqual messages.textThreeCharity
       }
 
       "should have a link" which {
 
         s"has the text ${messages.linkTextCharity}" in {
-          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextCharity
+          doc.select("p").get(4).select("a").text shouldEqual messages.linkTextCharity
         }
 
         "has a href to https://www.gov.uk/charities-and-tax/tax-reliefs" in {
-          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/charities-and-tax/tax-reliefs"
+          doc.select("p").get(4).select("a").attr("href") shouldEqual "https://www.gov.uk/charities-and-tax/tax-reliefs"
         }
       }
     }
@@ -148,18 +148,18 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
     "should have a third paragraph" which {
 
       s"should have the text ${messages.textThreePartnership}" in {
-        doc.select("p").get(3).text shouldEqual messages.textThreePartnership
+        doc.select("p").get(4).text shouldEqual messages.textThreePartnership
       }
 
       "should have a link" which {
 
         s"has the text ${messages.linkTextPartnership}" in {
-          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextPartnership
+          doc.select("p").get(4).select("a").text shouldEqual messages.linkTextPartnership
         }
 
         "has a href to https://www.gov.uk/government/publications/partnerships-and-capital-gains-tax-hs288-self-assessment-helpsheet/" +
           "hs288-partnerships-and-capital-gains-tax-2016" in {
-          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/government/publications/" +
+          doc.select("p").get(4).select("a").attr("href") shouldEqual "https://www.gov.uk/government/publications/" +
             "partnerships-and-capital-gains-tax-hs288-self-assessment-helpsheet/hs288-partnerships-and-capital-gains-tax-2016"
         }
       }
@@ -174,17 +174,17 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
     "should have a third paragraph" which {
 
       s"should have the text ${messages.textThreeTrust}" in {
-        doc.select("p").get(3).text shouldEqual messages.textThreeTrust
+        doc.select("p").get(4).text shouldEqual messages.textThreeTrust
       }
 
       "should have a link" which {
 
         s"has the text ${messages.linkTextTrust}" in {
-          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextTrust
+          doc.select("p").get(4).select("a").text shouldEqual messages.linkTextTrust
         }
 
         "has a href to https://www.gov.uk/guidance/trusts-and-capital-gains-tax" in {
-          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/guidance/trusts-and-capital-gains-tax"
+          doc.select("p").get(4).select("a").attr("href") shouldEqual "https://www.gov.uk/guidance/trusts-and-capital-gains-tax"
         }
       }
     }
@@ -198,17 +198,17 @@ class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication w
     "should have a third paragraph" which {
 
       s"should have the text ${messages.textThreePensionTrust}" in {
-        doc.select("p").get(3).text shouldEqual messages.textThreePensionTrust
+        doc.select("p").get(4).text shouldEqual messages.textThreePensionTrust
       }
 
       "should have a link" which {
 
         s"has the text ${messages.linkTextPensionTrust}" in {
-          doc.select("p").get(3).select("a").text shouldEqual messages.linkTextPensionTrust
+          doc.select("p").get(4).select("a").text shouldEqual messages.linkTextPensionTrust
         }
 
         "has a href to https://www.gov.uk/guidance/pension-trustees-investments-and-tax" in {
-          doc.select("p").get(3).select("a").attr("href") shouldEqual "https://www.gov.uk/guidance/pension-trustees-investments-and-tax"
+          doc.select("p").get(4).select("a").attr("href") shouldEqual "https://www.gov.uk/guidance/pension-trustees-investments-and-tax"
         }
       }
     }

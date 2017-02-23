@@ -49,12 +49,20 @@
       gaCalls = None)
 }
 
+@betaBanner = {
+    @uiLayouts.betaBanner(
+        userLoggedIn = true,
+        betaFeedbackUrl = "http://www.gov.uk",
+        betaFeedbackUnauthenticatedUrl = ""
+    )
+}
+
 @footerTop = {}
 @footerLinks = {}
 
 @serviceInfo = {
     @uiLayouts.serviceInfo(
-      betaBanner = HtmlFormat.empty,
+      betaBanner = betaBanner,
       includeGridWrapper = false,
       serviceInfoContent = Some(serviceInfoContent))
 }

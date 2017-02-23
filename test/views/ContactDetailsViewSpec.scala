@@ -58,7 +58,7 @@ class ContactDetailsViewSpec extends ViewTestSpec {
     }
 
     "has some text" which {
-      lazy val text = doc.select("main p")
+      lazy val text = doc.select("main p").get(1)
 
       "has a class of 'lede'" in {
         text.attr("class") shouldBe "lede"
