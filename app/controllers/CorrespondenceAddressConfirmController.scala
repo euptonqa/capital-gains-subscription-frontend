@@ -50,7 +50,7 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
           (existingAnswer, registrationDetails) match {
 
             case (_, None) =>
-              Logger.warn("Failed to retrieved registration details from BusinessCustomer keystore")
+              Logger.warn("Failed to retrieve registration details from BusinessCustomer keystore")
               InternalServerError
 
             case (None, Some(details)) =>
