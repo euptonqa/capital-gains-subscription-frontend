@@ -16,14 +16,11 @@
 
 package controllers
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtIndividual}
-import javax.inject.Inject
-
 import config.AppConfig
 import helpers.EnrolmentToCGTCheck
-import models.SubscriptionReference
 import play.api.mvc.{Action, AnyContent, Result}
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -42,14 +39,14 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
 
   val residentIndividualSubscription: Action[AnyContent] =
     actions.authorisedResidentIndividualAction {
-    implicit user =>
-      implicit request =>
-        for {
-          enrolments <- authService.getEnrolments
-          isEnrolled <- enrolmentToCGTCheck.checkEnrolments(enrolments)
-          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
-        } yield redirect
-  }
+      implicit user =>
+        implicit request =>
+          for {
+            enrolments <- authService.getEnrolments
+            isEnrolled <- enrolmentToCGTCheck.checkEnrolments(enrolments)
+            redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
+          } yield redirect
+    }
 
 
   def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
@@ -60,7 +57,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
 
   def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual)(implicit hc: HeaderCarrier): Future[Result] = {
 
-    subscriptionService.getSubscriptionResponse(user.nino.get).map{
+    subscriptionService.getSubscriptionResponse(user.nino.get).map {
       case Some(response) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(response.cgtRef))
       case _ => Redirect("http://www.gov.uk")
     }

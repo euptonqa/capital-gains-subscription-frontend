@@ -15,23 +15,23 @@ GET        /non-resident/individual                                 controllers.
 GET        /individual/organisation-type                            controllers.OrganisationTypeController.organisationType
 POST       /individual/organisation-type                            controllers.OrganisationTypeController.submitOrganisationType
 
-GET        /non-resident/individual/user-details                    controllers.UserDetailsController.userDetails()
-POST       /non-resident/individual/user-details                    controllers.UserDetailsController.submitUserDetails()
+GET        /non-resident/individual/user-details                    controllers.UserDetailsController.userDetails
+POST       /non-resident/individual/user-details                    controllers.UserDetailsController.submitUserDetails
 
-GET        /company                                                 controllers.CompanyController.subscribe()
+GET        /company                                                 controllers.CompanyController.subscribe
 
-GET        /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.correspondenceAddressConfirm()
-POST       /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm()
+GET        /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.correspondenceAddressConfirm
+POST       /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm
 
-GET       /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.enterCorrespondenceAddress()
-POST      /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.submitCorrespondenceAddress()
+GET       /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.enterCorrespondenceAddress
+POST      /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.submitCorrespondenceAddress
 
-GET        /company/contact-details                                 controllers.ContactDetailsController.contactDetails()
-POST       /company/contact-details                                 controllers.ContactDetailsController.submitContactDetails()
+GET        /company/contact-details                                 controllers.ContactDetailsController.contactDetails
+POST       /company/contact-details                                 controllers.ContactDetailsController.submitContactDetails
 
-GET        /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation()
-POST       /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.submitCorrespondenceAddressFinalConfirmation()
+GET        /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation
+POST       /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.submitCorrespondenceAddressFinalConfirmation
 
-GET        /agent/subscribe                                         controllers.AgentController.agent()
+GET        /agent/subscribe                                         controllers.AgentController.agent
 
-GET        /agent/registered/subscribe                              controllers.AgentController.registeredAgent()
+GET        /agent/registered/subscribe                              controllers.AgentController.registeredAgent

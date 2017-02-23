@@ -37,27 +37,29 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
                                                                  actions: AuthorisedActions,
                                                                  subscriptionService: SubscriptionService,
                                                                  keystoreConnector: KeystoreConnector) extends FrontendController with I18nSupport {
-  val correspondenceAddressFinalConfirmation = actions.authorisedNonResidentOrganisationAction { implicit user => implicit request =>
 
-    val businessData = keystoreConnector.fetchAndGetBusinessData()
+  val correspondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction { implicit user =>
+    implicit request =>
 
-    val addressData: Future[Option[CompanyAddressModel]] = keystoreConnector.fetchAndGetFormData[CompanyAddressModel](KeystoreKeys.correspondenceAddressKey)
+      val businessData = keystoreConnector.fetchAndGetBusinessData()
 
-    val contactDetailsData:Future[Option[ContactDetailsModel]] = keystoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetailsKey)
+      val addressData: Future[Option[CompanyAddressModel]] = keystoreConnector.fetchAndGetFormData[CompanyAddressModel](KeystoreKeys.correspondenceAddressKey)
 
-    def yieldBusinessData = {
-      for {
-        data <- businessData
-        address <- addressData
-        contactDetails <- contactDetailsData
-      } yield {
-        Ok(views.html.reviewBusinessDetails(appConfig, data.get.businessAddress, address.get, data.get.businessName, contactDetails.get))
+      val contactDetailsData: Future[Option[ContactDetailsModel]] = keystoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetailsKey)
+
+      def yieldBusinessData = {
+        for {
+          data <- businessData
+          address <- addressData
+          contactDetails <- contactDetailsData
+        } yield {
+          Ok(views.html.reviewBusinessDetails(appConfig, data.get.businessAddress, address.get, data.get.businessName, contactDetails.get))
+        }
       }
-    }
 
-    yieldBusinessData.recoverWith {
-      case exception: Exception => Future.successful(BadRequest(exception.getMessage))
-    }
+      yieldBusinessData.recoverWith {
+        case exception: Exception => Future.successful(BadRequest(exception.getMessage))
+      }
   }
 
   val submitCorrespondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction {
