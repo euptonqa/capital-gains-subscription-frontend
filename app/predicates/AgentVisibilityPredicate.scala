@@ -25,17 +25,10 @@ import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, PageVisibilityPredicate}
 
 class AgentVisibilityPredicate @Inject()(applicationConfig: AppConfig,
-                                        authorisationService: AuthorisationService)
-                              (postSignInRedirectUrl: String,
-                               notAuthorisedRedirectUrl: String,
-                               affinityGroupUrl: String) extends CompositePageVisibilityPredicate {
+                                         authorisationService: AuthorisationService)
+                                        (affinityGroupUrl: String) extends CompositePageVisibilityPredicate {
 
   override def children: Seq[PageVisibilityPredicate] = Seq(
-    new TwoFAPredicate(twoFactorURI),
     new AffinityGroupAgentPredicate(authorisationService)(new URI(affinityGroupUrl))
   )
-
-  lazy private val twoFactorURI: URI =
-    new URI(s"continue=${URLEncoder.encode(postSignInRedirectUrl, "UTF-8")}&" +
-      s"failure=${URLEncoder.encode(notAuthorisedRedirectUrl, "UTF-8")}")
 }

@@ -36,14 +36,11 @@ import scala.concurrent.Future
 
 class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
-  def mockedService(authorisationDataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]],
-                    enrolmentUri: String = "http://enrolments-uri.com",
+  def mockedService(authorisationDataModel: Option[AuthorisationDataModel],
                     affinityGroup: String = "Agent"): AuthorisationService = {
     val mockService = mock[AuthorisationService]
 
     when(mockService.getAffinityGroup(ArgumentMatchers.any())).thenReturn(Future.successful(Some(affinityGroup)))
-
-    when(mockService.getEnrolments(ArgumentMatchers.any())).thenReturn(Future.successful(enrolments))
 
     mockService
   }
@@ -53,30 +50,20 @@ class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with OneAp
 
     def appConfig: AppConfig = injector.instanceOf[AppConfig]
 
-    val postSignUri = "http://post-sign-in-example.com"
-    val notAuthorisedRedirectURI = "http://not-authorised-example.com"
-
     implicit val fakeRequest = FakeRequest()
 
-    val nino = TestUserBuilder.createRandomNino
-
-    val authorisationDataModelPass = AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Agent,
-      ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$nino", Nino(nino)))))
-
-    val authorisationDataModelFail = AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
-      ConfidenceLevel.L50, "example.com", Accounts())
-
-    val enrolmentsPass = Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(Identifier("test", "test")), ""), Enrolment("key", Seq(), ""))
-    val enrolmentsFail = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
-
-    def predicate(dataModel: Option[AuthorisationDataModel], enrolments: Option[Seq[Enrolment]], affinityGroup: String): AgentVisibilityPredicate =
-      new AgentVisibilityPredicate(appConfig, mockedService(dataModel, enrolments, affinityGroup))(postSignUri,
-        notAuthorisedRedirectURI,
-        affinityGroup)
+    def predicate(dataModel: Option[AuthorisationDataModel], affinityGroup: String): AgentVisibilityPredicate =
+      new AgentVisibilityPredicate(appConfig, mockedService(dataModel, affinityGroup))(affinityGroup)
 
     "return true for page visibility when the conditions of the predicate are satisfied" in {
-      lazy val authContext = TestUserBuilder.visibilityPredicateUserPass
-      val result = predicate(Some(authorisationDataModelPass), Some(enrolmentsPass), authorisationDataModelPass.affinityGroup)(authContext, fakeRequest)
+      val authorisationDataModel = AuthorisationDataModel(CredentialStrength.Strong,
+        AffinityGroup.Agent,
+        ConfidenceLevel.L50,
+        "example.com",
+        Accounts())
+
+      lazy val authContext = TestUserBuilder.noCredUserAuthContext
+      val result = predicate(Some(authorisationDataModel), "Agent")(authContext, fakeRequest)
 
       lazy val pageVisibility = await(result)
 
@@ -84,8 +71,14 @@ class AgentVisibilityPredicateSpec extends UnitSpec with MockitoSugar with OneAp
     }
 
     "return false for page visibility when predicate conditions are not satisfied" in {
-      lazy val authContext = TestUserBuilder.visibilityPredicateUserFail
-      val result = predicate(Some(authorisationDataModelFail), Some(enrolmentsFail), authorisationDataModelFail.affinityGroup)(authContext, fakeRequest)
+      val authorisationDataModel = AuthorisationDataModel(CredentialStrength.Strong,
+        AffinityGroup.Organisation,
+        ConfidenceLevel.L50,
+        "example.com",
+        Accounts())
+
+      lazy val authContext = TestUserBuilder.noCredUserAuthContext
+      val result = predicate(Some(authorisationDataModel), "Organisation")(authContext, fakeRequest)
 
       lazy val pageVisibility = await(result)
 
