@@ -41,9 +41,8 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
       override def authenticationType: AuthenticationProvider = ggProvider
     }
 
-    lazy val visibilityPredicate = new AgentVisibilityPredicate(applicationConfig, authorisationService)(postSignInRedirectUrl,
-      applicationConfig.notAuthorisedRedirectUrl,
-      applicationConfig.agentBadAffinity)
+    lazy val visibilityPredicate = new AgentVisibilityPredicate(applicationConfig,
+      authorisationService)(applicationConfig.agentBadAffinity)
 
     lazy val guardedAction: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
 
