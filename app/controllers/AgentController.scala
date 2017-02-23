@@ -16,18 +16,18 @@
 
 package controllers
 
+import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
-import auth.AuthorisedActions
+import auth.{AuthorisedActions, CgtAgent}
 import config.AppConfig
 import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
+import helpers.EnrolmentToCGTCheck
 import models.{AgentSubmissionModel, ReviewDetails}
-import java.time.LocalDate
-
 import play.api.Logger
-import services.AgentService
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
+import services.{AgentService, AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -39,6 +39,9 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 authorisedActions: AuthorisedActions,
                                 agentService: AgentService,
                                 sessionService: KeystoreConnector,
+                                authService: AuthorisationService,
+                                enrolmentToCGTCheck: EnrolmentToCGTCheck,
+                                subscriptionService: SubscriptionService,
                                 val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   private val businessDataNotFoundError: String = "Failed to retrieve registration details from BusinessCustomer keystore"
@@ -48,7 +51,17 @@ class AgentController @Inject()(appConfig: AppConfig,
   val agent: Action[AnyContent] = authorisedActions.authorisedAgentAction {
     implicit user =>
       implicit request =>
-        Future.successful(Ok(views.html.setupYourAgency(appConfig)))
+
+        def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
+          if (isEnrolled) Future.successful(Redirect("http://www.gov.uk"))
+          else Future.successful(Ok(views.html.setupYourAgency(appConfig)))
+        }
+
+        for {
+          enrolments <- authService.getEnrolments
+          isEnrolled <- enrolmentToCGTCheck.checkAgentEnrolments(enrolments)
+          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
+        } yield redirect
   }
 
   private[controllers] def handleBusinessData()(implicit hc: HeaderCarrier): Future[ReviewDetails] = {
@@ -89,8 +102,8 @@ class AgentController @Inject()(appConfig: AppConfig,
         } yield result
       }
 
-     result.recoverWith {
-      case error => Future.successful(InternalServerError)
-    }
+      result.recoverWith {
+        case error => Future.successful(InternalServerError)
+      }
   }
 }
