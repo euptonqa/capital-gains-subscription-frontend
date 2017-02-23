@@ -16,17 +16,18 @@
 
 package controllers
 
-import play.api.mvc.{Action, AnyContent, Result}
 import javax.inject.{Inject, Singleton}
-import config.AppConfig
-import play.api.i18n.{I18nSupport, MessagesApi}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+
 import common.Constants._
+import config.AppConfig
 import exceptions.AffinityGroupNotFoundException
 import forms.OrganisationForm
 import models.OrganisationModel
 import play.api.data.Form
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, Result}
 import services.AuthorisationService
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
@@ -66,6 +67,7 @@ class OrganisationTypeController @Inject()(appConfig: AppConfig,
       case InvalidUserTypes.trust => incorrectAffinityGroupPage(InvalidUserTypes.trust)
       case InvalidUserTypes.pensionTrust => incorrectAffinityGroupPage(InvalidUserTypes.pensionTrust)
     }
+
     form.organisationForm.bindFromRequest().fold(errorAction, successAction)
   }
 }

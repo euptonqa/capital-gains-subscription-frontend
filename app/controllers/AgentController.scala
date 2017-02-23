@@ -41,7 +41,6 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 sessionService: KeystoreConnector,
                                 val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
   private val businessDataNotFoundError: String = "Failed to retrieve registration details from BusinessCustomer keystore"
   private val arnNotFoundError: String = "Agent Details retrieved did not contain an ARN"
   private val failedToEnrolError: String = "Error returned from backend while attempting to enrol agent"
