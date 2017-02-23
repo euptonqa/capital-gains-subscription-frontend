@@ -18,8 +18,8 @@ package controllers
 
 import java.time.LocalDate
 
-import assets.ControllerTestSpec
 import assets.MessageLookup.{AgentConfirmation => messages}
+import assets.{ControllerTestSpec, MessageLookup}
 import auth.{AuthorisedActions, CgtAgent}
 import builders.TestUserBuilder
 import common.Constants.AffinityGroup
@@ -164,6 +164,26 @@ class AgentControllerSpec extends ControllerTestSpec {
         redirectLocation(result).get.toString shouldBe "http://www.gov.uk"
       }
     }
+
+
+    "the agent is authorised and not enrolled" should {
+
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      val enrolments = Option(Seq(Enrolment("other key", Seq(), ""), Enrolment("key", Seq(), "")))
+      lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
+
+      lazy val result = await(agentController.agent(fakeRequest))
+      lazy val document = Jsoup.parse(bodyOf(result))
+
+      "return a status of 200" in {
+        status(result) shouldBe 200
+      }
+
+      "load the setupYourAgency page" in {
+        document.title() shouldBe MessageLookup.SetupYourAgency.title
+      }
+    }
+
 
     "the agent is unauthorised" should {
       lazy val fakeRequest = FakeRequest("GET", "/")
