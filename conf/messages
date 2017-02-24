@@ -86,6 +86,7 @@ common.continue = Continue
 common.yes = Yes
 common.no = No
 common.change = Change
+common.back = Back
 
 ##Review BusinessDetails Page ##
 reviewBusinessDetails.title = Review business details

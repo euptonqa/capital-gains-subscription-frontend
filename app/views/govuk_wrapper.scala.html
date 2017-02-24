@@ -52,8 +52,8 @@
 @betaBanner = {
     @uiLayouts.betaBanner(
         userLoggedIn = true,
-        betaFeedbackUrl = "http://www.gov.uk",
-        betaFeedbackUnauthenticatedUrl = ""
+        betaFeedbackUrl = controllers.routes.FeedbackController.show.url,
+        betaFeedbackUnauthenticatedUrl = controllers.routes.FeedbackController.show.url
     )
 }
 

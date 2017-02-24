@@ -7,5 +7,5 @@ messages: Messages, appConfig: AppConfig)
 
 @main_template(title = messages("feedback.title"), bodyClasses = None, appConfig = appConfig) {
     @cachedStaticHtmlPartialRetriever.getPartialContent(partialUrl)
-    <a id="back" href='@redirectUrl' role="button" tabindex="0" class="button">@Messages("base.back")</a>
+    <a id="back" href='@redirectUrl' role="button" tabindex="0" class="button">@Messages("common.back")</a>
 }
