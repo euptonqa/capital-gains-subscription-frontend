@@ -1,0 +1,11 @@
+@import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
+@import views.html
+@import config.AppConfig
+
+@(partialUrl: String, redirectUrl: String)(implicit request: Request[_], cachedStaticHtmlPartialRetriever: CachedStaticHtmlPartialRetriever,
+messages: Messages, appConfig: AppConfig)
+
+@main_template(title = messages("feedback.thanks"), bodyClasses = None, appConfig = appConfig) {
+    @cachedStaticHtmlPartialRetriever.getPartialContent(partialUrl)
+    <a id="back" href='@redirectUrl' role="button" tabindex="0" class="button">@Messages("common.back")</a>
+}
