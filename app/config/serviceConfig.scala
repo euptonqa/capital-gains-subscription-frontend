@@ -25,6 +25,8 @@ trait AppConfig extends ServicesConfig {
   val assetsPrefix: String
   val analyticsToken: String
   val analyticsHost: String
+  val contactFormServiceIdentifier: String
+  val contactFrontendPartialBaseUrl: String
   val reportAProblemPartialUrl: String
   val reportAProblemNonJSUrl: String
   val identityVerification: Boolean
@@ -50,11 +52,12 @@ class ApplicationConfig @Inject()(configuration: Configuration, val app: Applica
   private def constructUrl(key: String) = baseUrl(key) + configuration.getString(s"microservice.services.$key.path").getOrElse("")
 
   private val contactHost = configuration.getString(s"contact-frontend.host").getOrElse("")
-  private val contactFormServiceIdentifier = "MyService"
+  override val contactFormServiceIdentifier = "CGT-Subscription"
 
   override lazy val assetsPrefix: String = loadConfig(s"assets.url") + loadConfig(s"assets.version")
   override lazy val analyticsToken: String = loadConfig(s"google-analytics.token")
   override lazy val analyticsHost: String = loadConfig(s"google-analytics.host")
+  override lazy val contactFrontendPartialBaseUrl = s"$contactHost"
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override val identityVerification: Boolean = configuration.getBoolean("microservice.services.features.identityVerification").getOrElse(false)

@@ -1,0 +1,11 @@
+@import uk.gov.hmrc.play.partials.FormPartialRetriever
+@import uk.gov.hmrc.play.partials.CachedStaticHtmlPartialRetriever
+@import views.html
+@import config.AppConfig
+
+@(partialUrl: String, formBody: Option[Html])(implicit request: Request[_], formPartialRetriever: FormPartialRetriever,
+partialRetriever: CachedStaticHtmlPartialRetriever, messages: Messages, appConfig: AppConfig)
+
+@main_template(title = messages("feedback.title"), bodyClasses = None, appConfig = appConfig) {
+    @formBody.getOrElse(formPartialRetriever.getPartialContent(partialUrl))
+}
