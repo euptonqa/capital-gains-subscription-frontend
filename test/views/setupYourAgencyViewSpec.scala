@@ -44,7 +44,7 @@ class setupYourAgencyViewSpec extends ViewTestSpec {
     }
 
     "contain a leading paragraph" which {
-      lazy val paragraph = doc.select("main p")
+      lazy val paragraph = doc.select("main p").get(1)
 
       "has the class 'lede'" in {
         paragraph.attr("class") shouldBe "lede"
@@ -84,7 +84,7 @@ class setupYourAgencyViewSpec extends ViewTestSpec {
     }
 
     "contain a button" which {
-      lazy val button = doc.select("main a").first()
+      lazy val button = doc.select("main a").get(1)
 
       "has the class 'button'" in {
         button.attr("class") shouldBe "button"
