@@ -115,3 +115,7 @@ agent.confirmation.on = on
 agent.confirmation.yourArn = Your agent registration number (ARN) is
 agent.confirmation.whatNext = What happens next?
 agent.confirmation.addClients = You can now add your clients.
+
+## Feedback messages ##
+feedback.send = Send your feedback
+feedback.thanks = Your feedback
