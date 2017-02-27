@@ -51,7 +51,7 @@ class ApplicationConfig @Inject()(configuration: Configuration, val app: Applica
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
   private def constructUrl(key: String) = baseUrl(key) + configuration.getString(s"microservice.services.$key.path").getOrElse("")
 
-  private val contactHost = configuration.getString(s"contact-frontend.host").getOrElse("")
+  private val contactHost = constructUrl(s"contact-frontend")
   override val contactFormServiceIdentifier = "CGT-Subscription"
 
   override lazy val assetsPrefix: String = loadConfig(s"assets.url") + loadConfig(s"assets.version")
