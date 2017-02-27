@@ -59,7 +59,7 @@ class ApplicationConfig @Inject()(configuration: Configuration, val app: Applica
   override lazy val analyticsHost: String = loadConfig(s"google-analytics.host")
   override lazy val contactFrontendPartialBaseUrl = s"$contactHost"
   override lazy val reportAProblemPartialUrl = s"/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  override lazy val reportAProblemNonJSUrl = s"/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override val identityVerification: Boolean = configuration.getBoolean("microservice.services.features.identityVerification").getOrElse(false)
   override val ivUpliftUrl: String = configuration.getString(s"identity-verification-uplift.host").getOrElse("")
   override lazy val notAuthorisedRedirectUrl: String = configuration.getString("not-authorised-callback.url").getOrElse("")
