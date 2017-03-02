@@ -53,7 +53,7 @@ class SubscriptionConnector @Inject()(http: WSHttp, appConfig: AppConfig) extend
           case OK =>
             Try(response.json.as[SubscriptionReference]) match {
               case Success(value) => Some(value)
-              case _ => logSubscriptionResponseError(subscriptionNonResidentUrl)
+              case _ => logSubscriptionResponseError(subscriptionResidentUrl)
                 None
             }
           case _ => None
