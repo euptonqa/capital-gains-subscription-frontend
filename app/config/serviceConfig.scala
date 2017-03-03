@@ -43,6 +43,7 @@ trait AppConfig extends ServicesConfig {
   val businessCompanyFrontendRegister: String
   val businessCompanyFrontendAgentRegister: String
   val agentServiceUrl: String
+  val iFormUrl: String
 }
 
 @Singleton
@@ -75,4 +76,5 @@ class ApplicationConfig @Inject()(configuration: Configuration, val app: Applica
   override lazy val businessCompanyFrontendRegister: String = constructUrl("business-customer")
   override lazy val businessCompanyFrontendAgentRegister: String = constructUrl("business-customer-agents")
   override lazy val agentServiceUrl: String = constructUrl("agent-service-frontend")
+  override lazy val iFormUrl: String = configuration.getString(s"iform-url").getOrElse("")
 }
