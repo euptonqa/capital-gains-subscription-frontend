@@ -40,8 +40,8 @@ class CompanyController @Inject()(appConfig: AppConfig,
       implicit request =>
 
         def checkForEnrolmentsAndRedirect(user: CgtNROrganisation, isEnrolled: Boolean)(): Future[Result] ={
-          if (isEnrolled) Future.successful(Redirect(businessCustomerFrontendUrl))
-          else Future.successful(Redirect(appConfig.iFormUrl))
+          if (isEnrolled) Future.successful(Redirect(appConfig.iFormUrl))
+          else Future.successful(Redirect(businessCustomerFrontendUrl))
         }
 
         for {

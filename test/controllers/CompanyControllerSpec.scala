@@ -19,19 +19,33 @@ package controllers
 import assets.ControllerTestSpec
 import auth.{AuthorisedActions, CgtNROrganisation}
 import builders.TestUserBuilder
+import common.Constants.AffinityGroup
+import common.Keys
+import config.WSHttp
+import connectors.AuthorisationConnector
+import helpers.EnrolmentToCGTCheck
+import models.{AuthorisationDataModel, Enrolment}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
+import play.api.inject.Injector
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.AuthorisationService
 import types.AuthenticatedNROrganisationAction
 import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
+
+import scala.concurrent.Future
 
 class CompanyControllerSpec extends ControllerTestSpec {
 
   val testOnlyUnauthorisedLoginUri = "just-a-test"
+
+  val injector: Injector = app.injector
+  val enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
 
   def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.strongUserAuthContext): AuthorisedActions = {
 
@@ -56,13 +70,31 @@ class CompanyControllerSpec extends ControllerTestSpec {
     mockActions
   }
 
+  def mockAuthorisationService(enrolmentsResponse: Option[Seq[Enrolment]], authResponse: Option[AuthorisationDataModel]): AuthorisationService ={
+    implicit val mockHttp = mock[WSHttp]
+
+    val mockConnector = mock[AuthorisationConnector]
+
+    when(mockConnector.getAuthResponse()(ArgumentMatchers.any())).thenReturn(Future.successful(authResponse))
+
+    when(mockConnector.getEnrolmentsResponse(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(enrolmentsResponse)
+
+    new AuthorisationService(mockConnector)
+  }
+
   "Calling .registerCompany" when {
 
-    "the company is authorised" should {
+    val authorisationDataModelPass = Some(AuthorisationDataModel(CredentialStrength.Weak, AffinityGroup.Organisation,
+      ConfidenceLevel.L50, "example.com", Accounts()))
 
-      lazy val fakeRequest = FakeRequest("GET", "/")
-      lazy val action = createMockActions(valid = true)
-      lazy val companyController: CompanyController = new CompanyController(mockConfig, action)
+    lazy val fakeRequest = FakeRequest("GET", "/")
+    lazy val action = createMockActions(valid = true)
+
+    "the company is authorised and unenrolled" should {
+      val enrolments = Option(Seq(Enrolment("key", Seq(), "")))
+      lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, enrolmentToCGTCheck)
       lazy val result = await(companyController.subscribe(fakeRequest))
 
       "return a status of 303" in {
@@ -73,11 +105,30 @@ class CompanyControllerSpec extends ControllerTestSpec {
         redirectLocation(result).get.toString shouldBe "http://localhost:9923/business-customer/business-verification/capital-gains-tax"
       }
     }
+    "the company is authorised and enrolled" should {
+      lazy val enrolments = Option(Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
+      lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, enrolmentToCGTCheck)
+      lazy val result = await(companyController.subscribe(fakeRequest))
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the iForm" in {
+        redirectLocation(result).get.toString shouldBe ""
+      }
+    }
+    }
 
     "the company is unauthorised" should {
+      val authorisationDataModelFail = Some(AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
+        ConfidenceLevel.L0, "example.com", Accounts()))
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val action = createMockActions()
-      lazy val companyController: CompanyController = new CompanyController(mockConfig, action)
+      val enrolments = Option(Seq(Enrolment("key", Seq(), "")))
+      lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelFail)
+
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, enrolmentToCGTCheck)
       lazy val result = await(companyController.subscribe(fakeRequest))
 
       "return a status of 303" in {
@@ -88,5 +139,5 @@ class CompanyControllerSpec extends ControllerTestSpec {
         redirectLocation(result).get.toString shouldBe "just-a-test"
       }
     }
-  }
+
 }
