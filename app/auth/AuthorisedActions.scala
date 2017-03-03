@@ -117,7 +117,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   }
 
   private val composeAuthorisedNonResidentOrganisationAction: AuthenticatedNROrganisationAction => Action[AnyContent] = {
-    val postSignInRedirectUrl: String = controllers.routes.CompanyController.subscribe().url
+    val postSignInRedirectUrl: String = applicationConfig.companySignIn
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
 
     val regime = new CgtRegime {
