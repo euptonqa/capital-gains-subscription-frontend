@@ -18,22 +18,37 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
-import auth.AuthorisedActions
+import auth.{AuthorisedActions, CgtNROrganisation}
 import config.AppConfig
-import play.api.mvc.{Action, AnyContent}
+import helpers.EnrolmentToCGTCheck
+import play.api.mvc.{Action, AnyContent, Result}
+import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
 class CompanyController @Inject()(appConfig: AppConfig,
-                                  authorisedActions: AuthorisedActions) extends FrontendController {
+                                  authorisedActions: AuthorisedActions,
+                                  authService: AuthorisationService,
+                                  enrolmentToCGTCheck: EnrolmentToCGTCheck) extends FrontendController {
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 
   val subscribe: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
     implicit user =>
       implicit request =>
-        Future.successful(Redirect(businessCustomerFrontendUrl))
+
+        def checkForEnrolmentsAndRedirect(user: CgtNROrganisation, isEnrolled: Boolean)(): Future[Result] ={
+          if (isEnrolled) Future.successful(Redirect(appConfig.iFormUrl))
+          else Future.successful(Redirect(businessCustomerFrontendUrl))
+        }
+
+        for {
+          enrolments <- authService.getEnrolments
+          isEnrolled <- enrolmentToCGTCheck.checkEnrolments(enrolments)
+          redirect <- checkForEnrolmentsAndRedirect(user, isEnrolled)
+        } yield redirect
+
   }
 }
