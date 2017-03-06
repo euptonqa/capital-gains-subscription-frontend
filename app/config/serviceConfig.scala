@@ -71,7 +71,7 @@ class ApplicationConfig @Inject()(configuration: Configuration, val app: Applica
   override lazy val individualNonResident: String = configuration.getString(s"non-resident-individual-sign-in.url").getOrElse("")
   override lazy val individualBadAffinity: String = configuration.getString(s"resident-individual-bad-affinity.url").getOrElse("")
   override lazy val agentBadAffinity: String = configuration.getString(s"agent-bad-affinity.url").getOrElse("")
-  override lazy val agentPostSignIn: String = configuration.getString(s"agent-post-siginin.url").getOrElse("")
+  override lazy val agentPostSignIn: String = configuration.getString(s"agent-sign-in.url").getOrElse("")
   override lazy val subscription: String = configuration.getString(s"subscription.url").getOrElse("")
   override lazy val businessCompanyFrontendRegister: String = constructUrl("business-customer")
   override lazy val businessCompanyFrontendAgentRegister: String = constructUrl("business-customer-agents")
