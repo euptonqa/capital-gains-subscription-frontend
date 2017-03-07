@@ -43,7 +43,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
         implicit request =>
           for {
             enrolments <- authService.getEnrolments
-            isEnrolled <- enrolmentToCGTCheck.checkEnrolments(enrolments)
+            isEnrolled <- enrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
             redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
           } yield redirect
     }
