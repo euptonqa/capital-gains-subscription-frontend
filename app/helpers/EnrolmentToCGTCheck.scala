@@ -25,7 +25,7 @@ import scala.concurrent.Future
 
 class EnrolmentToCGTCheck @Inject()() {
   def checkEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = enrolments match {
-    case Some(data) => Future.successful(data.exists(_.key == Keys.cGTEnrolmentKey))
+    case Some(data) => Future.successful(data.exists(_.key == Keys.cgtIndividualEnrolmentKey))
     case None => Future.successful(false)
   }
 
