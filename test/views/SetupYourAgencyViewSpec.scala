@@ -21,7 +21,7 @@ import assets.MessageLookup.SetupYourAgency._
 import org.jsoup.Jsoup
 import views.html.setupYourAgency
 
-class setupYourAgencyViewSpec extends ViewTestSpec {
+class SetupYourAgencyViewSpec extends ViewTestSpec {
 
   "The setup your agency view" should {
     lazy val view = setupYourAgency(appConfig)
@@ -96,6 +96,10 @@ class setupYourAgencyViewSpec extends ViewTestSpec {
 
       "has an href to business customer frontend" in {
         button.attr("href") should include("business-customer/business-verification/capital-gains-tax-agents")
+      }
+
+      "has an id of continue-button" in {
+        button.id() shouldBe "continue-button"
       }
     }
   }
