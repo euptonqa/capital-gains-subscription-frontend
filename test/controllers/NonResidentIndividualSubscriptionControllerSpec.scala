@@ -117,7 +117,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       val fakeRequest = FakeRequest("GET", "/")
       lazy val mockActions = createMockActions(valid = true)
       val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
-      val enrolments = Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), ""))
+      val enrolments = Seq(Enrolment(Keys.cgtIndividualEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), ""))
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,

@@ -70,7 +70,7 @@ class NonResidentIndividualVisibilityPredicateSpec extends UnitSpec with Mockito
     val authorisationDataModelFail = AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
       ConfidenceLevel.L50, "example.com", Accounts())
 
-    val enrolmentsPass = Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("test","test")), ""), Enrolment("key", Seq(), ""))
+    val enrolmentsPass = Seq(Enrolment(Keys.cgtIndividualEnrolmentKey, Seq(Identifier("test","test")), ""), Enrolment("key", Seq(), ""))
     val enrolmentsFail = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
 
     implicit val hc = HeaderCarrier()

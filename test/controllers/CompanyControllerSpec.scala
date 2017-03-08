@@ -106,7 +106,7 @@ class CompanyControllerSpec extends ControllerTestSpec {
       }
     }
     "the company is authorised and enrolled" should {
-      lazy val enrolments = Option(Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
+      lazy val enrolments = Option(Seq(Enrolment(Keys.cgtCompanyEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
       lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, enrolmentToCGTCheck)
       lazy val result = await(companyController.subscribe(fakeRequest))

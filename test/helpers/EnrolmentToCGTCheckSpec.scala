@@ -26,27 +26,51 @@ class EnrolmentToCGTCheckSpec extends UnitSpec with WithFakeApplication {
   val injector: Injector = fakeApplication.injector
   val enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
 
-  "Calling .checkEnrolments" should {
+  "Calling .checkIndividualEnrolments" should {
     "return true when supplied with a single element Sequence of Enrolments that includes the CGT enrolment" in {
-      val enrolments = Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), ""))
-      await(enrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe true
+      val enrolments = Seq(Enrolment(Keys.cgtIndividualEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), ""))
+      await(enrolmentToCGTCheck.checkIndividualEnrolments(Some(enrolments))) shouldBe true
     }
 
     "return true when supplied with a multiple element Sequence of Enrolments that includes the CGT enrolment" in {
       val enrolments = Seq(
         Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""),
-        Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), "")
+        Enrolment(Keys.cgtIndividualEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), "")
       )
-      await(enrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe true
+      await(enrolmentToCGTCheck.checkIndividualEnrolments(Some(enrolments))) shouldBe true
       }
 
     "return false when supplied with Sequence of Enrolments that does not include the CGT enrolment" in {
       val enrolments = Seq(Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""))
-      await(enrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe false
+      await(enrolmentToCGTCheck.checkIndividualEnrolments(Some(enrolments))) shouldBe false
     }
 
     "return false when supplied with a None" in {
-      await(enrolmentToCGTCheck.checkEnrolments(None)) shouldBe false
+      await(enrolmentToCGTCheck.checkIndividualEnrolments(None)) shouldBe false
+    }
+  }
+
+  "Calling .checkCompanyEnrolments" should {
+    "return true when supplied with a single element Sequence of Enrolments that includes the CGT enrolment" in {
+      val enrolments = Seq(Enrolment(Keys.cgtCompanyEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), ""))
+      await(enrolmentToCGTCheck.checkCompanyEnrolments(Some(enrolments))) shouldBe true
+    }
+
+    "return true when supplied with a multiple element Sequence of Enrolments that includes the CGT enrolment" in {
+      val enrolments = Seq(
+        Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""),
+        Enrolment(Keys.cgtCompanyEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), "")
+      )
+      await(enrolmentToCGTCheck.checkCompanyEnrolments(Some(enrolments))) shouldBe true
+    }
+
+    "return false when supplied with Sequence of Enrolments that does not include the CGT enrolment" in {
+      val enrolments = Seq(Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""))
+      await(enrolmentToCGTCheck.checkCompanyEnrolments(Some(enrolments))) shouldBe false
+    }
+
+    "return false when supplied with a None" in {
+      await(enrolmentToCGTCheck.checkCompanyEnrolments(None)) shouldBe false
     }
   }
 
