@@ -36,7 +36,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.redirectLocation
 import services.{AuthorisationService, SubscriptionService}
 import traits.ControllerTestSpec
-import types.AuthenticatedIndividualAction
+import auth.AuthenticatedIndividualAction
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._

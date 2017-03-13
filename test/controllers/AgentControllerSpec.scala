@@ -39,7 +39,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{AgentService, AuthorisationService, SubscriptionService}
 import traits.ControllerTestSpec
-import types._
+import auth._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.HeaderCarrier

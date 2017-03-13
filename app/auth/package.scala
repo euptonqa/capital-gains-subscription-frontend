@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import auth.{CgtAgent, CgtIndividual, CgtNROrganisation}
 import play.api.mvc.{AnyContent, Request, Result}
 
 import scala.concurrent.Future
 
-package object types {
+package object auth {
   type AuthenticatedIndividualAction = CgtIndividual => Request[AnyContent] => Future[Result]
   type AuthenticatedNROrganisationAction = CgtNROrganisation => Request[AnyContent] => Future[Result]
   type AuthenticatedAgentAction = CgtAgent => Request[AnyContent] => Future[Result]

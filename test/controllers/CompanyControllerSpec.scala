@@ -34,7 +34,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.AuthorisationService
 import traits.ControllerTestSpec
-import types.AuthenticatedNROrganisationAction
+import auth.AuthenticatedNROrganisationAction
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 

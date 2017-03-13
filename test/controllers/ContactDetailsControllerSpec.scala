@@ -30,7 +30,7 @@ import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import traits.ControllerTestSpec
-import types._
+import auth._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 import scala.concurrent.Future
