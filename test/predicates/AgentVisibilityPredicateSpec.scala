@@ -17,10 +17,9 @@
 package predicates
 
 import common.Constants.AffinityGroup
-import common.Keys
 import config.AppConfig
 import data.TestUserBuilder
-import models.{AuthorisationDataModel, Enrolment, Identifier}
+import models.AuthorisationDataModel
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
@@ -28,7 +27,6 @@ import org.scalatestplus.play.OneAppPerSuite
 import play.api.inject.Injector
 import play.api.test.FakeRequest
 import services.AuthorisationService
-import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength, PayeAccount}
 import uk.gov.hmrc.play.test.UnitSpec
 

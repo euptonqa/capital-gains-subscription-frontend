@@ -59,7 +59,6 @@ class NonResidentIndividualVisibilityPredicateSpec extends UnitSpec with Mockito
     val notAuthorisedRedirectURI = "http://not-authorised-example.com"
     val twoFactorURI = appConfig.twoFactorUrl
     val authorisationURI = "http://authorisation-uri-example.com"
-    val enrolmentURI = "http://sample-enrolment-uri.com"
 
     implicit val fakeRequest = FakeRequest()
 

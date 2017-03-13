@@ -16,7 +16,6 @@
 
 package helpers
 
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel
 import uk.gov.hmrc.play.test.UnitSpec
 import data.TestUserBuilder._
 

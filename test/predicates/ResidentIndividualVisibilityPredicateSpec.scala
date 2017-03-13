@@ -20,8 +20,6 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import config.AppConfig
 import models.{AuthorisationDataModel, Enrolment, Identifier}
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
 import play.api.inject.Injector
 import services.AuthorisationService
 import uk.gov.hmrc.domain.Nino
