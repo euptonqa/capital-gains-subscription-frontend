@@ -29,7 +29,6 @@ import common.Constants.{AffinityGroup, InvalidUserTypes}
 import data.MessageLookup
 import exceptions.AffinityGroupNotFoundException
 import forms.OrganisationForm
-import models.OrganisationModel
 import services.AuthorisationService
 import traits.FakeRequestHelper
 
