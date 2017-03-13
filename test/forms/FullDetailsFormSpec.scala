@@ -19,7 +19,7 @@ package forms
 import models.UserFactsModel
 import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
-import assets.MessageLookup.Errors
+import data.MessageLookup.Errors
 
 class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
 

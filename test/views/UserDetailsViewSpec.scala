@@ -16,15 +16,15 @@
 
 package views
 
-import assets.FakeRequestHelper
-import assets.MessageLookup.UserDetails
-import assets.MessageLookup.Common
+import data.MessageLookup.UserDetails
+import data.MessageLookup.Common
 import config.AppConfig
 import forms.UserFactsForm
 import org.jsoup.Jsoup
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
+import traits.FakeRequestHelper
 import uk.gov.hmrc.play.test.UnitSpec
 import views.html.userDetails
 

@@ -16,13 +16,12 @@
 
 package controllers
 
-import assets.ControllerTestSpec
 import auth.{AuthorisedActions, CgtIndividual}
-import builders.TestUserBuilder
 import common.Constants.AffinityGroup
 import common.Keys
 import config.WSHttp
 import connectors.{AuthorisationConnector, SubscriptionConnector}
+import data.TestUserBuilder
 import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment, Identifier, SubscriptionReference}
 import org.mockito.ArgumentMatchers
@@ -34,7 +33,8 @@ import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{AuthorisationService, SubscriptionService}
-import types.AuthenticatedIndividualAction
+import traits.ControllerTestSpec
+import auth.AuthenticatedIndividualAction
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength, PayeAccount}

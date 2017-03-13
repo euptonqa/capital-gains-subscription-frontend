@@ -16,8 +16,8 @@
 
 package views
 
-import assets.{FakeRequestHelper, MessageLookup}
 import config.AppConfig
+import data.MessageLookup
 import models.{CompanyAddressModel, ContactDetailsModel}
 import org.jsoup.Jsoup
 import org.scalatestplus.play.OneAppPerSuite
@@ -25,7 +25,8 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
 import uk.gov.hmrc.play.test.UnitSpec
 import views.html.reviewBusinessDetails
-import assets.MessageLookup.{ReviewBusinessDetails => messages}
+import data.MessageLookup.{ReviewBusinessDetails => messages}
+import traits.FakeRequestHelper
 
 
 class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestHelper with I18nSupport {

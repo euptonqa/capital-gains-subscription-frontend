@@ -20,7 +20,6 @@ import java.net.URI
 
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import builders.TestUserBuilder
 import connectors.AuthorisationConnector
 import models.AuthorisationDataModel
 import org.mockito.ArgumentMatchers
@@ -30,6 +29,7 @@ import services.AuthorisationService
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import common.Constants.AffinityGroup._
+import data.TestUserBuilder
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future

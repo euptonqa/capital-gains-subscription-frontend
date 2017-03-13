@@ -16,9 +16,8 @@
 
 package helpers
 
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel
 import uk.gov.hmrc.play.test.UnitSpec
-import builders.TestUserBuilder._
+import data.TestUserBuilder._
 
 class ConfidenceLevelCheckSpec extends UnitSpec {
   "Calling .confidenceLevelCheck" should {

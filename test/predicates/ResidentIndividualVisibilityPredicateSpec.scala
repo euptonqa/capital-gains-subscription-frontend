@@ -16,13 +16,10 @@
 
 package predicates
 
-import builders.TestUserBuilder
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import config.AppConfig
 import models.{AuthorisationDataModel, Enrolment, Identifier}
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito._
 import play.api.inject.Injector
 import services.AuthorisationService
 import uk.gov.hmrc.domain.Nino
@@ -32,6 +29,7 @@ import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength, PayeAccount}
 import common.Constants.AffinityGroup
 import common.Keys
+import data.TestUserBuilder
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future

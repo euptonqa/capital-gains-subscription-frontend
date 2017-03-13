@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package builders
+package data
 
 import uk.gov.hmrc.domain.{Generator, Nino}
 import uk.gov.hmrc.play.frontend.auth.AuthContext
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, Authority, ConfidenceLevel, CredentialStrength, PayeAccount}
+import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 
 import scala.util.Random
 

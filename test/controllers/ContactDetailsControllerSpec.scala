@@ -16,10 +16,9 @@
 
 package controllers
 
-import assets.{ControllerTestSpec, MessageLookup}
 import auth.{AuthorisedActions, CgtNROrganisation}
-import builders.TestUserBuilder
 import connectors.KeystoreConnector
+import data.{MessageLookup, TestUserBuilder}
 import forms.ContactDetailsForm
 import models.ContactDetailsModel
 import org.jsoup.Jsoup
@@ -30,7 +29,8 @@ import org.mockito.stubbing.Answer
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import types._
+import traits.ControllerTestSpec
+import auth._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 import scala.concurrent.Future

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package enums
+package common
 
 import play.api.Logger
 import play.api.libs.json._

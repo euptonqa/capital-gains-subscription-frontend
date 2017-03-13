@@ -23,7 +23,6 @@ import connectors.FrontendAuthorisationConnector
 import play.api.mvc.{Action, AnyContent}
 import predicates._
 import services.AuthorisationService
-import types.{AuthenticatedAgentAction, AuthenticatedIndividualAction, AuthenticatedNROrganisationAction}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 

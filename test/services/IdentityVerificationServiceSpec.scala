@@ -16,9 +16,9 @@
 
 package services
 
+import common.IdentityVerificationResult
+import common.IdentityVerificationResult._
 import connectors.IdentityVerificationConnector
-import enums.IdentityVerificationResult
-import enums.IdentityVerificationResult.IdentityVerificationResult
 import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec

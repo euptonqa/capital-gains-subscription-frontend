@@ -16,7 +16,7 @@
 
 package forms
 
-import assets.MessageLookup.Errors
+import data.MessageLookup.Errors
 import models.CompanyAddressModel
 import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec

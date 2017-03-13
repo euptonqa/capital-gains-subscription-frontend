@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package assets
+package traits
 
-import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
-import common.FormValidation._
+import config.AppConfig
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.inject.Injector
+import uk.gov.hmrc.play.test.UnitSpec
 
-object TestForm {
-
-  private val bindingError: TestModel => Boolean = model => model.anotherField == ""
-
-  val testForm = Form(
-    mapping (
-      "response" -> text
-        .verifying(MessageLookup.Errors.dummyError, nonEmptyCheck),
-      "anotherField" -> text
-    )(TestModel.apply)(TestModel.unapply)
-    .verifying(MessageLookup.Errors.dummyError, model => bindingError(model))
-  )
+trait ViewTestSpec extends UnitSpec with OneAppPerSuite with FakeRequestHelper with I18nSupport {
+  lazy val injector: Injector = app.injector
+  lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
+  implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 }
-
-case class TestModel(response: String, anotherField: String)

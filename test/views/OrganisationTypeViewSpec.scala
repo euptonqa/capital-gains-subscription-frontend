@@ -16,17 +16,17 @@
 
 package views
 
-import assets.FakeRequestHelper
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import common.Constants.InvalidUserTypes
-import assets.MessageLookup.{OrganisationType => messages}
-import assets.MessageLookup.{Common => commonMessages}
+import data.MessageLookup.{OrganisationType => messages}
+import data.MessageLookup.{Common => commonMessages}
 import config.AppConfig
 import forms.OrganisationForm
 import org.scalatest.mock.MockitoSugar
 import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
+import traits.FakeRequestHelper
 
 class OrganisationTypeViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with MockitoSugar with I18nSupport {
 

@@ -16,16 +16,15 @@
 
 package views.confirmation
 
-
-import assets.FakeRequestHelper
-import assets.MessageLookup.{CGTSubscriptionConfirm => messages}
-import assets.MessageLookup.{Common => commonMessages}
+import data.MessageLookup.{CGTSubscriptionConfirm => messages}
+import data.MessageLookup.{Common => commonMessages}
 import config.AppConfig
 import org.jsoup._
 import org.scalatest.mock.MockitoSugar
 import views.html.confirmation.cgtSubscriptionConfirmation
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
+import traits.FakeRequestHelper
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class CGTSubscriptionConfirmationViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with MockitoSugar with I18nSupport {

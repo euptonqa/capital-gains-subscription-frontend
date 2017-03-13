@@ -16,14 +16,14 @@
 
 package views.address
 
-import assets.FakeRequestHelper
-import assets.MessageLookup.{Common, EnterCorrespondenceAddress}
+import data.MessageLookup.{Common, EnterCorrespondenceAddress}
 import config.AppConfig
 import forms.CorrespondenceAddressForm
 import org.jsoup.Jsoup
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
+import traits.FakeRequestHelper
 import uk.gov.hmrc.play.test.UnitSpec
 import views.html.address.enterCorrespondenceAddress
 
