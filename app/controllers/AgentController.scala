@@ -40,7 +40,6 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 agentService: AgentService,
                                 sessionService: KeystoreConnector,
                                 authService: AuthorisationService,
-                                enrolmentToCGTCheck: EnrolmentToCGTCheck,
                                 subscriptionService: SubscriptionService,
                                 val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
@@ -59,7 +58,7 @@ class AgentController @Inject()(appConfig: AppConfig,
 
         for {
           enrolments <- authService.getEnrolments
-          isEnrolled <- enrolmentToCGTCheck.checkAgentEnrolments(enrolments)
+          isEnrolled <- EnrolmentToCGTCheck.checkAgentEnrolments(enrolments)
           redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
         } yield redirect
   }

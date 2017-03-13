@@ -16,14 +16,13 @@
 
 package helpers
 
-import javax.inject.Inject
-
 import common.Keys
 import models.Enrolment
 
 import scala.concurrent.Future
 
-class EnrolmentToCGTCheck @Inject()() {
+object EnrolmentToCGTCheck {
+
   def checkIndividualEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = enrolments match {
     case Some(data) => Future.successful(data.exists(_.key == Keys.cgtIndividualEnrolmentKey))
     case None => Future.successful(false)

@@ -21,11 +21,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.CredentialStrength
 
 import scala.concurrent.Future
 
-object StrongCredentialCheck extends StrongCredentialCheck
-
-trait StrongCredentialCheck {
-
+object StrongCredentialCheck {
   def checkCredential(authContext: AuthContext): Future[Boolean] = Future.successful(authContext.user.credentialStrength == CredentialStrength.Strong)
-
 }
 

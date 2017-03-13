@@ -19,8 +19,6 @@ package helpers
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import scala.concurrent.Future
 
-object NINOCheck extends NINOCheck
-
-trait NINOCheck {
+object NINOCheck {
   def checkNINO(authContext: AuthContext): Future[Boolean] = Future.successful(authContext.principal.accounts.paye.isDefined)
 }

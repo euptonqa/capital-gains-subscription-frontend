@@ -45,9 +45,6 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
 
   val unauthorisedLoginUri = "some-url"
 
-  val injector: Injector = app.injector
-  val enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
-
   def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithNINO): AuthorisedActions = {
 
     val mockActions = mock[AuthorisedActions]
@@ -117,7 +114,7 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
-        authorisationService, enrolmentToCGTCheck)
+        authorisationService)
 
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
@@ -139,7 +136,7 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
-        authorisationService, enrolmentToCGTCheck)
+        authorisationService)
 
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
@@ -160,7 +157,7 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
-        authorisationService, enrolmentToCGTCheck)
+        authorisationService)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
@@ -180,7 +177,7 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
       lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
-        authorisationService, enrolmentToCGTCheck)
+        authorisationService)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {
@@ -198,7 +195,7 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
       val mockSubscriptionService = createMockSubscriptionService(None)
       lazy val authorisationService = createMockAuthorisationService(None, Some(authorisationDataModelFail))
       lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
-        authorisationService, enrolmentToCGTCheck)
+        authorisationService)
       lazy val result = target.residentIndividualSubscription(fakeRequest)
 
       "return a status of 303" in {

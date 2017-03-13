@@ -30,8 +30,7 @@ import scala.concurrent.Future
 @Singleton
 class CompanyController @Inject()(appConfig: AppConfig,
                                   authorisedActions: AuthorisedActions,
-                                  authService: AuthorisationService,
-                                  enrolmentToCGTCheck: EnrolmentToCGTCheck) extends FrontendController {
+                                  authService: AuthorisationService) extends FrontendController {
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 
@@ -46,7 +45,7 @@ class CompanyController @Inject()(appConfig: AppConfig,
 
         for {
           enrolments <- authService.getEnrolments
-          isEnrolled <- enrolmentToCGTCheck.checkCompanyEnrolments(enrolments)
+          isEnrolled <- EnrolmentToCGTCheck.checkCompanyEnrolments(enrolments)
           redirect <- checkForEnrolmentsAndRedirect(user, isEnrolled)
         } yield redirect
 

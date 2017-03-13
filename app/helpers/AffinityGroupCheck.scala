@@ -19,14 +19,10 @@ package helpers
 import scala.concurrent.Future
 import common.Constants.AffinityGroup._
 
-object AffinityGroupCheck extends AffinityGroupCheck
-
-trait AffinityGroupCheck {
-
+object AffinityGroupCheck {
   def affinityGroupCheckIndividual(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Individual)
 
   def affinityGroupCheckCompany(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Organisation)
 
   def affinityGroupCheckAgent(affinityGroup: String): Future[Boolean] = Future.successful(affinityGroup == Agent)
-
 }
