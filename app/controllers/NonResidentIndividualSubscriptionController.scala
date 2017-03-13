@@ -30,8 +30,7 @@ import scala.concurrent.Future
 class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
                                                             appConfig: AppConfig,
                                                             subscriptionService: SubscriptionService,
-                                                            authorisationService: AuthorisationService,
-                                                            enrolmentToCGTCheck: EnrolmentToCGTCheck)
+                                                            authorisationService: AuthorisationService)
   extends FrontendController {
 
   val nonResidentIndividualSubscription: Action[AnyContent] = actions.authorisedNonResidentIndividualAction {
@@ -39,7 +38,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
       implicit request =>
         for {
           enrolments <- authorisationService.getEnrolments(hc(request))
-          checkEnrolled <- enrolmentToCGTCheck.checkEnrolments(enrolments)
+          checkEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
           route <- routeRequest(checkEnrolled)
         } yield route
   }

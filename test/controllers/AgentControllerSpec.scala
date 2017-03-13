@@ -50,9 +50,6 @@ class AgentControllerSpec extends ControllerTestSpec {
 
   val testOnlyUnauthorisedLoginUri = "just-a-test"
 
-  val injector: Injector = app.injector
-  val enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
-
   object TestData {
     val businessAddress = Address(line_1 = "",
       line_2 = "",
@@ -138,7 +135,7 @@ class AgentControllerSpec extends ControllerTestSpec {
     when(sessionService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(businessDetails))
     when(service.getAgentEnrolmentResponse(any())(any())).thenReturn(Future.successful(enrolmentResponse))
 
-    new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService, enrolmentToCGTCheck, mockSubscriptionService, messagesApi)
+    new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService, mockSubscriptionService, messagesApi)
 
   }
 

@@ -44,9 +44,6 @@ class CompanyControllerSpec extends ControllerTestSpec {
 
   val testOnlyUnauthorisedLoginUri = "just-a-test"
 
-  val injector: Injector = app.injector
-  val enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
-
   def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.strongUserAuthContext): AuthorisedActions = {
 
     val mockActions = mock[AuthorisedActions]
@@ -94,7 +91,7 @@ class CompanyControllerSpec extends ControllerTestSpec {
     "the company is authorised and unenrolled" should {
       val enrolments = Option(Seq(Enrolment("key", Seq(), "")))
       lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
-      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, enrolmentToCGTCheck)
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService)
       lazy val result = await(companyController.subscribe(fakeRequest))
 
       "return a status of 303" in {
@@ -108,7 +105,7 @@ class CompanyControllerSpec extends ControllerTestSpec {
     "the company is authorised and enrolled" should {
       lazy val enrolments = Option(Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
-      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, enrolmentToCGTCheck)
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService)
       lazy val result = await(companyController.subscribe(fakeRequest))
       "return a status of 303" in {
         status(result) shouldBe 303
@@ -128,7 +125,7 @@ class CompanyControllerSpec extends ControllerTestSpec {
       val enrolments = Option(Seq(Enrolment("key", Seq(), "")))
       lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelFail)
 
-      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, enrolmentToCGTCheck)
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService)
       lazy val result = await(companyController.subscribe(fakeRequest))
 
       "return a status of 303" in {

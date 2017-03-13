@@ -47,9 +47,6 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
 
   val unauthorisedLoginUri = "some-url"
 
-  val injector: Injector = app.injector
-  val enrolmentToCGTCheck: EnrolmentToCGTCheck = injector.instanceOf[EnrolmentToCGTCheck]
-
   implicit val timeout: Timeout = mock[Timeout]
 
   def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithNINO): AuthorisedActions = {
@@ -121,7 +118,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, enrolmentToCGTCheck)
+        mockAuthorisationService)
 
       lazy val result = target.nonResidentIndividualSubscription(fakeRequest)
 
@@ -144,7 +141,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, enrolmentToCGTCheck)
+        mockAuthorisationService)
 
       lazy val result = target.nonResidentIndividualSubscription(fakeRequest)
 
@@ -166,7 +163,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, enrolmentToCGTCheck)
+        mockAuthorisationService)
 
       lazy val result = target.nonResidentIndividualSubscription(fakeRequest)
 
@@ -190,7 +187,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelNoNino))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, enrolmentToCGTCheck)
+        mockAuthorisationService)
 
       lazy val result = target.nonResidentIndividualSubscription(fakeRequest)
 
