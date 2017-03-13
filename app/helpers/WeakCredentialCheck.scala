@@ -21,9 +21,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.CredentialStrength
 
 import scala.concurrent.Future
 
-object WeakCredentialCheck extends WeakCredentialCheck
-
-trait WeakCredentialCheck {
+object WeakCredentialCheck {
   def weakCredentialCheck(authContext: AuthContext): Future[Boolean] = authContext.user.credentialStrength match {
     case CredentialStrength.None => Future.successful(false)
     case _ => Future.successful(true)
