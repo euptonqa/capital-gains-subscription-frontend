@@ -18,9 +18,9 @@ package predicates
 
 import java.net.URI
 
+import data.TestUserBuilder
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import builders.TestUserBuilder
 
 class LoginPredicateSpec extends UnitSpec with WithFakeApplication {
 

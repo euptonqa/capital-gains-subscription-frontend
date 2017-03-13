@@ -16,15 +16,15 @@
 
 package views
 
-import assets.FakeRequestHelper
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import assets.MessageLookup.{InvalidAffinityGroup => messages}
+import data.MessageLookup.{InvalidAffinityGroup => messages}
 import config.AppConfig
 import org.jsoup._
 import org.scalatest.mock.MockitoSugar
 import views.html.errors.errorInvalidUser
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.inject.Injector
+import traits.FakeRequestHelper
 
 class IncorrectAffinityGroupViewSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with MockitoSugar with I18nSupport {
 

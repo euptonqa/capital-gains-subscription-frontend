@@ -18,7 +18,7 @@ package services
 
 import javax.inject.{Inject, Singleton}
 import connectors.IdentityVerificationConnector
-import enums.IdentityVerificationResult._
+import common.IdentityVerificationResult._
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future

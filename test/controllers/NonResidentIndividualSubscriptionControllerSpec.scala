@@ -17,13 +17,12 @@
 package controllers
 
 import akka.util.Timeout
-import assets.ControllerTestSpec
 import auth.{AuthorisedActions, CgtIndividual}
-import builders.TestUserBuilder
 import common.Constants.AffinityGroup
 import common.Keys
 import config.WSHttp
 import connectors.{AuthorisationConnector, SubscriptionConnector}
+import data.TestUserBuilder
 import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment, SubscriptionReference}
 import org.mockito.ArgumentMatchers
@@ -36,7 +35,8 @@ import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.redirectLocation
 import services.{AuthorisationService, SubscriptionService}
-import types.AuthenticatedIndividualAction
+import traits.ControllerTestSpec
+import auth.AuthenticatedIndividualAction
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
@@ -114,7 +114,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       val fakeRequest = FakeRequest("GET", "/")
       lazy val mockActions = createMockActions(valid = true)
       val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
-      val enrolments = Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), ""))
+      val enrolments = Seq(Enrolment(Keys.cgtIndividualEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), ""))
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,

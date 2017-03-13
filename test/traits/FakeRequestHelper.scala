@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package assets
+package traits
 
 import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded}
 import play.api.test.FakeRequest

@@ -18,12 +18,12 @@ package connectors
 
 import java.util.UUID
 
-import assets.ControllerTestSpec
 import config.{AppConfig, BusinessCustomerSessionCache, SubscriptionSessionCache, WSHttp}
 import models.ReviewDetails
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
+import traits.ControllerTestSpec
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.SessionId

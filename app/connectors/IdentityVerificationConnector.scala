@@ -18,7 +18,7 @@ package connectors
 
 import javax.inject.{Inject, Singleton}
 import config.WSHttp
-import enums.IdentityVerificationResult.IdentityVerificationResult
+import common.IdentityVerificationResult.IdentityVerificationResult
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}

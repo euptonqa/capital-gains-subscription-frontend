@@ -22,8 +22,14 @@ import models.Enrolment
 import scala.concurrent.Future
 
 object EnrolmentToCGTCheck {
-  def checkEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = enrolments match {
-    case Some(data) => Future.successful(data.exists(_.key == Keys.cGTEnrolmentKey))
+
+  def checkIndividualEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = enrolments match {
+    case Some(data) => Future.successful(data.exists(_.key == Keys.cgtIndividualEnrolmentKey))
+    case None => Future.successful(false)
+  }
+
+  def checkCompanyEnrolments(enrolments: Option[Seq[Enrolment]]): Future[Boolean] = enrolments match {
+    case Some(data) => Future.successful(data.exists(_.key == Keys.cgtCompanyEnrolmentKey))
     case None => Future.successful(false)
   }
 

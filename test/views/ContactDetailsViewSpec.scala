@@ -16,10 +16,10 @@
 
 package views
 
-import assets.MessageLookup.{Common, ContactDetails => messages}
-import assets.ViewTestSpec
+import data.MessageLookup.{Common, ContactDetails => messages}
 import forms.ContactDetailsForm
 import org.jsoup.Jsoup
+import traits.ViewTestSpec
 import views.html.contactDetails
 
 class ContactDetailsViewSpec extends ViewTestSpec {

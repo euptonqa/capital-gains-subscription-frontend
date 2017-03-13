@@ -16,13 +16,12 @@
 
 package controllers
 
-import assets.ControllerTestSpec
 import auth.{AuthorisedActions, CgtNROrganisation}
-import builders.TestUserBuilder
 import common.Constants.AffinityGroup
 import common.Keys
 import config.WSHttp
 import connectors.AuthorisationConnector
+import data.TestUserBuilder
 import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment}
 import org.mockito.ArgumentMatchers
@@ -34,7 +33,8 @@ import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.AuthorisationService
-import types.AuthenticatedNROrganisationAction
+import traits.ControllerTestSpec
+import auth.AuthenticatedNROrganisationAction
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 
@@ -103,7 +103,7 @@ class CompanyControllerSpec extends ControllerTestSpec {
       }
     }
     "the company is authorised and enrolled" should {
-      lazy val enrolments = Option(Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
+      lazy val enrolments = Option(Seq(Enrolment(Keys.cgtCompanyEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
       lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService)
       lazy val result = await(companyController.subscribe(fakeRequest))

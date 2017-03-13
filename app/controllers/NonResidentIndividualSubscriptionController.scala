@@ -38,7 +38,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
       implicit request =>
         for {
           enrolments <- authorisationService.getEnrolments(hc(request))
-          checkEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
+          checkEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
           route <- routeRequest(checkEnrolled)
         } yield route
   }

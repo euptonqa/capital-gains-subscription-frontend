@@ -24,27 +24,47 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 class EnrolmentToCGTCheckSpec extends UnitSpec with WithFakeApplication {
 
 
-  "Calling .checkEnrolments" should {
+  "Calling .checkIndividualEnrolments" should {
+
+    "return true when supplied with a multiple element Sequence of Enrolments that includes the CGT enrolment" in {
+      val enrolments = Seq(
+        Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""),
+        Enrolment(Keys.cgtIndividualEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), "")
+      )
+      await(EnrolmentToCGTCheck.checkIndividualEnrolments(Some(enrolments))) shouldBe true
+      }
+
+    "return false when supplied with Sequence of Enrolments that does not include the CGT enrolment" in {
+      val enrolments = Seq(Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""))
+      await(EnrolmentToCGTCheck.checkIndividualEnrolments(Some(enrolments))) shouldBe false
+    }
+
+    "return false when supplied with a None" in {
+      await(EnrolmentToCGTCheck.checkIndividualEnrolments(None)) shouldBe false
+    }
+  }
+
+  "Calling .checkCompanyEnrolments" should {
     "return true when supplied with a single element Sequence of Enrolments that includes the CGT enrolment" in {
-      val enrolments = Seq(Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), ""))
-      await(EnrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe true
+      val enrolments = Seq(Enrolment(Keys.cgtCompanyEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), ""))
+      await(EnrolmentToCGTCheck.checkCompanyEnrolments(Some(enrolments))) shouldBe true
     }
 
     "return true when supplied with a multiple element Sequence of Enrolments that includes the CGT enrolment" in {
       val enrolments = Seq(
         Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""),
-        Enrolment(Keys.cGTEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), "")
+        Enrolment(Keys.cgtCompanyEnrolmentKey, Seq(Identifier("DummyKey", "DummyValue")), "")
       )
-      await(EnrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe true
-      }
+      await(EnrolmentToCGTCheck.checkCompanyEnrolments(Some(enrolments))) shouldBe true
+    }
 
     "return false when supplied with Sequence of Enrolments that does not include the CGT enrolment" in {
       val enrolments = Seq(Enrolment("Not the CGT Key", Seq(Identifier("DummyKey", "DummyValue")), ""))
-      await(EnrolmentToCGTCheck.checkEnrolments(Some(enrolments))) shouldBe false
+      await(EnrolmentToCGTCheck.checkCompanyEnrolments(Some(enrolments))) shouldBe false
     }
 
     "return false when supplied with a None" in {
-      await(EnrolmentToCGTCheck.checkEnrolments(None)) shouldBe false
+      await(EnrolmentToCGTCheck.checkCompanyEnrolments(None)) shouldBe false
     }
   }
 

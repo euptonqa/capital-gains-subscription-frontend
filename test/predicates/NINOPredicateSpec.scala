@@ -18,7 +18,7 @@ package predicates
 
 import java.net.URI
 
-import builders.TestUserBuilder
+import data.TestUserBuilder
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 

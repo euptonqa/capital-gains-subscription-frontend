@@ -45,7 +45,7 @@ class CompanyController @Inject()(appConfig: AppConfig,
 
         for {
           enrolments <- authService.getEnrolments
-          isEnrolled <- EnrolmentToCGTCheck.checkEnrolments(enrolments)
+          isEnrolled <- EnrolmentToCGTCheck.checkCompanyEnrolments(enrolments)
           redirect <- checkForEnrolmentsAndRedirect(user, isEnrolled)
         } yield redirect
 

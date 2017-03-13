@@ -18,9 +18,9 @@ package predicates
 
 import java.net.URI
 
-import builders.TestUserBuilder
 import common.Constants.AffinityGroup._
 import connectors.AuthorisationConnector
+import data.TestUserBuilder
 import models.AuthorisationDataModel
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._

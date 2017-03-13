@@ -16,8 +16,7 @@
 
 package controllers
 
-import assets.ControllerTestSpec
-import assets.MessageLookup.{UseRegisteredAddress => messages}
+import data.MessageLookup.{UseRegisteredAddress => messages}
 import auth.{AuthorisedActions, CgtNROrganisation}
 import common.Keys.KeystoreKeys
 import connectors.KeystoreConnector
@@ -32,7 +31,8 @@ import org.mockito.stubbing.Answer
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import types.AuthenticatedNROrganisationAction
+import traits.ControllerTestSpec
+import auth.AuthenticatedNROrganisationAction
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
