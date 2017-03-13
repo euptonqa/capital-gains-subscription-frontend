@@ -16,7 +16,6 @@
 
 package controllers
 
-import assets.ControllerTestSpec
 import config.WSHttp
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
@@ -25,6 +24,7 @@ import play.api.mvc.RequestHeader
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
+import traits.ControllerTestSpec
 import uk.gov.hmrc.play.http.{HttpGet, HttpResponse}
 import uk.gov.hmrc.play.partials.{CachedStaticHtmlPartialRetriever, FormPartialRetriever}
 

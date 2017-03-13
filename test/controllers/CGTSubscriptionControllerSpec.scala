@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import assets.MessageLookup.{CGTSubscriptionConfirm => messages}
+import data.MessageLookup.{CGTSubscriptionConfirm => messages}
 import org.jsoup._
 import org.scalatest.mock.MockitoSugar
 import play.api.http.Status

@@ -19,7 +19,7 @@ package forms
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import models.OrganisationModel
 import common.Constants.InvalidUserTypes._
-import assets.MessageLookup.{Errors => messages}
+import data.MessageLookup.{Errors => messages}
 import play.api.i18n.MessagesApi
 import play.api.inject.Injector
 

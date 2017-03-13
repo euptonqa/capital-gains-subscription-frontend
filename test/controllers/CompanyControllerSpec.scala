@@ -16,13 +16,12 @@
 
 package controllers
 
-import assets.ControllerTestSpec
 import auth.{AuthorisedActions, CgtNROrganisation}
-import builders.TestUserBuilder
 import common.Constants.AffinityGroup
 import common.Keys
 import config.WSHttp
 import connectors.AuthorisationConnector
+import data.TestUserBuilder
 import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment}
 import org.mockito.ArgumentMatchers
@@ -34,6 +33,7 @@ import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.AuthorisationService
+import traits.ControllerTestSpec
 import types.AuthenticatedNROrganisationAction
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}

@@ -16,11 +16,11 @@
 
 package views.helpers
 
-import assets.MessageLookup.{ErrorSummary => messages}
-import assets.MessageLookup.{Errors => errorMessages}
+import data.MessageLookup.{ErrorSummary => messages}
+import data.MessageLookup.{Errors => errorMessages}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import views.html.helpers.{errorSummary => view}
-import assets.TestForm._
+import forms.TestForm._
 import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 

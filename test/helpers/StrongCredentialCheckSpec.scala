@@ -17,7 +17,7 @@
 package helpers
 
 import uk.gov.hmrc.play.test.UnitSpec
-import builders.TestUserBuilder._
+import data.TestUserBuilder._
 
 class StrongCredentialCheckSpec extends UnitSpec {
 

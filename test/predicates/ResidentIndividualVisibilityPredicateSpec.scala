@@ -16,7 +16,6 @@
 
 package predicates
 
-import builders.TestUserBuilder
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import config.AppConfig
@@ -32,6 +31,7 @@ import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength, PayeAccount}
 import common.Constants.AffinityGroup
 import common.Keys
+import data.TestUserBuilder
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future

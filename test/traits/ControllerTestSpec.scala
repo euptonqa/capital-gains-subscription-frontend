@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package assets
+package traits
 
-import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
-import common.FormValidation._
+import akka.stream.Materializer
+import config.AppConfig
+import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.play.OneAppPerSuite
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.play.test.UnitSpec
 
-object TestForm {
 
-  private val bindingError: TestModel => Boolean = model => model.anotherField == ""
+trait ControllerTestSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
-  val testForm = Form(
-    mapping (
-      "response" -> text
-        .verifying(MessageLookup.Errors.dummyError, nonEmptyCheck),
-      "anotherField" -> text
-    )(TestModel.apply)(TestModel.unapply)
-    .verifying(MessageLookup.Errors.dummyError, model => bindingError(model))
-  )
+  val mockConfig: AppConfig = app.injector.instanceOf[AppConfig]
+  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
+  implicit val mat: Materializer = app.injector.instanceOf[Materializer]
+
 }
-
-case class TestModel(response: String, anotherField: String)

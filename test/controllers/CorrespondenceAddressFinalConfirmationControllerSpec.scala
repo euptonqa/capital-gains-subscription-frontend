@@ -16,10 +16,10 @@
 
 package controllers
 
-import assets.{ControllerTestSpec, MessageLookup}
 import auth.{AuthorisedActions, CgtNROrganisation}
 import common.Keys.KeystoreKeys
 import connectors.KeystoreConnector
+import data.MessageLookup
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -30,6 +30,7 @@ import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SubscriptionService
+import traits.ControllerTestSpec
 import types.AuthenticatedNROrganisationAction
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 

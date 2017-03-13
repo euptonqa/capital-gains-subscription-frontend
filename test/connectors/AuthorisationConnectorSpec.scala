@@ -16,9 +16,9 @@
 
 package connectors
 
-import builders.TestUserBuilder
 import common.Constants.AffinityGroup
 import config.WSHttp
+import data.TestUserBuilder
 import models.{AuthorisationDataModel, Enrolment, Identifier}
 import org.scalatest.mock.MockitoSugar
 import play.api.libs.json.{JsValue, Json}

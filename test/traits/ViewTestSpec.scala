@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package assets
+package traits
 
-import akka.stream.Materializer
 import config.AppConfig
-import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.i18n.MessagesApi
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.inject.Injector
 import uk.gov.hmrc.play.test.UnitSpec
 
-
-trait ControllerTestSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
-
-  val mockConfig: AppConfig = app.injector.instanceOf[AppConfig]
-  val messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-
-  implicit val mat: Materializer = app.injector.instanceOf[Materializer]
-
+trait ViewTestSpec extends UnitSpec with OneAppPerSuite with FakeRequestHelper with I18nSupport {
+  lazy val injector: Injector = app.injector
+  lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
+  implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 }

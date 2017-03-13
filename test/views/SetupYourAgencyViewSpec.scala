@@ -16,9 +16,10 @@
 
 package views
 
-import assets.{MessageLookup, ViewTestSpec}
-import assets.MessageLookup.SetupYourAgency._
+import data.MessageLookup
+import data.MessageLookup.SetupYourAgency._
 import org.jsoup.Jsoup
+import traits.ViewTestSpec
 import views.html.setupYourAgency
 
 class SetupYourAgencyViewSpec extends ViewTestSpec {

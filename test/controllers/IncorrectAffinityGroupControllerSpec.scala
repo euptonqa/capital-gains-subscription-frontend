@@ -16,14 +16,15 @@
 
 package controllers
 
-import assets.{FakeRequestHelper, MessageLookup}
 import config.AppConfig
+import data.MessageLookup
 import org.jsoup.Jsoup
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.MessagesApi
 import play.api.inject.Injector
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import play.api.test.Helpers._
+import traits.FakeRequestHelper
 
 class IncorrectAffinityGroupControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
 

@@ -16,8 +16,8 @@
 
 package predicates
 
-import builders.TestUserBuilder
 import common.Constants.AffinityGroup
+import data.TestUserBuilder
 import models.AuthorisationDataModel
 import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar

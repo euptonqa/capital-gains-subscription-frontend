@@ -16,7 +16,6 @@
 
 package controllers
 
-import assets.{FakeRequestHelper, MessageLookup}
 import config.AppConfig
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -27,10 +26,12 @@ import play.api.inject.Injector
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import common.Constants.{AffinityGroup, InvalidUserTypes}
+import data.MessageLookup
 import exceptions.AffinityGroupNotFoundException
 import forms.OrganisationForm
 import models.OrganisationModel
 import services.AuthorisationService
+import traits.FakeRequestHelper
 
 class OrganisationTypeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
 

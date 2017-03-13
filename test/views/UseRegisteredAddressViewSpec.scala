@@ -16,12 +16,12 @@
 
 package views
 
-import assets.ViewTestSpec
 import forms.YesNoForm
 import org.jsoup.Jsoup
 import views.html.useRegisteredAddress
-import assets.MessageLookup.{Common, UseRegisteredAddress}
+import data.MessageLookup.{Common, UseRegisteredAddress}
 import models.CompanyAddressModel
+import traits.ViewTestSpec
 
 class UseRegisteredAddressViewSpec extends ViewTestSpec {
 

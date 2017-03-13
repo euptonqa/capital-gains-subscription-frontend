@@ -19,10 +19,10 @@ package views.confirmation
 import java.time.LocalDate
 import java.time.format.{DateTimeFormatter, ResolverStyle}
 
-import assets.ViewTestSpec
 import org.jsoup.Jsoup
 import views.html.confirmation.agentSubscriptionConfirmation
-import assets.MessageLookup.{AgentConfirmation => messages}
+import data.MessageLookup.{AgentConfirmation => messages}
+import traits.ViewTestSpec
 
 class AgentSubscriptionConfirmationViewSpec extends ViewTestSpec {
 

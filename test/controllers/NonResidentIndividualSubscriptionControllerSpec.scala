@@ -17,13 +17,12 @@
 package controllers
 
 import akka.util.Timeout
-import assets.ControllerTestSpec
 import auth.{AuthorisedActions, CgtIndividual}
-import builders.TestUserBuilder
 import common.Constants.AffinityGroup
 import common.Keys
 import config.WSHttp
 import connectors.{AuthorisationConnector, SubscriptionConnector}
+import data.TestUserBuilder
 import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment, SubscriptionReference}
 import org.mockito.ArgumentMatchers
@@ -36,6 +35,7 @@ import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.redirectLocation
 import services.{AuthorisationService, SubscriptionService}
+import traits.ControllerTestSpec
 import types.AuthenticatedIndividualAction
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.play.frontend.auth.AuthContext

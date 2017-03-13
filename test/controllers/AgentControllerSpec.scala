@@ -18,14 +18,13 @@ package controllers
 
 import java.time.LocalDate
 
-import assets.MessageLookup.{AgentConfirmation => messages}
-import assets.{ControllerTestSpec, MessageLookup}
+import data.MessageLookup.{AgentConfirmation => messages}
 import auth.{AuthorisedActions, CgtAgent}
-import builders.TestUserBuilder
 import common.Constants.AffinityGroup
 import common.{Dates, Keys}
 import config.WSHttp
 import connectors._
+import data.{MessageLookup, TestUserBuilder}
 import helpers.EnrolmentToCGTCheck
 import models._
 import org.jsoup.Jsoup
@@ -39,6 +38,7 @@ import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{AgentService, AuthorisationService, SubscriptionService}
+import traits.ControllerTestSpec
 import types._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
