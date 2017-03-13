@@ -21,9 +21,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel
 
 import scala.concurrent.Future
 
-object ConfidenceLevelCheck extends ConfidenceLevelCheck
-
-trait ConfidenceLevelCheck {
+object ConfidenceLevelCheck {
   def confidenceLevelCheck(authContext: AuthContext): Future[Boolean] = authContext.user.confidenceLevel match {
     case ConfidenceLevel.L200 => Future.successful(true)
     case ConfidenceLevel.L300 => Future.successful(true)
