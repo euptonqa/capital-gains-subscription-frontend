@@ -30,10 +30,10 @@ class ResidentIndividualVisibilityPredicate(applicationConfig: AppConfig, author
                                                                                                                       enrolmentUrl: String
                             ) extends CompositePageVisibilityPredicate  {
   override def children: Seq[PageVisibilityPredicate] = Seq (
+    new AffinityGroupIndividualPredicate(authorisationService)(new URI(affinityGroup)),
     new TwoFAPredicate(twoFactorURI),
     new IVUpliftPredicate(ivUpliftURI),
-    new NINOPredicate(ivUpliftURI),
-    new AffinityGroupIndividualPredicate(authorisationService)(new URI(affinityGroup))
+    new NINOPredicate(ivUpliftURI)
   )
 
   lazy private val ivUpliftURI: URI =
