@@ -29,8 +29,8 @@ class NonResidentIndividualVisibilityPredicate (applicationConfig: AppConfig, au
 ) extends CompositePageVisibilityPredicate  {
 
   override def children: Seq[PageVisibilityPredicate] = Seq (
-    new TwoFAPredicate(twoFactorURI),
-    new AffinityGroupIndividualPredicate(authorisationService)(new URI(affinityGroup))
+    new AffinityGroupIndividualPredicate(authorisationService)(new URI(affinityGroup)),
+    new TwoFAPredicate(twoFactorURI)
   )
 
   lazy private val twoFactorURI: URI =
