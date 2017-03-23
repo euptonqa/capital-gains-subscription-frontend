@@ -16,54 +16,106 @@
 
 package controllers
 
+import auth.GlobalRedirects
 import config.AppConfig
+import connectors.FrontendAuthCoreConnector
+import data.MessageLookup
 import data.MessageLookup.{CGTSubscriptionConfirm => messages}
-import org.jsoup._
+import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.inject.Injector
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import uk.gov.hmrc.auth.core.{InsufficientConfidenceLevel, InsufficientEnrolments, MissingBearerToken}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class CGTSubscriptionControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
 
   val fakeRequest = FakeRequest("GET", "/")
   val injector: Injector = fakeApplication.injector
 
-  def appConfig: AppConfig = injector.instanceOf[AppConfig]
+  lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
 
-  def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
+  lazy val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
-  val target = new CGTSubscriptionController(appConfig, messagesApi)
+  lazy val redirects: GlobalRedirects = injector.instanceOf[GlobalRedirects]
 
   implicit val mat: akka.stream.Materializer = mock[akka.stream.Materializer]
 
-  "GET /resident/confirmation" should {
+  def setupController(authResponse: Future[Unit]): CGTSubscriptionController = {
+    val mockConnector = mock[FrontendAuthCoreConnector]
 
-    lazy val result = target.confirmationOfSubscription("testString")(fakeRequest)
-    lazy val view = Jsoup.parse(bodyOf(result))
+    when(mockConnector.authorise[Any](ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(authResponse)
 
-    "return 200" in {
-      status(result) shouldBe Status.OK
-    }
-
-    "display the confirmationOfSubscription screen" in {
-      view.title() shouldEqual messages.title
-    }
+    new CGTSubscriptionController(appConfig, messagesApi, mockConnector, redirects)
   }
 
-  "POST /resident/confirmation" should {
+  "Calling the controller method" when {
 
-    lazy val result = target.submitConfirmationOfSubscription(fakeRequest)
+    "the user is not logged in" should {
+      lazy val controller = setupController(Future.failed(new MissingBearerToken))
+      lazy val result = controller.testAuth("CGTREF")(FakeRequest("GET", ""))
 
-    "return 303" in {
-      status(result) shouldBe Status.SEE_OTHER
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the gg-login page" in {
+        redirectLocation(result).get shouldBe "http://localhost:9025/gg/sign-in" +
+          "?continue=http%3A%2F%2Flocalhost%3A9771%2Fcapital-gains-tax%2Fsubscription%2Fresident%2Findividual" +
+          "&origin=capital-gains-subscription-frontend"
+      }
     }
 
-    "redirect to the iForm page" in {
-      redirectLocation(result).get should include("http://www.gov.uk")
+    "the user does not have the correct enrolments" should {
+      lazy val controller = setupController(Future.failed(new InsufficientEnrolments))
+      lazy val result = controller.testAuth("CGTREF")(FakeRequest("GET", ""))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the unauthorised page" in {
+        redirectLocation(result).get shouldBe "http://localhost:9771/capital-gains-tax/subscription/not-authorised"
+      }
+    }
+
+    "the user does not have the correct confidence level" should {
+      lazy val controller = setupController(Future.failed(new InsufficientConfidenceLevel))
+      lazy val result = controller.testAuth("CGTREF")(FakeRequest("GET", ""))
+
+      "return a status of 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to the iv-uplift page" in {
+        redirectLocation(result).get shouldBe "http://localhost:9948/mdtp/uplift" +
+          "?origin=capital-gains-subscription-frontend" +
+          "&confidenceLevel=200" +
+          "&completionURL=http%3A%2F%2Flocalhost%3A9771%2Fcapital-gains-tax%2Fsubscription%2Fresident%2Findividual" +
+          "&failureURL=http%3A%2F%2Flocalhost%3A9771%2Fcapital-gains-tax%2Fsubscription%2Fnot-authorised"
+      }
+    }
+
+    "the user is authorised" should {
+      lazy val controller = setupController(Future.successful())
+      lazy val result = controller.testAuth("CGTREF")(FakeRequest("GET", ""))
+
+      "return a status of 200" in {
+        status(result) shouldBe 200
+      }
+
+      "load the confirmation page" in {
+        lazy val doc = Jsoup.parse(bodyOf(result))
+
+        doc.title() shouldBe MessageLookup.CGTSubscriptionConfirm.title
+      }
     }
   }
 }

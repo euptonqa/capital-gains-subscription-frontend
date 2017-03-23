@@ -18,21 +18,43 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import auth.GlobalRedirects
 import config.AppConfig
+import connectors.FrontendAuthCoreConnector
+import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.{Action, AnyContent, Result}
+import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 @Singleton
-class CGTSubscriptionController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+class CGTSubscriptionController @Inject()(val config: AppConfig,
+                                          val messagesApi: MessagesApi,
+                                          val authConnector: FrontendAuthCoreConnector,
+                                          redirects: GlobalRedirects) extends FrontendController with I18nSupport with AuthorisedFunctions {
 
   val confirmationOfSubscription: String => Action[AnyContent] = cgtReference => Action.async { implicit request =>
-    Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference)))
+    Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(config, cgtReference)))
   }
 
   val submitConfirmationOfSubscription: Action[AnyContent] = Action.async { implicit request =>
     Future.successful(Redirect("http://www.gov.uk"))
+  }
+
+  val residentIndividualErrorHandler: PartialFunction[Throwable, Future[Result]] = {
+    case _: NoActiveSession => {
+      Logger.warn(s"#####################${redirects.toGGLogin(config.individualResident).toString()}")
+      Future.successful(redirects.toGGLogin(config.individualResident))}
+    case _: InsufficientEnrolments => Future.successful(Redirect(config.notAuthorisedRedirectUrl))
+    case _: InsufficientConfidenceLevel => Future.successful(redirects.toPersonalIV(config.individualResident,
+      config.notAuthorisedRedirectUrl, ConfidenceLevel.L200))
+  }
+
+  val testAuth: String => Action[AnyContent] = cgtReference => Action.async { implicit request =>
+    authorised(AffinityGroup.Individual and Enrolment("HMRC-NI").withConfidenceLevel(ConfidenceLevel.L200)) {
+      Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(config, cgtReference)))
+    }.recoverWith {residentIndividualErrorHandler}
   }
 }

@@ -7,6 +7,7 @@ GET        /individual/invalid-user                                 controllers.
 
 GET        /confirmation                                            controllers.CGTSubscriptionController.confirmationOfSubscription(cgtReference: String)
 POST       /confirmation                                            controllers.CGTSubscriptionController.submitConfirmationOfSubscription
+GET        /fake-confirmation                                       controllers.CGTSubscriptionController.testAuth(cgtReference: String)
 
 GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
 
