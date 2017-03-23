@@ -44,9 +44,7 @@ class CGTSubscriptionController @Inject()(val config: AppConfig,
   }
 
   val residentIndividualErrorHandler: PartialFunction[Throwable, Future[Result]] = {
-    case _: NoActiveSession => {
-      Logger.warn(s"#####################${redirects.toGGLogin(config.individualResident).toString()}")
-      Future.successful(redirects.toGGLogin(config.individualResident))}
+    case _: NoActiveSession => Future.successful(redirects.toGGLogin(config.individualResident))
     case _: InsufficientEnrolments => Future.successful(Redirect(config.notAuthorisedRedirectUrl))
     case _: InsufficientConfidenceLevel => Future.successful(redirects.toPersonalIV(config.individualResident,
       config.notAuthorisedRedirectUrl, ConfidenceLevel.L200))
