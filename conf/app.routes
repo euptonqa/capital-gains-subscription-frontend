@@ -23,8 +23,8 @@ GET        /company                                                 controllers.
 GET        /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.correspondenceAddressConfirm
 POST       /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm
 
-GET       /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.enterCorrespondenceAddress
-POST      /company/correspondence-address-enter                     controllers.EnterCorrespondenceAddressController.submitCorrespondenceAddress
+GET        /company/correspondence-address-enter                    controllers.EnterCorrespondenceAddressController.enterCorrespondenceAddress
+POST       /company/correspondence-address-enter                    controllers.EnterCorrespondenceAddressController.submitCorrespondenceAddress
 
 GET        /company/contact-details                                 controllers.ContactDetailsController.contactDetails
 POST       /company/contact-details                                 controllers.ContactDetailsController.submitContactDetails
@@ -37,6 +37,6 @@ GET        /agent/subscribe                                         controllers.
 GET        /agent/registered/subscribe                              controllers.AgentController.registeredAgent
 
 # Feedback Routes
-GET        /feedback                  controllers.FeedbackController.show
-POST       /feedback                  controllers.FeedbackController.submit
-GET        /thankyou                  controllers.FeedbackController.thankyou
+GET        /feedback                                                controllers.FeedbackController.show
+POST       /feedback                                                controllers.FeedbackController.submit
+GET        /thankyou                                                controllers.FeedbackController.thankyou
