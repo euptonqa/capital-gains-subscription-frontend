@@ -19,10 +19,12 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import common.Constants._
+import common.Constants.ErrorMessages._
 import config.AppConfig
 import exceptions.AffinityGroupNotFoundException
 import forms.OrganisationForm
 import models.OrganisationModel
+import play.api.Logger
 import play.api.data.Form
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
@@ -47,7 +49,8 @@ class OrganisationTypeController @Inject()(appConfig: AppConfig,
       case Some(AffinityGroup.Agent) => Future.successful(Redirect(
         controllers.routes.IncorrectAffinityGroupController.incorrectAffinityGroup(InvalidUserTypes.agent)))
       case Some(AffinityGroup.Organisation) => Future.successful(Ok(views.html.errors.organisationType(appConfig, form.organisationForm)))
-      case _ => throw AffinityGroupNotFoundException("Affinity group not retrieved")
+      case _ => Logger.warn(affinityGroupNotRetrieved)
+        throw AffinityGroupNotFoundException(affinityGroupNotRetrieved)
     }
 
     for {

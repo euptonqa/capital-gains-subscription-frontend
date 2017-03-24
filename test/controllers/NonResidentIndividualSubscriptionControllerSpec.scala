@@ -19,18 +19,16 @@ package controllers
 import akka.util.Timeout
 import auth.{AuthorisedActions, CgtIndividual}
 import common.Constants.AffinityGroup
+import common.Constants.ErrorMessages._
 import common.Keys
 import config.WSHttp
 import connectors.{AuthorisationConnector, SubscriptionConnector}
 import data.TestUserBuilder
-import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import play.api.http.Status.INTERNAL_SERVER_ERROR
-import play.api.inject.Injector
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.redirectLocation
@@ -165,10 +163,12 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
         mockAuthorisationService)
 
-      lazy val result = target.nonResidentIndividualSubscription(fakeRequest)
+      lazy val ex = intercept[Exception] {
+        await(target.nonResidentIndividualSubscription(fakeRequest))
+      }
 
-      "return a status of 500 (INTERNAL_SERVER_ERROR)" in {
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+      s"return an Exception with text $failedToEnrolIndividual" in {
+        ex.getMessage shouldEqual failedToEnrolIndividual
       }
     }
   }

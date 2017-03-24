@@ -19,10 +19,10 @@ package controllers
 import auth.AuthorisedActions
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
+import common.Constants.ErrorMessages._
 import forms.UserFactsForm
 import models.UserFactsModel
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Result}
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -40,7 +40,7 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
   def subscribeUser(userFactsModel: UserFactsModel)(implicit hc: HeaderCarrier): Future[Try[String]] = {
     subscriptionService.getSubscriptionResponseGhost(userFactsModel).map[Try[String]] {
       case Some(data) => Success(data.cgtRef)
-      case _ => Failure(new Exception("No data found"))
+      case _ => Failure(new Exception(failedToEnrolIndividual))
     }
   }
 
@@ -57,7 +57,7 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
         def action(cgtRef: Try[String]) = {
           cgtRef match {
             case Success(ref) => Future.successful(Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(ref)))
-            case Failure(error) => Future.successful(InternalServerError(Json.toJson(error.getMessage)))
+            case Failure(error) => Future.failed(new Exception(error.getMessage))
           }
         }
 

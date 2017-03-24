@@ -25,7 +25,6 @@ import common.{Dates, Keys}
 import config.WSHttp
 import connectors._
 import data.{MessageLookup, TestUserBuilder}
-import helpers.EnrolmentToCGTCheck
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -33,13 +32,13 @@ import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import play.api.inject.Injector
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.{AgentService, AuthorisationService, SubscriptionService}
 import traits.ControllerTestSpec
 import auth._
+import common.Constants.ErrorMessages._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -220,10 +219,12 @@ class AgentControllerSpec extends ControllerTestSpec {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val agentController = setupController(valid = true, businessDetails = None)
-      lazy val result = await(agentController.registeredAgent(fakeRequest))
+      lazy val ex = intercept[Exception] {
+        await(agentController.registeredAgent(fakeRequest))
+      }
 
-      "return a 500 response code" in {
-        status(result) shouldBe 500
+      s"throw an exception with text $businessDataNotFound" in {
+        ex.getMessage shouldEqual businessDataNotFound
       }
     }
 
@@ -231,10 +232,12 @@ class AgentControllerSpec extends ControllerTestSpec {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val agentController = setupController(valid = true, businessDetails = Some(TestData.invalidBusinessDetails))
-      lazy val result = await(agentController.registeredAgent(fakeRequest))
+      lazy val ex = intercept[Exception] {
+        await(agentController.registeredAgent(fakeRequest))
+      }
 
-      "return a 500 response code" in {
-        status(result) shouldBe 500
+      s"throw an exception with text $arnNotFound" in {
+        ex.getMessage shouldEqual arnNotFound
       }
     }
 
@@ -280,10 +283,13 @@ class AgentControllerSpec extends ControllerTestSpec {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       lazy val agentController = setupController(valid = true, enrolmentResponse = FailedAgentEnrolmentResponse)
-      lazy val result = await(agentController.registeredAgent(fakeRequest))
 
-      "return a 500 response code" in {
-        status(result) shouldBe 500
+      lazy val ex = intercept[Exception] {
+        await(agentController.registeredAgent(fakeRequest))
+      }
+
+      s"throw an exception with text $failedToEnrolAgent" in {
+        ex.getMessage shouldEqual failedToEnrolAgent
       }
     }
   }

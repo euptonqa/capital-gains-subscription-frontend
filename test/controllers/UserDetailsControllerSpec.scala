@@ -161,15 +161,13 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
 
         override def subscribeUser(fullDetailsModel: UserFactsModel)(implicit hc: HeaderCarrier) = Future.successful(Failure(mockException))
       }
-      lazy val result = controller.submitUserDetails(fakeRequest)
-      lazy val document = Jsoup.parse(bodyOf(result))
 
-      "return a status of 500" in {
-        status(result) shouldBe 500
+      lazy val ex = intercept[Exception] {
+        await(controller.submitUserDetails(fakeRequest))
       }
 
-      "display the error message" in {
-        document.text() shouldBe """"test""""
+      s"throw an exception with text 'test'" in {
+        ex.getMessage shouldEqual "test"
       }
     }
 
