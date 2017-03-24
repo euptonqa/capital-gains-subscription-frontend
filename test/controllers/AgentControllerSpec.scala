@@ -25,7 +25,6 @@ import common.{Dates, Keys}
 import config.WSHttp
 import connectors._
 import data.{MessageLookup, TestUserBuilder}
-import helpers.EnrolmentToCGTCheck
 import models._
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -33,7 +32,6 @@ import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import play.api.inject.Injector
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._

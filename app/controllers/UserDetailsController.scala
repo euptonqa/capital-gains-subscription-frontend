@@ -23,7 +23,6 @@ import common.Constants.ErrorMessages._
 import forms.UserFactsForm
 import models.UserFactsModel
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Result}
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController

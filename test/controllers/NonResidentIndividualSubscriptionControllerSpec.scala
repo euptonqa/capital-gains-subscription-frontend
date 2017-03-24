@@ -24,14 +24,11 @@ import common.Keys
 import config.WSHttp
 import connectors.{AuthorisationConnector, SubscriptionConnector}
 import data.TestUserBuilder
-import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import play.api.http.Status.INTERNAL_SERVER_ERROR
-import play.api.inject.Injector
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.redirectLocation

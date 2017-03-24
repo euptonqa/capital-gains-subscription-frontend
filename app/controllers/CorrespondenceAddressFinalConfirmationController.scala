@@ -32,7 +32,6 @@ import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
-import scala.util.Failure
 
 @Singleton
 class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppConfig,

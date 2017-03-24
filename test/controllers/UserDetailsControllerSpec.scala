@@ -31,7 +31,6 @@ import play.api.test.Helpers._
 import services.SubscriptionService
 import traits.ControllerTestSpec
 import auth.AuthenticatedIndividualAction
-import common.Constants.ErrorMessages._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.HeaderCarrier
 
