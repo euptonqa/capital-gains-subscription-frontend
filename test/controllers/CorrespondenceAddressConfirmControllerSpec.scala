@@ -33,6 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import traits.ControllerTestSpec
 import auth.AuthenticatedNROrganisationAction
+import common.Constants.ErrorMessages._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
@@ -102,7 +103,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
 
     "no details for the business exist in keystore" should {
 
-      "return a return a 500 response code" in {
+      "return a return a 500 response code" should {
 
         val request = FakeRequest("", "")
         val stateService = mock[KeystoreConnector]
@@ -113,9 +114,13 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
         when(stateService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(None))
         when(stateService.fetchAndGetFormData[YesNoModel](anyString())(any(), any())).thenReturn(Future.successful(None))
 
-        val result = target.correspondenceAddressConfirm(request)
+        lazy val ex = intercept[Exception] {
+          await(target.correspondenceAddressConfirm(request))
+        }
 
-        status(result) shouldBe 500
+        s"throw an exception with text $businessDataNotFound" in {
+          ex.getMessage shouldEqual businessDataNotFound
+        }
       }
     }
 
@@ -189,7 +194,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
 
     "no details for the business exist in keystore" should {
 
-      "return a return a 500 response code" in {
+      "return a return a 500 response code" should {
 
         val request = FakeRequest("", "")
         val stateService = mock[KeystoreConnector]
@@ -200,9 +205,13 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
         when(stateService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(None))
         when(stateService.fetchAndGetFormData[YesNoModel](anyString())(any(), any())).thenReturn(Future.successful(None))
 
-        val result = target.submitCorrespondenceAddressConfirm(request)
+        lazy val ex = intercept[Exception] {
+          await(target.submitCorrespondenceAddressConfirm(request))
+        }
 
-        status(result) shouldBe 500
+        s"throw an exception with text $businessDataNotFound" in {
+          ex.getMessage shouldEqual businessDataNotFound
+        }
       }
     }
 
@@ -278,7 +287,6 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
       }
 
       "redirect the user to the correct location" in {
-        //TODO: replace with the correct URL
         redirectLocation(result) shouldBe Some(controllers.routes.EnterCorrespondenceAddressController.enterCorrespondenceAddress().url)
       }
 
