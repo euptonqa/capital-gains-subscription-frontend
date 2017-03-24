@@ -34,4 +34,13 @@ object Constants {
 
     val users = Seq(agent, company, charity, partnership, trust, pensionTrust, "")
   }
+
+  object ErrorMessages {
+    val businessDataNotFound: String = "Failed to retrieve registration details from BusinessCustomer keystore"
+    val arnNotFound: String = "Agent Details retrieved did not contain an ARN"
+    val failedToEnrolAgent: String = "Error returned from backend while attempting to enrol agent"
+    val failedToEnrolIndividual: String = "DES responded with no subscription reference for Individual"
+    val failedToEnrolCompany: String = "DES responded with no subscription reference for Company"
+    val affinityGroupNotRetrieved: String = "Affinity group not retrieved"
+  }
 }

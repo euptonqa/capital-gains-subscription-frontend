@@ -20,6 +20,7 @@ import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtAgent}
+import common.Constants.ErrorMessages._
 import config.AppConfig
 import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
 import helpers.EnrolmentToCGTCheck
@@ -43,10 +44,6 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 subscriptionService: SubscriptionService,
                                 val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  private val businessDataNotFoundError: String = "Failed to retrieve registration details from BusinessCustomer keystore"
-  private val arnNotFoundError: String = "Agent Details retrieved did not contain an ARN"
-  private val failedToEnrolError: String = "Error returned from backend while attempting to enrol agent"
-
   val agent: Action[AnyContent] = authorisedActions.authorisedAgentAction {
     implicit user =>
       implicit request =>
@@ -66,16 +63,16 @@ class AgentController @Inject()(appConfig: AppConfig,
   private[controllers] def handleBusinessData()(implicit hc: HeaderCarrier): Future[ReviewDetails] = {
     sessionService.fetchAndGetBusinessData().flatMap {
       case Some(details) => Future.successful(details)
-      case None => Logger.warn(businessDataNotFoundError)
-        Future.failed(new Exception(businessDataNotFoundError))
+      case None => Logger.warn(businessDataNotFound)
+        Future.failed(new Exception(businessDataNotFound))
     }
   }
 
   private[controllers] def constructAgentSubmissionModel(businessData: ReviewDetails): Future[AgentSubmissionModel] = {
     if (businessData.agentReferenceNumber.isDefined) Future.successful(AgentSubmissionModel(businessData.safeId, businessData.agentReferenceNumber.get))
     else {
-      Logger.warn(arnNotFoundError)
-      Future.failed(new Exception(arnNotFoundError))
+      Logger.warn(arnNotFound)
+      Future.failed(new Exception(arnNotFound))
     }
   }
 
@@ -87,7 +84,7 @@ class AgentController @Inject()(appConfig: AppConfig,
           reviewDetailsModel.agentReferenceNumber.get,
           LocalDate.now(),
           reviewDetailsModel.businessName)))
-      case _ => Future.failed(new Exception(failedToEnrolError))
+      case _ => Future.failed(new Exception(failedToEnrolAgent))
     }
   }
 
@@ -102,7 +99,7 @@ class AgentController @Inject()(appConfig: AppConfig,
       }
 
       result.recoverWith {
-        case error => Future.successful(InternalServerError)
+        case error => Future.failed(error)
       }
   }
 }

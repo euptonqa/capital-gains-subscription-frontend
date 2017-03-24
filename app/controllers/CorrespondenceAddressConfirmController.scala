@@ -19,6 +19,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import auth.AuthorisedActions
+import common.Constants.ErrorMessages._
 import common.Keys.KeystoreKeys
 import config.AppConfig
 import connectors.KeystoreConnector
@@ -50,8 +51,8 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
           (existingAnswer, registrationDetails) match {
 
             case (_, None) =>
-              Logger.warn("Failed to retrieve registration details from BusinessCustomer keystore")
-              InternalServerError
+              Logger.warn(businessDataNotFound)
+              throw new Exception(businessDataNotFound)
 
             case (None, Some(details)) =>
               val emptyForm = new YesNoForm(messagesApi).yesNoForm
@@ -84,8 +85,8 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
 
         sessionService.fetchAndGetBusinessData().flatMap {
           case None =>
-            Logger.warn("Failed to retrieved registration details from BusinessCustomer keystore")
-            Future.successful(InternalServerError)
+            Logger.warn(businessDataNotFound)
+            Future.failed(new Exception(businessDataNotFound))
 
           case Some(details) => processRequest(details.businessAddress)
         }

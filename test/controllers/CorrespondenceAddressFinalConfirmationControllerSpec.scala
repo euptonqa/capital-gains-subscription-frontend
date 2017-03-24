@@ -32,6 +32,7 @@ import play.api.test.Helpers._
 import services.SubscriptionService
 import traits.ControllerTestSpec
 import auth.AuthenticatedNROrganisationAction
+import common.Constants.ErrorMessages._
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 import scala.concurrent.Future
@@ -98,7 +99,9 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       lazy val actions = createMockActions(valid = true)
       lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""), Some(""))),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
-        Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
+        Some(validBusinessData),
+        actions,
+        Some(ContactDetailsModel("", "", "")))
       lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
       lazy val doc = Jsoup.parse(bodyOf(result))
 
@@ -116,10 +119,12 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
         None, actions, Some(ContactDetailsModel("", "", "")))
-      lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
+      lazy val ex = intercept[Exception] {
+        await(controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", "")))
+      }
 
-      "return a status of 400" in {
-        status(result) shouldBe 400
+      s"throw an exception with text $businessDataNotFound" in {
+        ex.getMessage shouldEqual businessDataNotFound
       }
     }
 
@@ -128,10 +133,12 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       lazy val controller = createMockPostController(None,
         Future.successful(Some(SubscriptionReference("CGT123456"))),
         Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
-      lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
+      lazy val ex = intercept[Exception] {
+        await(controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", "")))
+      }
 
-      "return a status of 400" in {
-        status(result) shouldBe 400
+      s"throw an exception with text $businessDataNotFound" in {
+        ex.getMessage shouldEqual businessDataNotFound
       }
     }
 
@@ -140,10 +147,12 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""), Some(""))),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
         Some(validBusinessData), actions, None)
-      lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
+      lazy val ex = intercept[Exception] {
+        await(controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", "")))
+      }
 
-      "return a status of 400" in {
-        status(result) shouldBe 400
+      s"throw an exception with text $businessDataNotFound" in {
+        ex.getMessage shouldEqual businessDataNotFound
       }
     }
 
@@ -172,7 +181,9 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
         lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
           Future.successful(Some(SubscriptionReference("CGT123456"))),
-          Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
+          Some(validBusinessData),
+          actions,
+          Some(ContactDetailsModel("", "", "")))
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
         "have a status of 303" in {
@@ -186,7 +197,11 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
       "there is no keystore data available" should {
         lazy val actions = createMockActions(valid = true)
-        lazy val controller = createMockPostController(None, Future.successful(Some(SubscriptionReference("CGT123456"))), None, actions, None)
+        lazy val controller = createMockPostController(None,
+          Future.successful(Some(SubscriptionReference("CGT123456"))),
+          None,
+          actions,
+          None)
         lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
         "have a status of 400" in {
@@ -197,22 +212,32 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       "no business data is returned" should {
         lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
-          Future.successful(Some(SubscriptionReference("CGT123456"))), None, actions, Some(ContactDetailsModel("", "", "")))
-        lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
+          Future.successful(Some(SubscriptionReference("CGT123456"))),
+          None,
+          actions,
+          Some(ContactDetailsModel("", "", "")))
+        lazy val ex = intercept[Exception] {
+          await(controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", "")))
+        }
 
-        "have a status of 500" in {
-          status(result) shouldBe 500
+        s"throw an exception with text $businessDataNotFound" in {
+          ex.getMessage shouldEqual businessDataNotFound
         }
       }
 
       "no CGT reference is returned" should {
         lazy val actions = createMockActions(valid = true)
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
-          Future.successful(None), Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
-        lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
+          Future.successful(None),
+          Some(validBusinessData),
+          actions,
+          Some(ContactDetailsModel("", "", "")))
+        lazy val ex = intercept[Exception] {
+          await(controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", "")))
+        }
 
-        "have a status of 500" in {
-          status(result) shouldBe 500
+        s"throw an exception with text $failedToEnrolCompany" in {
+          ex.getMessage shouldEqual failedToEnrolCompany
         }
       }
 
@@ -221,11 +246,15 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
         lazy val exception = new Exception("testMessage")
         lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
           Future.failed(exception),
-          Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
-        lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
+          Some(validBusinessData),
+          actions,
+          Some(ContactDetailsModel("", "", "")))
+        lazy val ex = intercept[Exception] {
+          await(controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", "")))
+        }
 
-        "have a status of 500" in {
-          status(result) shouldBe 500
+        "throw an exception with text 'testMessage'" in {
+          ex.getMessage shouldEqual "testMessage"
         }
       }
     }
@@ -235,7 +264,9 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       lazy val actions = createMockActions()
       lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
-        Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
+        Some(validBusinessData),
+        actions,
+        Some(ContactDetailsModel("", "", "")))
       lazy val result = controller.submitCorrespondenceAddressFinalConfirmation(FakeRequest("POST", ""))
 
       "return a status of 303" in {

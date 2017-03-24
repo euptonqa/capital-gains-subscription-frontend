@@ -22,13 +22,11 @@ import common.Keys
 import config.WSHttp
 import connectors.{AuthorisationConnector, SubscriptionConnector}
 import data.TestUserBuilder
-import helpers.EnrolmentToCGTCheck
 import models.{AuthorisationDataModel, Enrolment, Identifier, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import play.api.inject.Injector
 import play.api.mvc._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._

@@ -20,10 +20,12 @@ import javax.inject.{Inject, Singleton}
 
 import auth.AuthorisedActions
 import common.Keys
+import common.Constants.ErrorMessages._
 import common.Keys.KeystoreKeys
 import config.AppConfig
 import connectors.KeystoreConnector
 import models.{CompanyAddressModel, CompanySubmissionModel, ContactDetailsModel, ReviewDetails}
+import play.api.Logger
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
 import services.SubscriptionService
@@ -58,7 +60,8 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
       }
 
       yieldBusinessData.recoverWith {
-        case exception: Exception => Future.successful(BadRequest(exception.getMessage))
+        case exception: Exception => Logger.warn(businessDataNotFound)
+          Future.failed(new Exception(businessDataNotFound))
       }
   }
 
@@ -73,7 +76,8 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
               reviewDetails match {
                 case Some(details) => Future.successful(CompanySubmissionModel(Some(details.safeId),
                   Some(contactDetailsModel), Some(companyAddressModel), Some(details.businessAddress)))
-                case _ => Future.failed(new Exception("Details not found"))
+                case _ => Logger.warn(businessDataNotFound)
+                  Future.failed(new Exception(businessDataNotFound))
               }
             }
 
@@ -84,10 +88,11 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
             } yield cgtRef
           }
 
-          result.map { reference =>
-            Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(reference.get.cgtRef))
+          result.map {
+            case Some(x) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef))
+            case None => throw new Exception(failedToEnrolCompany)
           } recoverWith {
-            case error => Future.successful(InternalServerError(error.getMessage))
+            case error => Future.failed(error)
           }
         }
 
