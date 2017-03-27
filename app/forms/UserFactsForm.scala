@@ -30,10 +30,10 @@ class UserFactsForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport 
       "firstName" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
       "lastName" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
       "addressLineOne" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
-      "addressLineTwo" -> text.transform(textToOptional, optionalToText),
-      "townOrCity" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
+      "addressLineTwo" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
+      "townOrCity" -> text.transform(textToOptional, optionalToText),
       "county" -> text.transform(textToOptional, optionalToText),
-      "postCode" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
+      "postCode" -> text.transform(textToOptional, optionalToText),
       "country" -> text.verifying(Messages("errors.required"), nonEmptyCheck)
     )(UserFactsModel.apply)(UserFactsModel.unapply)
   )
