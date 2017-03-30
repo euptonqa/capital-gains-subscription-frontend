@@ -27,6 +27,6 @@ object Keys {
     val correspondenceAddressKey = "correspondenceAddress"
     val contactDetailsKey = "contactDetails"
     val useRegistrationAddressKey = "useRegistrationAddressKey"
-
+    val callbackUrlKey = "callbackUrl"
   }
 }
