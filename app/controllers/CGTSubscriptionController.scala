@@ -18,7 +18,10 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import common.Keys.{KeystoreKeys => keys}
 import config.AppConfig
+import connectors.KeystoreConnector
+import models.CallbackUrlModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -26,13 +29,18 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import scala.concurrent.Future
 
 @Singleton
-class CGTSubscriptionController @Inject()(appConfig: AppConfig, val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+class CGTSubscriptionController @Inject()(keystoreConnector: KeystoreConnector,
+                                          appConfig: AppConfig,
+                                          val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   val confirmationOfSubscription: String => Action[AnyContent] = cgtReference => Action.async { implicit request =>
     Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference)))
   }
 
   val submitConfirmationOfSubscription: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Redirect("http://www.gov.uk"))
+    keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
+      case Some(model) => Future successful Redirect(model.url)
+      case _ => throw new Exception("Failed to find a callback URL")
+    }
   }
 }
