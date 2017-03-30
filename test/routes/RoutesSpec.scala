@@ -50,8 +50,8 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
 
   "The URL for the residentIndividualSubscription action" should {
     "be equal to /capital-gains-tax/subscription/resident/individual" in {
-      val path = controllers.routes.ResidentIndividualSubscriptionController.residentIndividualSubscription().url
-      path shouldEqual "/capital-gains-tax/subscription/resident/individual"
+      val path = controllers.routes.ResidentIndividualSubscriptionController.residentIndividualSubscription("/test/route").url
+      path shouldEqual "/capital-gains-tax/subscription/resident/individual?url=%2Ftest%2Froute"
     }
   }
 

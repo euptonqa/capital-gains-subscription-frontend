@@ -8,7 +8,7 @@ GET        /individual/invalid-user                                 controllers.
 GET        /confirmation                                            controllers.CGTSubscriptionController.confirmationOfSubscription(cgtReference: String)
 POST       /confirmation                                            controllers.CGTSubscriptionController.submitConfirmationOfSubscription
 
-GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription
+GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription(url: String)
 
 GET        /non-resident/individual                                 controllers.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription
 

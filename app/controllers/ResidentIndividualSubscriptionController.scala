@@ -19,9 +19,14 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtIndividual}
+import common.Keys.KeystoreKeys
 import config.AppConfig
+import connectors.KeystoreConnector
 import helpers.EnrolmentToCGTCheck
-import play.api.mvc.{Action, AnyContent, Result}
+import models.CallbackUrlModel
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -33,24 +38,43 @@ import scala.concurrent.Future
 class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
                                                          appConfig: AppConfig,
                                                          subscriptionService: SubscriptionService,
-                                                         authService: AuthorisationService) extends FrontendController {
+                                                         authService: AuthorisationService,
+                                                         keystoreConnector: KeystoreConnector,
+                                                         val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  val residentIndividualSubscription: Action[AnyContent] =
+  val residentIndividualSubscription: String => Action[AnyContent] = url =>
     actions.authorisedResidentIndividualAction {
       implicit user =>
         implicit request =>
           for {
+            validate <- bindAndValidateCallbackUrl(url)
             enrolments <- authService.getEnrolments
             isEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
-            redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
+            redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, validate, url)
           } yield redirect
     }
 
+  def bindAndValidateCallbackUrl(url: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+    val bindModel = Future {CallbackUrlModel(url)}
+    val result = for {
+      model <- bindModel
+      saveResult <- keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model)
+    } yield saveResult
+    result.map(_ => true)
+      .recoverWith {
+        case _: Exception => Future.successful(false)
+      }
+  }
 
-  def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-    if (isEnrolled) Future.successful(Redirect("http://www.gov.uk"))
+  def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual,
+                                                                  isEnrolled: Boolean,
+                                                                  isValid: Boolean,
+                                                                  url: String)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
+    if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
+      Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
+    else if (isEnrolled) Future.successful(Redirect(url))
     //TODO: you're already enrolled to CGT!
-    else checkForCgtRefAndRedirectToConfirmation(user)
+    else  checkForCgtRefAndRedirectToConfirmation(user)
   }
 
   def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual)(implicit hc: HeaderCarrier): Future[Result] = {

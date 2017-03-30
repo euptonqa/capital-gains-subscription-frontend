@@ -21,6 +21,8 @@ object MessageLookup {
   object Common {
     val continue = "Continue"
     val change = "Change"
+    val badRequest = "Bad request"
+    val checkAddress = "Please check that you have entered the correct web address."
   }
 
   object Errors {
