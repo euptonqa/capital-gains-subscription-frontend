@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package common
+package models
 
-object Keys {
+import java.net.URI
 
-  val cgtIndividualEnrolmentKey: String = "HMRC-CGT-IND"
-  val cgtCompanyEnrolmentKey: String = "HMRC-CGT-ORG"
-  val cgtAgentEnrolmentKey: String = "HMRC-AGENT-AGENT"
+import play.api.libs.json.{Json, OFormat}
 
-  object KeystoreKeys {
+case class CallbackUrlModel (url: String) {
+  require(CallbackUrlModel.validateUrl(new URI(url)), "Failed to bind as a URI")
+}
 
-    val correspondenceAddressKey = "correspondenceAddress"
-    val contactDetailsKey = "contactDetails"
-    val useRegistrationAddressKey = "useRegistrationAddressKey"
-    val callbackUrlKey = "callbackUrl"
+object CallbackUrlModel {
+  implicit val formats: OFormat[CallbackUrlModel] = Json.format[CallbackUrlModel]
+
+  val localhost: String = "localhost"
+
+  val validateUrl: URI => Boolean = { url =>
+    if (Option(url.getHost).isDefined) url.getHost.contains(localhost)
+    else true
   }
 }
