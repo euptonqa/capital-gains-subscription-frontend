@@ -22,11 +22,12 @@ import common.Constants.AffinityGroup
 import common.Constants.ErrorMessages._
 import common.Keys
 import config.WSHttp
-import connectors.{AuthorisationConnector, SubscriptionConnector}
-import data.{MessageLookup, TestUserBuilder}
+import data.MessageLookup
 import helpers.LogicHelpers
-import models.{AuthorisationDataModel, Enrolment, SubscriptionReference}
 import org.jsoup.Jsoup
+import connectors.{AuthorisationConnector, SubscriptionConnector}
+import data.TestUserBuilder
+import models.{AuthorisationDataModel, Enrolment, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
@@ -139,7 +140,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       }
     }
 
-    "provided with a valid user who has a nino and the user is already subscribed" should {
+    "provided with a valid user who has a nino and the user is already subscribed and a callback url is supplied" should {
 
       val fakeRequest = FakeRequest("GET", "/")
       lazy val mockActions = createMockActions(valid = true)
@@ -156,7 +157,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
         status(result) shouldBe 303
       }
 
-      "redirect to the callback url" in {
+      "redirect to the I-form screen" in {
         redirectLocation(result).get.toString shouldBe "/test/route"
       }
     }

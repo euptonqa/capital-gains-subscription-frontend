@@ -64,6 +64,11 @@ object TestUserBuilder {
       CredentialStrength.None, ConfidenceLevel.L50, None, None, None, ""))
   }
 
+  val userWithoutNINO: AuthContext = {
+    AuthContext.apply(Authority("testUserId", Accounts(), None, None,
+      CredentialStrength.None, ConfidenceLevel.L50, None, None, None, ""))
+  }
+
   val visibilityPredicateUserPass: AuthContext = {
     AuthContext.apply(Authority("testUserId", Accounts(paye= Some(PayeAccount(s"/paye/$testNINO", Nino(testNINO)))), None, None,
       CredentialStrength.Strong, ConfidenceLevel.L500, None, Some("testEnrolmentUri"), None, ""))

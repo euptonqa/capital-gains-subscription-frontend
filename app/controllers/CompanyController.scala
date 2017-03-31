@@ -20,8 +20,9 @@ import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtNROrganisation}
 import config.AppConfig
-import helpers.{EnrolmentToCGTCheck, LogicHelpers}
+import helpers.LogicHelpers
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import helpers.EnrolmentToCGTCheck
 import play.api.mvc.{Action, AnyContent, Result}
 import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -34,6 +35,7 @@ class CompanyController @Inject()(appConfig: AppConfig,
                                   authService: AuthorisationService,
                                   logicHelpers: LogicHelpers,
                                   val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 
