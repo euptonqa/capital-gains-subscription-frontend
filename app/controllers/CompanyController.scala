@@ -19,8 +19,12 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtNROrganisation}
+import common.Keys.KeystoreKeys
 import config.AppConfig
+import connectors.KeystoreConnector
 import helpers.EnrolmentToCGTCheck
+import models.CallbackUrlModel
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
 import services.AuthorisationService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -30,23 +34,43 @@ import scala.concurrent.Future
 @Singleton
 class CompanyController @Inject()(appConfig: AppConfig,
                                   authorisedActions: AuthorisedActions,
-                                  authService: AuthorisationService) extends FrontendController {
+                                  authService: AuthorisationService,
+                                  keystoreConnector: KeystoreConnector,
+                                  val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 
-  val subscribe: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
+  val subscribe: String => Action[AnyContent] = url => authorisedActions.authorisedNonResidentOrganisationAction {
     implicit user =>
       implicit request =>
 
-        def checkForEnrolmentsAndRedirect(user: CgtNROrganisation, isEnrolled: Boolean)(): Future[Result] ={
-          if (isEnrolled) Future.successful(Redirect(appConfig.iFormUrl))
+        def bindAndValidateCallbackUrl(url: String): Future[Boolean] = {
+          val bindModel = Future {
+            CallbackUrlModel(url)
+          }
+          val result = for {
+            model <- bindModel
+            saveResult <- keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model)
+          } yield saveResult
+
+          result.map(_ => true)
+            .recoverWith {
+              case _: Exception => Future.successful(false)
+            }
+        }
+
+        def checkForEnrolmentsAndRedirect(user: CgtNROrganisation, isEnrolled: Boolean, isValid: Boolean)(): Future[Result] = {
+          if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
+            Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
+          else if (isEnrolled) Future.successful(Redirect(url))
           else Future.successful(Redirect(businessCustomerFrontendUrl))
         }
 
         for {
+          isValid <- bindAndValidateCallbackUrl(url)
           enrolments <- authService.getEnrolments
           isEnrolled <- EnrolmentToCGTCheck.checkCompanyEnrolments(enrolments)
-          redirect <- checkForEnrolmentsAndRedirect(user, isEnrolled)
+          redirect <- checkForEnrolmentsAndRedirect(user, isEnrolled, isValid)
         } yield redirect
 
   }

@@ -132,7 +132,7 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
         status(result) shouldBe 400
       }
 
-      "redirect to the CGT confirmation screen" in {
+      "redirect to the Bad Request error page" in {
         body.title() shouldBe MessageLookup.Common.badRequest
       }
     }
