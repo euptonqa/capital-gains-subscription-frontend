@@ -21,6 +21,10 @@ import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import helpers.EnrolmentToCGTCheck
 import common.Constants.ErrorMessages._
+import common.Keys.KeystoreKeys
+import connectors.KeystoreConnector
+import models.CallbackUrlModel
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc._
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -31,23 +35,43 @@ import scala.concurrent.Future
 class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
                                                             appConfig: AppConfig,
                                                             subscriptionService: SubscriptionService,
-                                                            authorisationService: AuthorisationService)
-  extends FrontendController {
+                                                            authorisationService: AuthorisationService,
+                                                            keystoreConnector: KeystoreConnector,
+                                                            val messagesApi: MessagesApi)
+  extends FrontendController with I18nSupport {
 
-  val nonResidentIndividualSubscription: Action[AnyContent] = actions.authorisedNonResidentIndividualAction {
+  val nonResidentIndividualSubscription: String => Action[AnyContent] = url => actions.authorisedNonResidentIndividualAction {
     implicit user =>
       implicit request =>
+
+        def bindAndValidateCallbackUrl(url: String): Future[Boolean] = {
+          val bindModel = Future {
+            CallbackUrlModel(url)
+          }
+          val result = for {
+            model <- bindModel
+            saveResult <- keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model)
+          } yield saveResult
+
+          result.map(_ => true)
+            .recoverWith {
+              case _: Exception => Future.successful(false)
+            }
+        }
+
+        def routeRequest(alreadyEnrolled: Boolean, isValid: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
+          if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
+            Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
+          else if (alreadyEnrolled) Future.successful(Redirect(url))
+          else notEnrolled()
+        }
+
         for {
+          isValid <- bindAndValidateCallbackUrl(url)
           enrolments <- authorisationService.getEnrolments(hc(request))
           checkEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
-          route <- routeRequest(checkEnrolled)
+          route <- routeRequest(checkEnrolled, isValid)
         } yield route
-  }
-
-  def routeRequest(alreadyEnrolled: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
-    //TODO: Update the route here to point to the actual Iform (on success)
-    if (alreadyEnrolled) Future.successful(Redirect("http://www.gov.uk"))
-    else notEnrolled()
   }
 
   def notEnrolled()(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {

@@ -22,8 +22,8 @@ import common.Constants.AffinityGroup
 import common.Constants.ErrorMessages._
 import common.Keys
 import config.WSHttp
-import connectors.{AuthorisationConnector, SubscriptionConnector}
-import data.TestUserBuilder
+import connectors.{AuthorisationConnector, KeystoreConnector, SubscriptionConnector}
+import data.{MessageLookup, TestUserBuilder}
 import models.{AuthorisationDataModel, Enrolment, SubscriptionReference}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -35,7 +35,9 @@ import play.api.test.Helpers.redirectLocation
 import services.{AuthorisationService, SubscriptionService}
 import traits.ControllerTestSpec
 import auth.AuthenticatedIndividualAction
+import org.jsoup.Jsoup
 import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 
@@ -100,12 +102,43 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
     new AuthorisationService(mockConnector)
   }
 
+  val mockKeystoreConnector = {
+    val connector = mock[KeystoreConnector]
+
+    when(connector.saveFormData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(mock[CacheMap]))
+
+    connector
+  }
+
   "Calling the .nonResidentIndividualSubscription action" when {
 
     val nino = TestUserBuilder.createRandomNino
 
     val authorisationDataModelPass = AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
       ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$nino", Nino(nino)))))
+
+    "provided with an invalid callback URL" should {
+      val fakeRequest = FakeRequest("GET", "/")
+      lazy val mockActions = createMockActions(valid = true)
+      val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
+      val enrolments = Seq(Enrolment(Keys.cgtIndividualEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), ""))
+      lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
+
+      lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
+        mockAuthorisationService, mockKeystoreConnector, messagesApi)
+
+      lazy val result = target.nonResidentIndividualSubscription("http://www.google.com")(fakeRequest)
+      lazy val body = Jsoup.parse(bodyOf(result))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+
+      "redirect to the Bad Request error page" in {
+        body.title() shouldBe MessageLookup.Common.badRequest
+      }
+    }
 
     "provided with a valid user who has a nino and the user is already subscribed" should {
 
@@ -116,17 +149,16 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService)
+        mockAuthorisationService, mockKeystoreConnector, messagesApi)
 
-      lazy val result = target.nonResidentIndividualSubscription(fakeRequest)
+      lazy val result = target.nonResidentIndividualSubscription("/test/route")(fakeRequest)
 
       "return a status of 303" in {
         status(result) shouldBe 303
       }
 
-      //TODO: Update this to the actual link later
-      "redirect to the I-form screen" in {
-        redirectLocation(result).get.toString shouldBe "http://www.gov.uk"
+      "redirect to the callback url" in {
+        redirectLocation(result).get.toString shouldBe "/test/route"
       }
     }
 
@@ -139,9 +171,9 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService)
+        mockAuthorisationService, mockKeystoreConnector, messagesApi)
 
-      lazy val result = target.nonResidentIndividualSubscription(fakeRequest)
+      lazy val result = target.nonResidentIndividualSubscription("/test/route")(fakeRequest)
 
       "return a status of 303" in {
         status(result) shouldBe 303
@@ -161,10 +193,10 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService)
+        mockAuthorisationService, mockKeystoreConnector, messagesApi)
 
       lazy val ex = intercept[Exception] {
-        await(target.nonResidentIndividualSubscription(fakeRequest))
+        await(target.nonResidentIndividualSubscription("/test/route")(fakeRequest))
       }
 
       s"return an Exception with text $failedToEnrolIndividual" in {
@@ -187,9 +219,9 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelNoNino))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService)
+        mockAuthorisationService, mockKeystoreConnector, messagesApi)
 
-      lazy val result = target.nonResidentIndividualSubscription(fakeRequest)
+      lazy val result = target.nonResidentIndividualSubscription("/test/route")(fakeRequest)
 
       "return a status of 303" in {
         status(result) shouldBe 303

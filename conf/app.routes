@@ -10,7 +10,7 @@ POST       /confirmation                                            controllers.
 
 GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription(url: String)
 
-GET        /non-resident/individual                                 controllers.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription
+GET        /non-resident/individual                                 controllers.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription(url: String)
 
 GET        /individual/organisation-type                            controllers.OrganisationTypeController.organisationType
 POST       /individual/organisation-type                            controllers.OrganisationTypeController.submitOrganisationType
