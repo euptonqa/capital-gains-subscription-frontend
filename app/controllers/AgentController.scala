@@ -21,12 +21,13 @@ import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtAgent}
 import common.Constants.ErrorMessages._
+import common.Keys.KeystoreKeys
 import config.AppConfig
 import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
 import helpers.EnrolmentToCGTCheck
-import models.{AgentSubmissionModel, ReviewDetails}
+import models.{AgentSubmissionModel, CallbackUrlModel, ReviewDetails}
 import play.api.Logger
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{AgentService, AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -42,21 +43,42 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 sessionService: KeystoreConnector,
                                 authService: AuthorisationService,
                                 subscriptionService: SubscriptionService,
-                                val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+                                val messagesApi: MessagesApi,
+                                keystoreConnector: KeystoreConnector) extends FrontendController with I18nSupport {
 
-  val agent: Action[AnyContent] = authorisedActions.authorisedAgentAction {
+  val agent: String => Action[AnyContent] = url => authorisedActions.authorisedAgentAction {
     implicit user =>
       implicit request =>
 
-        def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-          if (isEnrolled) Future.successful(Redirect("http://www.gov.uk"))
+        def bindAndValidateCallbackUrl(url: String): Future[Boolean] = {
+          val bindModel = Future {
+            CallbackUrlModel(url)
+          }
+          val result = for {
+            model <- bindModel
+            saveResult <- keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model)
+          } yield saveResult
+
+          result.map(_ => true)
+            .recoverWith {
+              case _: Exception => Future.successful(false)
+            }
+        }
+
+        def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent,
+                                                                        isEnrolled: Boolean,
+                                                                        isValid: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
+          if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
+            Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
+          else if (isEnrolled) Future.successful(Redirect(url))
           else Future.successful(Ok(views.html.setupYourAgency(appConfig)))
         }
 
         for {
+          isValid <- bindAndValidateCallbackUrl(url)
           enrolments <- authService.getEnrolments
           isEnrolled <- EnrolmentToCGTCheck.checkAgentEnrolments(enrolments)
-          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
+          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, isValid)
         } yield redirect
   }
 

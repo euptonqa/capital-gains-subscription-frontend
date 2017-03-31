@@ -39,6 +39,7 @@ import services.{AgentService, AuthorisationService, SubscriptionService}
 import traits.ControllerTestSpec
 import auth._
 import common.Constants.ErrorMessages._
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -134,8 +135,17 @@ class AgentControllerSpec extends ControllerTestSpec {
     when(sessionService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(businessDetails))
     when(service.getAgentEnrolmentResponse(any())(any())).thenReturn(Future.successful(enrolmentResponse))
 
-    new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService, mockSubscriptionService, messagesApi)
+    new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService, mockSubscriptionService, messagesApi, mockKeystoreConnector)
 
+  }
+
+  val mockKeystoreConnector = {
+    val connector = mock[KeystoreConnector]
+
+    when(connector.saveFormData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(mock[CacheMap]))
+
+    connector
   }
 
 
@@ -144,20 +154,38 @@ class AgentControllerSpec extends ControllerTestSpec {
     val authorisationDataModelPass = Some(AuthorisationDataModel(CredentialStrength.Weak, AffinityGroup.Agent,
       ConfidenceLevel.L50, "example.com", Accounts()))
 
+    "provided with an invalid callback URL" should {
+
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      val enrolments = Option(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
+      lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
+
+      lazy val result = agentController.agent("http://www.google.com")(fakeRequest)
+      lazy val body = Jsoup.parse(bodyOf(result))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+
+      "redirect to the Bad Request error page" in {
+        body.title() shouldBe MessageLookup.Common.badRequest
+      }
+    }
+
     "the agent is authorised and enrolled" should {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       val enrolments = Option(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
 
-      lazy val result = await(agentController.agent(fakeRequest))
+      lazy val result = await(agentController.agent("/test/route")(fakeRequest))
 
       "return a status of 303" in {
         status(result) shouldBe 303
       }
 
       "load the iForm page" in {
-        redirectLocation(result).get.toString shouldBe "http://www.gov.uk"
+        redirectLocation(result).get.toString shouldBe "/test/route"
       }
     }
 
@@ -168,7 +196,7 @@ class AgentControllerSpec extends ControllerTestSpec {
       val enrolments = Option(Seq(Enrolment("other key", Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
 
-      lazy val result = await(agentController.agent(fakeRequest))
+      lazy val result = await(agentController.agent("/test/route")(fakeRequest))
       lazy val document = Jsoup.parse(bodyOf(result))
 
       "return a status of 200" in {
@@ -186,7 +214,7 @@ class AgentControllerSpec extends ControllerTestSpec {
       val enrolments = Some(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val agentController = setupController(enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
 
-      lazy val result = await(agentController.agent(fakeRequest))
+      lazy val result = await(agentController.agent("/test/route")(fakeRequest))
 
       "return a status of 303" in {
         status(result) shouldBe 303
