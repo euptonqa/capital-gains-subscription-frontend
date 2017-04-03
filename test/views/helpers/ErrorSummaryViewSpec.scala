@@ -16,17 +16,20 @@
 
 package views.helpers
 
+import common.FormValidation
 import data.MessageLookup.{ErrorSummary => messages}
 import data.MessageLookup.{Errors => errorMessages}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import views.html.helpers.{errorSummary => view}
-import forms.TestForm._
+import forms.TestForm
 import org.jsoup.Jsoup
 import play.api.i18n.{I18nSupport, MessagesApi}
 
 class ErrorSummaryViewSpec extends UnitSpec with WithFakeApplication with I18nSupport {
 
   implicit val messagesApi: MessagesApi = fakeApplication.injector.instanceOf[MessagesApi]
+  val validation = new FormValidation(messagesApi)
+  val testForm = new TestForm(validation).testForm
 
   "Calling the error summary helper" when {
 
