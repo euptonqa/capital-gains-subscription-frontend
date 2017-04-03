@@ -16,12 +16,14 @@
 
 package common
 
+import javax.inject.Inject
+
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
-import play.api.i18n.Messages
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 
-object FormValidation {
+class FormValidation @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
 
   val nonEmptyCheck: String => Boolean = input => !input.isEmpty
 
@@ -43,7 +45,7 @@ object FormValidation {
         text =>
           val error = text match {
             case countryCode() => Nil
-            case _ => Seq(ValidationError("Wrong thing"))
+            case _ => Seq(ValidationError(Messages("")))
           }
           if (error.isEmpty) Valid else Invalid(error)
       })

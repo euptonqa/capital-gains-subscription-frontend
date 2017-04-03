@@ -16,19 +16,21 @@
 
 package forms
 
-import common.FormValidation._
+import javax.inject.Inject
+
+import common.FormValidation
 import data.MessageLookup
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 
-object TestForm {
-
+class TestForm @Inject()(formValidation: FormValidation) {
+  //// POTENTIAL ISSUES NO MESSAGES API :)
   private val bindingError: TestModel => Boolean = model => model.anotherField == ""
 
   val testForm = Form(
     mapping (
       "response" -> text
-        .verifying(MessageLookup.Errors.dummyError, nonEmptyCheck),
+        .verifying(MessageLookup.Errors.dummyError, formValidation.nonEmptyCheck),
       "anotherField" -> text
     )(TestModel.apply)(TestModel.unapply)
     .verifying(MessageLookup.Errors.dummyError, model => bindingError(model))

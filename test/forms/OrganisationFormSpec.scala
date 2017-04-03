@@ -19,6 +19,7 @@ package forms
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import models.OrganisationModel
 import common.Constants.InvalidUserTypes._
+import common.FormValidation
 import data.MessageLookup.{Errors => messages}
 import play.api.i18n.MessagesApi
 import play.api.inject.Injector
@@ -28,7 +29,8 @@ class OrganisationFormSpec extends UnitSpec with WithFakeApplication {
   def orgForm: OrganisationForm = {
     val injector: Injector = fakeApplication.injector
     val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
-    new OrganisationForm(messagesApi)
+    val validation = new FormValidation(messagesApi)
+    new OrganisationForm(messagesApi, validation)
   }
 
   "Creating the form from a model" should {

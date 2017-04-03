@@ -16,6 +16,7 @@
 
 package views.address
 
+import common.FormValidation
 import data.MessageLookup.{Common, EnterCorrespondenceAddress}
 import config.AppConfig
 import forms.CorrespondenceAddressForm
@@ -32,9 +33,10 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
   lazy val injector: Injector = app.injector
   lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
   implicit def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
+  val validation = new FormValidation(messagesApi)
 
   "The Enter Correspondence Address view with a form with no errors" should {
-    lazy val form = new CorrespondenceAddressForm(messagesApi)
+    lazy val form = new CorrespondenceAddressForm(validation, messagesApi)
     lazy val view = enterCorrespondenceAddress(appConfig, form.correspondenceAddressForm)
     lazy val doc = Jsoup.parse(view.body)
 
@@ -209,7 +211,7 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
   }
 
   "The Enter Correspondence Address view with a form with errors" should {
-    lazy val form = new CorrespondenceAddressForm(messagesApi)
+    lazy val form = new CorrespondenceAddressForm(validation, messagesApi)
     lazy val map = Map("addressLineOne" -> "Something", "addressLineTwo" -> "Something else")
     lazy val view = enterCorrespondenceAddress(appConfig, form.correspondenceAddressForm.bind(map))
     lazy val doc = Jsoup.parse(view.body).toString

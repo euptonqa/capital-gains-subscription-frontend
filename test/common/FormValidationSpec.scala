@@ -16,56 +16,60 @@
 
 package common
 
-import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.MessagesApi
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class FormValidationSpec extends UnitSpec {
+class FormValidationSpec extends UnitSpec with WithFakeApplication{
+
+  implicit val messagesApi: MessagesApi = fakeApplication.injector.instanceOf[MessagesApi]
+  val formValidation = new FormValidation(messagesApi)
 
   "Calling .nonEmptyCheck" should {
 
     "when called with an empty string return false" in {
-      FormValidation.nonEmptyCheck("") shouldEqual false
+      formValidation.nonEmptyCheck("") shouldEqual false
     }
 
     "when called with a string that has the value '~' return true" in {
-      FormValidation.nonEmptyCheck("~") shouldEqual true
+      formValidation.nonEmptyCheck("~") shouldEqual true
     }
 
     "when called with a string that has the value 'fews' return true" in {
-      FormValidation.nonEmptyCheck("fews") shouldEqual true
+      formValidation.nonEmptyCheck("fews") shouldEqual true
     }
 
     "when called with a string that has the value '@' return true" in {
-      FormValidation.nonEmptyCheck("@") shouldEqual true
+      formValidation.nonEmptyCheck("@") shouldEqual true
     }
   }
 
   "Calling .textToOptional" should {
 
     "when called with an empty string return None" in {
-      FormValidation.textToOptional("") shouldEqual None
+      formValidation.textToOptional("") shouldEqual None
     }
 
     "when called with a string of 'qwerty' return Some('querty')" in {
-      FormValidation.textToOptional("qwerty") shouldEqual Some("qwerty")
+      formValidation.textToOptional("qwerty") shouldEqual Some("qwerty")
     }
 
     "when called with a string of '~' return Some('~')" in {
-      FormValidation.textToOptional("~") shouldEqual Some("~")
+      formValidation.textToOptional("~") shouldEqual Some("~")
     }
   }
 
   "Calling .optionalToText" should {
 
     "when called with None return an empty string" in {
-      FormValidation.optionalToText(None) shouldEqual ""
+      formValidation.optionalToText(None) shouldEqual ""
     }
 
     "when called with an Option of Some('#') return '#'" in {
-      FormValidation.optionalToText(Some("#")) shouldEqual "#"
+      formValidation.optionalToText(Some("#")) shouldEqual "#"
     }
 
     "when called with an Option of Some('~') return '~'" in {
-      FormValidation.optionalToText(Some("~")) shouldEqual "~"
+      formValidation.optionalToText(Some("~")) shouldEqual "~"
     }
   }
 
