@@ -34,6 +34,8 @@ import play.api.test.Helpers._
 import traits.ControllerTestSpec
 import auth.AuthenticatedNROrganisationAction
 import common.Constants.ErrorMessages._
+import common.CountriesMatcher
+import play.api.Environment
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
@@ -42,6 +44,7 @@ import scala.concurrent.Future
 class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
 
   val unauthorisedLoginUri = "dummy-unauthorised-url"
+  implicit val countriesMatcher = new CountriesMatcher(Environment.simple())
 
   def createMockActions(valid: Boolean = false): AuthorisedActions = {
 
@@ -89,7 +92,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
       val stateService = mock[KeystoreConnector]
       val actions = createMockActions()
       val form = new YesNoForm(messagesApi)
-      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form, countriesMatcher)
       lazy val result = target.correspondenceAddressConfirm(request)
 
       "return a return a 303 response code" in {
@@ -109,7 +112,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
         val stateService = mock[KeystoreConnector]
         val actions = createMockActions(true)
         val form = new YesNoForm(messagesApi)
-        val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+        val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form, countriesMatcher)
 
         when(stateService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(None))
         when(stateService.fetchAndGetFormData[YesNoModel](anyString())(any(), any())).thenReturn(Future.successful(None))
@@ -130,7 +133,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
       val stateService = mock[KeystoreConnector]
       val actions = createMockActions(true)
       val form = new YesNoForm(messagesApi)
-      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form, countriesMatcher)
       lazy val document = Jsoup.parse(bodyOf(result))
 
       when(stateService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(Some(TestData.businessDetails)))
@@ -153,7 +156,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
       val stateService = mock[KeystoreConnector]
       val actions = createMockActions(true)
       val form = new YesNoForm(messagesApi)
-      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form, countriesMatcher)
       lazy val document = Jsoup.parse(bodyOf(result))
 
       when(stateService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(Some(TestData.businessDetails)))
@@ -180,7 +183,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
       val stateService = mock[KeystoreConnector]
       val actions = createMockActions()
       val form = new YesNoForm(messagesApi)
-      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form, countriesMatcher)
       lazy val result = target.submitCorrespondenceAddressConfirm(request)
 
       "return a return a 303 response code" in {
@@ -200,7 +203,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
         val stateService = mock[KeystoreConnector]
         val actions = createMockActions(true)
         val form = new YesNoForm(messagesApi)
-        val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+        val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form, countriesMatcher)
 
         when(stateService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(None))
         when(stateService.fetchAndGetFormData[YesNoModel](anyString())(any(), any())).thenReturn(Future.successful(None))
@@ -221,7 +224,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
       val stateService = mock[KeystoreConnector]
       val actions = createMockActions(true)
       val form = new YesNoForm(messagesApi)
-      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form, countriesMatcher)
       lazy val document = Jsoup.parse(bodyOf(result))
 
       when(stateService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(Some(TestData.businessDetails)))
@@ -244,7 +247,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
       val stateService = mock[KeystoreConnector]
       val actions = createMockActions(true)
       val form = new YesNoForm(messagesApi)
-      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form, countriesMatcher)
 
       when(stateService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(Some(TestData.businessDetails)))
       when(stateService.saveFormData(anyString(), any())(any(), any())).thenReturn(Future.successful(CacheMap("", Map.empty)))
@@ -275,7 +278,7 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
       val stateService = mock[KeystoreConnector]
       val actions = createMockActions(true)
       val form = new YesNoForm(messagesApi)
-      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form)
+      lazy val target = new CorrespondenceAddressConfirmController(mockConfig, messagesApi, stateService, actions, form, countriesMatcher)
 
       when(stateService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(Some(TestData.businessDetails)))
       when(stateService.saveFormData(anyString(), any())(any(), any())).thenReturn(Future.successful(CacheMap("", Map.empty)))

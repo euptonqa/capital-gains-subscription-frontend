@@ -28,7 +28,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
     "provided with a valid map with no optional values" should {
       val map = Map("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "",
-        "addressLineFour" -> "", "country" -> "Fakeland", "postcode" -> "XX22 1XX")
+        "addressLineFour" -> "", "postcode" -> "XX22 1XX", "country" -> "United Kingdom")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return a valid model" in {
@@ -36,7 +36,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "return a model containing the stored data" in {
-        result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), None, None, Some("Fakeland"), Some("XX22 1XX"))
+        result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), None, None, Some("Fakeland"))
       }
 
       "contain no errors" in {
@@ -46,7 +46,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
     "provided with a valid map with all optional values" should {
       val map = Map("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "Fake City",
-        "addressLineFour" -> "Fake County", "country" -> "Fakeland", "postcode" -> "XX22 1XX")
+        "addressLineFour" -> "Fake County", "postcode" -> "XX22 1XX", "country" -> "Fakeland")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return a valid model" in {
@@ -55,7 +55,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
       "return a model containing the stored data" in {
         result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), Some("Fake City"),
-          Some("Fake County"), Some("Fakeland"), Some("XX22 1XX"))
+          Some("Fake County"), Some("Fakeland"))
       }
 
       "contain no errors" in {

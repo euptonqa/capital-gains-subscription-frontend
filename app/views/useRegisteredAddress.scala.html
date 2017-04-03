@@ -24,7 +24,7 @@
         @listItem(companyAddress.addressLine3)
         @listItem(companyAddress.addressLine4)
         @listItem(companyAddress.postCode)
-        <li>countriesMatcher.getSelectedCountry(companyAddress.countryCode))</li>
+        <li>@countriesMatcher.getSelectedCountry(companyAddress.countryCode)</li>
     </ul>
 
     @form(action = controllers.routes.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm) {

@@ -22,8 +22,12 @@ import views.html.useRegisteredAddress
 import data.MessageLookup.{Common, UseRegisteredAddress}
 import models.CompanyAddressModel
 import traits.ViewTestSpec
+import common.CountriesMatcher
+import play.api.Environment
 
 class UseRegisteredAddressViewSpec extends ViewTestSpec {
+
+  implicit val countryMatcher = new CountriesMatcher(Environment.simple())
 
   "The useRegisteredAddress view when supplied with a valid form" should {
     lazy val form = new YesNoForm(messagesApi)
@@ -32,8 +36,7 @@ class UseRegisteredAddressViewSpec extends ViewTestSpec {
       Some("line2"),
       Some("line3"),
       Some("line4"),
-      Some("postCode"),
-      Some("country")
+      Some("postCode")
     )
     lazy val view = useRegisteredAddress(appConfig, form.yesNoForm, addressModel)
     lazy val doc = Jsoup.parse(view.body)
@@ -77,7 +80,7 @@ class UseRegisteredAddressViewSpec extends ViewTestSpec {
       }
 
       "has the country" in {
-        list.select("li").get(5).text shouldBe "country"
+        list.select("li").get(5).text shouldBe "United Kingdom"
       }
     }
 
@@ -172,7 +175,7 @@ class UseRegisteredAddressViewSpec extends ViewTestSpec {
 
   "The useRegisteredAddress view with no optional data but a valid form" should {
     lazy val form = new YesNoForm(messagesApi)
-    val addressModel = CompanyAddressModel(None, None, None, None, None, None)
+    val addressModel = CompanyAddressModel(None, None, None, None, None)
     lazy val view = useRegisteredAddress(appConfig, form.yesNoForm, addressModel)
     lazy val doc = Jsoup.parse(view.body)
 
@@ -189,7 +192,7 @@ class UseRegisteredAddressViewSpec extends ViewTestSpec {
 
     lazy val form = new YesNoForm(messagesApi)
     lazy val map = Map("response" -> "")
-    val addressModel = CompanyAddressModel(None, None, None, None, None, None)
+    val addressModel = CompanyAddressModel(None, None, None, None, None)
     lazy val view = useRegisteredAddress(appConfig, form.yesNoForm.bind(map), addressModel)
     lazy val doc = Jsoup.parse(view.body).toString
 

@@ -33,12 +33,15 @@ import services.SubscriptionService
 import traits.ControllerTestSpec
 import auth.AuthenticatedNROrganisationAction
 import common.Constants.ErrorMessages._
+import common.CountriesMatcher
+import play.api.Environment
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 import scala.concurrent.Future
 
 class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTestSpec {
 
+  implicit val countriesMatcher: CountriesMatcher = new CountriesMatcher(Environment.simple())
   val unauthorisedLoginUri = "dummy-unauthorised-url"
   val validBusinessData = ReviewDetails("", None, Address("", "", None, None, None, ""), "123456789", "123456789",
     isAGroup = false, directMatch = false, None)
@@ -89,7 +92,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
     when(mockService.getSubscriptionResponseCompany(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(referenceResponse)
 
-    new CorrespondenceAddressFinalConfirmationController(mockConfig, messagesApi, mockedActions, mockService, mockKeystoreConnector)
+    new CorrespondenceAddressFinalConfirmationController(mockConfig, messagesApi, mockedActions, mockService, mockKeystoreConnector, countriesMatcher)
   }
 
 
@@ -97,7 +100,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
     "the business data, correspondence address and contact details are supplied" should {
       lazy val actions = createMockActions(valid = true)
-      lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""), Some(""))),
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""))),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
         Some(validBusinessData),
         actions,
@@ -116,7 +119,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
     "no business data is found" should {
       lazy val actions = createMockActions(valid = true)
-      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None)),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
         None, actions, Some(ContactDetailsModel("", "", "")))
       lazy val ex = intercept[Exception] {
@@ -144,7 +147,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
     "no contact details are found" should {
       lazy val actions = createMockActions(valid = true)
-      lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""), Some(""))),
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""))),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
         Some(validBusinessData), actions, None)
       lazy val ex = intercept[Exception] {
@@ -158,7 +161,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
     "the user is unauthorised" should {
       lazy val actions = createMockActions(valid = false)
-      lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""), Some(""))),
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(Some(""), Some(""), Some(""), Some(""), Some(""))),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
         Some(validBusinessData), actions, Some(ContactDetailsModel("", "", "")))
       lazy val result = controller.correspondenceAddressFinalConfirmation(FakeRequest("GET", ""))
@@ -179,7 +182,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
       "the cgt reference is retrieved correctly" should {
         lazy val actions = createMockActions(valid = true)
-        lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+        lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None)),
           Future.successful(Some(SubscriptionReference("CGT123456"))),
           Some(validBusinessData),
           actions,
@@ -211,7 +214,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
       "no business data is returned" should {
         lazy val actions = createMockActions(valid = true)
-        lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+        lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None)),
           Future.successful(Some(SubscriptionReference("CGT123456"))),
           None,
           actions,
@@ -227,7 +230,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
 
       "no CGT reference is returned" should {
         lazy val actions = createMockActions(valid = true)
-        lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+        lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None)),
           Future.successful(None),
           Some(validBusinessData),
           actions,
@@ -244,7 +247,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
       "an error occurs during subscription" should {
         lazy val actions = createMockActions(valid = true)
         lazy val exception = new Exception("testMessage")
-        lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+        lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None)),
           Future.failed(exception),
           Some(validBusinessData),
           actions,
@@ -262,7 +265,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
     "the user is not authorised correctly" should {
 
       lazy val actions = createMockActions()
-      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None, None)),
+      lazy val controller = createMockPostController(Some(CompanyAddressModel(None, None, None, None, None)),
         Future.successful(Some(SubscriptionReference("CGT123456"))),
         Some(validBusinessData),
         actions,

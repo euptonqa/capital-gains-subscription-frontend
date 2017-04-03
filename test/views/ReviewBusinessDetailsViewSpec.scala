@@ -16,6 +16,7 @@
 
 package views
 
+import common.CountriesMatcher
 import config.AppConfig
 import data.MessageLookup
 import models.{CompanyAddressModel, ContactDetailsModel}
@@ -26,6 +27,7 @@ import play.api.inject.Injector
 import uk.gov.hmrc.play.test.UnitSpec
 import views.html.reviewBusinessDetails
 import data.MessageLookup.{ReviewBusinessDetails => messages}
+import play.api.Environment
 import traits.FakeRequestHelper
 
 
@@ -33,11 +35,12 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
   lazy val injector: Injector = app.injector
   lazy val appConfig: AppConfig = injector.instanceOf[AppConfig]
   implicit lazy val messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
+  implicit val countriesMatcher: CountriesMatcher = new CountriesMatcher(Environment.simple())
 
   "The ReviewBusinessDetailsView" should {
 
-    val registeredModel = CompanyAddressModel(Some("hello"), Some("hello2"), None, None, None, None)
-    val contactModel = CompanyAddressModel(Some("hello"), Some("hello2"), None, None, None, None)
+    val registeredModel = CompanyAddressModel(Some("hello"), Some("hello2"), None, None, None)
+    val contactModel = CompanyAddressModel(Some("hello"), Some("hello2"), None, None, None)
     val detailsModel = ContactDetailsModel("name", "telephone", "email")
     lazy val view = reviewBusinessDetails(appConfig, registeredModel, contactModel, "business name", detailsModel)
     lazy val doc = Jsoup.parse(view.body)
