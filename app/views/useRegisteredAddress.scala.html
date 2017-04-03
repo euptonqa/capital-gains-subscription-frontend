@@ -2,7 +2,8 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form, inputRadioGroup}
 @import views.html.helpers.errorSummary
 
-@(appConfig: config.AppConfig, yesNoForm: Form[YesNoModel], companyAddress: CompanyAddressModel)(implicit request: Request[_], messages: Messages)
+@import common.CountriesMatcher
+@(appConfig: config.AppConfig, yesNoForm: Form[YesNoModel], companyAddress: CompanyAddressModel)(implicit request: Request[_], messages: Messages, countriesMatcher: CountriesMatcher)
 
 
 @listItem(input: Option[String])={
@@ -23,7 +24,7 @@
         @listItem(companyAddress.addressLine3)
         @listItem(companyAddress.addressLine4)
         @listItem(companyAddress.postCode)
-        @listItem(companyAddress.country)
+        <li>countriesMatcher.getSelectedCountry(companyAddress.countryCode))</li>
     </ul>
 
     @form(action = controllers.routes.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm) {

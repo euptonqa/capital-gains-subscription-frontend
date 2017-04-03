@@ -1,8 +1,8 @@
 @import models._
 @import uk.gov.hmrc.play.views.html.helpers.form
+@import common.CountriesMatcher
 
-@(appConfig: config.AppConfig, registeredAddress: CompanyAddressModel, contactAddress: CompanyAddressModel, businessName: String, contactDetails: ContactDetailsModel)(implicit request: Request [_], messages: Messages)
-<!--TODO: Take in CGT contact details -->
+@(appConfig: config.AppConfig, registeredAddress: CompanyAddressModel, contactAddress: CompanyAddressModel, businessName: String, contactDetails: ContactDetailsModel)(implicit request: Request [_], messages: Messages, countriesMatcher: CountriesMatcher)
 @insertAddress(addressTypeName: String, companyAddressModel: CompanyAddressModel, redirect: Option[String]) = {
 
     <tr>
@@ -24,9 +24,7 @@
                 @if(companyAddressModel.postCode.isDefined){
                     <li>@companyAddressModel.postCode.get</li>
                 }
-                @if(companyAddressModel.country.isDefined){
-                    <li>@companyAddressModel.country.get</li>
-                }
+                    <li>@countriesMatcher.getSelectedCountry(companyAddressModel.countryCode)</li>
             </ul>
         </td>
         <td style="vertical-align: top">

@@ -19,7 +19,7 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import auth.AuthorisedActions
-import common.Keys
+import common.{CountriesMatcher, Keys}
 import common.Constants.ErrorMessages._
 import common.Keys.KeystoreKeys
 import config.AppConfig
@@ -38,7 +38,8 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
                                                                  val messagesApi: MessagesApi,
                                                                  actions: AuthorisedActions,
                                                                  subscriptionService: SubscriptionService,
-                                                                 keystoreConnector: KeystoreConnector) extends FrontendController with I18nSupport {
+                                                                 keystoreConnector: KeystoreConnector,
+                                                                 implicit val countriesMatcher: CountriesMatcher) extends FrontendController with I18nSupport {
 
   val correspondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction { implicit user =>
     implicit request =>

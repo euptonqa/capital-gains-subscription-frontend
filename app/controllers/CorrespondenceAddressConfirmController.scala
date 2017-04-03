@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import auth.AuthorisedActions
 import common.Constants.ErrorMessages._
+import common.CountriesMatcher
 import common.Keys.KeystoreKeys
 import config.AppConfig
 import connectors.KeystoreConnector
@@ -37,7 +38,8 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
                                                        val messagesApi: MessagesApi,
                                                        sessionService: KeystoreConnector,
                                                        actions: AuthorisedActions,
-                                                       form: YesNoForm)
+                                                       form: YesNoForm,
+                                                       implicit val countriesMatcher: CountriesMatcher)
   extends FrontendController with I18nSupport {
 
   val correspondenceAddressConfirm: Action[AnyContent] =
