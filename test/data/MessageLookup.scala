@@ -29,6 +29,7 @@ object MessageLookup {
     val errorTelephone = "Please enter a valid telephone number"
     val errorEmail = "Please enter a valid email"
     val dummyError = "Dummy error message"
+    val errorCountry = "Please enter a valid country"
   }
 
   object ErrorSummary {

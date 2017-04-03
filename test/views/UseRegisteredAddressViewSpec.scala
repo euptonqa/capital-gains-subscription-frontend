@@ -182,8 +182,8 @@ class UseRegisteredAddressViewSpec extends ViewTestSpec {
     "contain a list" which {
       lazy val list = doc.select("main ul")
 
-      "has no elements" in {
-        list.select("li").size() shouldBe 0
+      "has one element for country" in {
+        list.select("li").size() shouldBe 1
       }
     }
   }

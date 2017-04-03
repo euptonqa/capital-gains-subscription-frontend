@@ -45,7 +45,7 @@ class FormValidation @Inject()(val messagesApi: MessagesApi) extends I18nSupport
         text =>
           val error = text match {
             case countryCode() => Nil
-            case _ => Seq(ValidationError(Messages("")))
+            case _ => Seq(ValidationError(Messages("errors.country")))
           }
           if (error.isEmpty) Valid else Invalid(error)
       })

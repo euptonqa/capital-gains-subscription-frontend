@@ -98,8 +98,8 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
             "has a td with the relevant address details found in the registeredAddress model" which {
               lazy val tdOne = row.select("td:nth-of-type(1) ul")
 
-              "has two list elements" in {
-                tdOne.select("li").size() shouldBe 2
+              "has three list elements" in {
+                tdOne.select("li").size() shouldBe 3
               }
 
               s"has a first element of ${registeredModel.addressLine1}" in {
@@ -126,8 +126,8 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
           "has a td with the relevant address details found in the correspondenceAddress model" which {
             lazy val tdOne = row.select("td:nth-of-type(1) ul")
 
-            "has two list elements" in {
-              tdOne.select("li").size() shouldBe 2
+            "has three list elements" in {
+              tdOne.select("li").size() shouldBe 3
             }
 
             s"has a first element of ${registeredModel.addressLine1}" in {

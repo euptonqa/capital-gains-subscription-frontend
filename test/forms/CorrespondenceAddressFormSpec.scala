@@ -28,7 +28,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
     "provided with a valid map with no optional values" should {
       val map = Map("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "",
-        "addressLineFour" -> "", "postcode" -> "XX22 1XX", "country" -> "United Kingdom")
+        "addressLineFour" -> "", "postcode" -> "XX22 1XX", "country" -> "GB")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return a valid model" in {
@@ -36,7 +36,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "return a model containing the stored data" in {
-        result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), None, None, Some("Fakeland"))
+        result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), None, None, Some("XX22 1XX"))
       }
 
       "contain no errors" in {
@@ -46,7 +46,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
     "provided with a valid map with all optional values" should {
       val map = Map("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "Fake City",
-        "addressLineFour" -> "Fake County", "postcode" -> "XX22 1XX", "country" -> "Fakeland")
+        "addressLineFour" -> "Fake County", "postcode" -> "XX22 1XX", "country" -> "GB")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return a valid model" in {
@@ -55,7 +55,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
       "return a model containing the stored data" in {
         result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), Some("Fake City"),
-          Some("Fake County"), Some("Fakeland"))
+          Some("Fake County"), Some("XX22 1XX"))
       }
 
       "contain no errors" in {
@@ -65,7 +65,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
     "provided with a invalid map without addressLineOne" should {
       val map = Map("addressLineOne" -> "", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "Fake City",
-        "addressLineFour" -> "Fake County", "country" -> "Fakeland", "postcode" -> "XX22 1XX")
+        "addressLineFour" -> "Fake County", "postcode" -> "XX22 1XX", "country" -> "GB")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return an invalid model" in {
@@ -83,7 +83,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
     "provided with a invalid map without addressLineTwo" should {
       val map = Map("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "", "addressLineThree" -> "Fake City",
-        "addressLineFour" -> "Fake County", "country" -> "Fakeland", "postcode" -> "XX22 1XX")
+        "addressLineFour" -> "Fake County", "postcode" -> "XX22 1XX", "country" -> "GB")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return an invalid model" in {
@@ -101,7 +101,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
     "provided with a invalid map without country" should {
       val map = Map("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "Fake City",
-        "addressLineFour" -> "Fake County", "country" -> "", "postcode" -> "XX22 1XX")
+        "addressLineFour" -> "Fake County", "postcode" -> "XX22 1XX", "country" -> "")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return an invalid model" in {
@@ -113,13 +113,13 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "contain an error message for a required field" in {
-        result.errors.head.message shouldBe Errors.errorRequired
+        result.errors.head.message shouldBe Errors.errorCountry
       }
     }
 
     "provided with a invalid map without postcode" should {
       val map = Map("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "Fake City",
-        "addressLineFour" -> "Fake County", "country" -> "Fakeland", "postcode" -> "")
+        "addressLineFour" -> "Fake County", "postcode" -> "", "country" -> "GB")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return an invalid model" in {
