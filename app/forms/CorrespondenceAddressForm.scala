@@ -32,8 +32,8 @@ class CorrespondenceAddressForm @Inject()(val messagesApi: MessagesApi) extends 
       "addressLineTwo" -> text.verifying(Messages("errors.required"), nonEmptyCheck).transform(textToOptional, optionalToText),
       "addressLineThree" -> text.transform(textToOptional, optionalToText),
       "addressLineFour" -> text.transform(textToOptional, optionalToText),
-      "country" -> text.verifying(Messages("errors.required"), nonEmptyCheck).transform(textToOptional, optionalToText),
-      "postcode" -> text.verifying(Messages("errors.required"), nonEmptyCheck).transform(textToOptional, optionalToText)
+      "postcode" -> text.verifying(Messages("errors.required"), nonEmptyCheck).transform(textToOptional, optionalToText),
+      "country" -> countryCodeCheck
     )(CompanyAddressModel.apply)(CompanyAddressModel.unapply)
   )
 }

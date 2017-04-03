@@ -21,8 +21,6 @@ import play.api.data.Mapping
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.i18n.Messages
 
-import scala.util.matching.Regex
-
 object FormValidation {
 
   val nonEmptyCheck: String => Boolean = input => !input.isEmpty
@@ -36,6 +34,8 @@ object FormValidation {
     case _ => ""
   }
 
+
+
   def countryCodeCheck: Mapping[String] = {
     val countryCode = """[A-Z]{2}""".r
     val countryCodeCheckConstraint: Constraint[String] =
@@ -43,7 +43,7 @@ object FormValidation {
         text =>
           val error = text match {
             case countryCode() => Nil
-            case _ => Seq(ValidationError(Messages("validation.error.countryCode")))
+            case _ => Seq(ValidationError("Wrong thing"))
           }
           if (error.isEmpty) Valid else Invalid(error)
       })

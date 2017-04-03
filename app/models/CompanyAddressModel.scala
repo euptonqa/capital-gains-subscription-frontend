@@ -24,7 +24,7 @@ case class CompanyAddressModel(
                                 addressLine3: Option[String],
                                 addressLine4: Option[String],
                                 postCode: Option[String],
-                                country: Option[String]
+                                countryCode: String = "GB"
                               )
 
 object CompanyAddressModel {

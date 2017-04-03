@@ -28,6 +28,6 @@ case class Address(line_1: String,
 object Address {
   implicit val formats = Json.format[Address]
   implicit val converts: Address => CompanyAddressModel = address => {
-    CompanyAddressModel(Some(address.line_1), Some(address.line_2), address.line_3, address.line_4, address.postcode, Some(address.country))
+    CompanyAddressModel(Some(address.line_1), Some(address.line_2), address.line_3, address.line_4, address.postcode, address.country)
   }
 }
