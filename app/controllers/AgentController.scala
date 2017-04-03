@@ -21,11 +21,10 @@ import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtAgent}
 import common.Constants.ErrorMessages._
-import common.Keys.KeystoreKeys
 import config.AppConfig
 import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
 import helpers.{EnrolmentToCGTCheck, LogicHelpers}
-import models.{AgentSubmissionModel, CallbackUrlModel, ReviewDetails}
+import models.{AgentSubmissionModel, ReviewDetails}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}

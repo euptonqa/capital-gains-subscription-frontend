@@ -18,12 +18,9 @@ package controllers
 
 import auth.{AuthorisedActions, CgtIndividual}
 import com.google.inject.{Inject, Singleton}
+import common.Constants.ErrorMessages._
 import config.AppConfig
 import helpers.{EnrolmentToCGTCheck, LogicHelpers}
-import common.Constants.ErrorMessages._
-import common.Keys.KeystoreKeys
-import connectors.KeystoreConnector
-import models.CallbackUrlModel
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc._
 import services.{AuthorisationService, SubscriptionService}

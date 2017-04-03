@@ -19,11 +19,8 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtNROrganisation}
-import common.Keys.KeystoreKeys
 import config.AppConfig
-import connectors.KeystoreConnector
 import helpers.{EnrolmentToCGTCheck, LogicHelpers}
-import models.CallbackUrlModel
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
 import services.AuthorisationService

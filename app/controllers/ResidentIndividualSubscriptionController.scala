@@ -19,13 +19,9 @@ package controllers
 import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtIndividual}
-import common.Keys.KeystoreKeys
 import config.AppConfig
-import connectors.KeystoreConnector
 import helpers.{EnrolmentToCGTCheck, LogicHelpers}
-import models.CallbackUrlModel
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -65,7 +61,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
       Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
     else if (isEnrolled) Future.successful(Redirect(url))
     //TODO: you're already enrolled to CGT!
-    else  checkForCgtRefAndRedirectToConfirmation(user)
+    else checkForCgtRefAndRedirectToConfirmation(user)
   }
 
   def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual)(implicit hc: HeaderCarrier): Future[Result] = {
