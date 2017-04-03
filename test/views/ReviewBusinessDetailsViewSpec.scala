@@ -99,7 +99,7 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
               lazy val tdOne = row.select("td:nth-of-type(1) ul")
 
               "has two list elements" in {
-                tdOne.select("li").size() shouldBe 2
+                tdOne.select("li").size() shouldBe 3
               }
 
               s"has a first element of ${registeredModel.addressLine1}" in {
@@ -127,7 +127,7 @@ class ReviewBusinessDetailsViewSpec extends UnitSpec with OneAppPerSuite with Fa
             lazy val tdOne = row.select("td:nth-of-type(1) ul")
 
             "has two list elements" in {
-              tdOne.select("li").size() shouldBe 2
+              tdOne.select("li").size() shouldBe 3
             }
 
             s"has a first element of ${registeredModel.addressLine1}" in {

@@ -131,7 +131,7 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
 
       val fakeRequest = FakeRequest("POST", "/")
         .withFormUrlEncodedBody("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "Fake City",
-          "addressLineFour" -> "Fake County", "country" -> "Fakeland", "postcode" -> "XX22 1XX")
+          "addressLineFour" -> "Fake County", "postcode" -> "XX22 1XX", "country" -> "GB")
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
       lazy val keystoreConnector = createMockKeystoreConnector
       lazy val action = createMockActions(valid = true)

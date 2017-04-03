@@ -17,19 +17,20 @@
 package forms
 
 import javax.inject.Inject
+
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import common.Constants.InvalidUserTypes
-import common.FormValidation._
+import common.FormValidation
 import models.OrganisationModel
 
-class OrganisationForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
+class OrganisationForm @Inject()(val messagesApi: MessagesApi, formValidation: FormValidation) extends I18nSupport {
 
   val organisationForm = Form(
     mapping(
       "organisationType" -> text
-        .verifying(Messages("errors.mandatory"), nonEmptyCheck)
+        .verifying(Messages("errors.mandatory"), formValidation.nonEmptyCheck)
         .verifying(Messages("errors.mandatory"), input => InvalidUserTypes.users.contains(input))
     )(OrganisationModel.apply)(OrganisationModel.unapply)
   )
