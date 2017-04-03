@@ -22,7 +22,7 @@ import auth.{AuthorisedActions, CgtNROrganisation}
 import common.Keys.KeystoreKeys
 import config.AppConfig
 import connectors.KeystoreConnector
-import helpers.EnrolmentToCGTCheck
+import helpers.{EnrolmentToCGTCheck, LogicHelpers}
 import models.CallbackUrlModel
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 class CompanyController @Inject()(appConfig: AppConfig,
                                   authorisedActions: AuthorisedActions,
                                   authService: AuthorisationService,
-                                  keystoreConnector: KeystoreConnector,
+                                  logicHelpers: LogicHelpers,
                                   val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
@@ -44,20 +44,7 @@ class CompanyController @Inject()(appConfig: AppConfig,
     implicit user =>
       implicit request =>
 
-        def bindAndValidateCallbackUrl(url: String): Future[Boolean] = {
-          val bindModel = Future {
-            CallbackUrlModel(url)
-          }
-          val result = for {
-            model <- bindModel
-            saveResult <- keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model)
-          } yield saveResult
-
-          result.map(_ => true)
-            .recoverWith {
-              case _: Exception => Future.successful(false)
-            }
-        }
+        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
 
         def checkForEnrolmentsAndRedirect(user: CgtNROrganisation, isEnrolled: Boolean, isValid: Boolean)(): Future[Result] = {
           if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
@@ -67,7 +54,7 @@ class CompanyController @Inject()(appConfig: AppConfig,
         }
 
         for {
-          isValid <- bindAndValidateCallbackUrl(url)
+          isValid <- isValidRequest
           enrolments <- authService.getEnrolments
           isEnrolled <- EnrolmentToCGTCheck.checkCompanyEnrolments(enrolments)
           redirect <- checkForEnrolmentsAndRedirect(user, isEnrolled, isValid)

@@ -17,14 +17,16 @@
 package controllers
 
 import akka.util.Timeout
-import auth.{AuthorisedActions, CgtIndividual}
+import auth.{AuthenticatedIndividualAction, AuthorisedActions, CgtIndividual}
 import common.Constants.AffinityGroup
 import common.Constants.ErrorMessages._
 import common.Keys
 import config.WSHttp
-import connectors.{AuthorisationConnector, KeystoreConnector, SubscriptionConnector}
+import connectors.{AuthorisationConnector, SubscriptionConnector}
 import data.{MessageLookup, TestUserBuilder}
+import helpers.LogicHelpers
 import models.{AuthorisationDataModel, Enrolment, SubscriptionReference}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
@@ -34,10 +36,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.redirectLocation
 import services.{AuthorisationService, SubscriptionService}
 import traits.ControllerTestSpec
-import auth.AuthenticatedIndividualAction
-import org.jsoup.Jsoup
 import uk.gov.hmrc.domain.Nino
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._
 
@@ -102,13 +101,13 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
     new AuthorisationService(mockConnector)
   }
 
-  val mockKeystoreConnector = {
-    val connector = mock[KeystoreConnector]
+  def mockLogicHelper(valid: Boolean) = {
+    val helper = mock[LogicHelpers]
 
-    when(connector.saveFormData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(mock[CacheMap]))
+    when(helper.bindAndValidateCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(valid))
 
-    connector
+    helper
   }
 
   "Calling the .nonResidentIndividualSubscription action" when {
@@ -126,7 +125,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, mockKeystoreConnector, messagesApi)
+        mockAuthorisationService, mockLogicHelper(false), messagesApi)
 
       lazy val result = target.nonResidentIndividualSubscription("http://www.google.com")(fakeRequest)
       lazy val body = Jsoup.parse(bodyOf(result))
@@ -149,7 +148,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, mockKeystoreConnector, messagesApi)
+        mockAuthorisationService, mockLogicHelper(true), messagesApi)
 
       lazy val result = target.nonResidentIndividualSubscription("/test/route")(fakeRequest)
 
@@ -171,7 +170,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, mockKeystoreConnector, messagesApi)
+        mockAuthorisationService, mockLogicHelper(true), messagesApi)
 
       lazy val result = target.nonResidentIndividualSubscription("/test/route")(fakeRequest)
 
@@ -193,7 +192,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, mockKeystoreConnector, messagesApi)
+        mockAuthorisationService, mockLogicHelper(true), messagesApi)
 
       lazy val ex = intercept[Exception] {
         await(target.nonResidentIndividualSubscription("/test/route")(fakeRequest))
@@ -219,7 +218,7 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
       lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelNoNino))
 
       lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, mockKeystoreConnector, messagesApi)
+        mockAuthorisationService, mockLogicHelper(true), messagesApi)
 
       lazy val result = target.nonResidentIndividualSubscription("/test/route")(fakeRequest)
 

@@ -39,7 +39,7 @@ import services.{AgentService, AuthorisationService, SubscriptionService}
 import traits.ControllerTestSpec
 import auth._
 import common.Constants.ErrorMessages._
-import uk.gov.hmrc.http.cache.client.CacheMap
+import helpers.LogicHelpers
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -106,7 +106,8 @@ class AgentControllerSpec extends ControllerTestSpec {
                       businessDetails: Option[ReviewDetails] = Some(TestData.validBusinessDetails),
                       enrolmentResponse: AgentEnrolmentResponse = SuccessAgentEnrolmentResponse,
                       enrolmentsResponse: Option[Seq[Enrolment]] = None,
-                      authResponse: Option[AuthorisationDataModel] = None): AgentController = {
+                      authResponse: Option[AuthorisationDataModel] = None,
+                      isValidRequest: Boolean = true): AgentController = {
 
     val mockActions = mock[AuthorisedActions]
 
@@ -135,17 +136,18 @@ class AgentControllerSpec extends ControllerTestSpec {
     when(sessionService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(businessDetails))
     when(service.getAgentEnrolmentResponse(any())(any())).thenReturn(Future.successful(enrolmentResponse))
 
-    new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService, mockSubscriptionService, messagesApi, mockKeystoreConnector)
+    new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService,
+      mockSubscriptionService, messagesApi,mockLogicHelper(isValidRequest))
 
   }
 
-  val mockKeystoreConnector = {
-    val connector = mock[KeystoreConnector]
+  def mockLogicHelper(valid: Boolean) = {
+    val helper = mock[LogicHelpers]
 
-    when(connector.saveFormData(ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(mock[CacheMap]))
+    when(helper.bindAndValidateCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(valid))
 
-    connector
+    helper
   }
 
 
@@ -158,7 +160,7 @@ class AgentControllerSpec extends ControllerTestSpec {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       val enrolments = Option(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
-      lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
+      lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass, isValidRequest = false)
 
       lazy val result = agentController.agent("http://www.google.com")(fakeRequest)
       lazy val body = Jsoup.parse(bodyOf(result))

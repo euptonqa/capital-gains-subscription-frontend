@@ -24,7 +24,7 @@ import common.Constants.ErrorMessages._
 import common.Keys.KeystoreKeys
 import config.AppConfig
 import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
-import helpers.EnrolmentToCGTCheck
+import helpers.{EnrolmentToCGTCheck, LogicHelpers}
 import models.{AgentSubmissionModel, CallbackUrlModel, ReviewDetails}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
@@ -44,26 +44,13 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 authService: AuthorisationService,
                                 subscriptionService: SubscriptionService,
                                 val messagesApi: MessagesApi,
-                                keystoreConnector: KeystoreConnector) extends FrontendController with I18nSupport {
+                                logicHelpers: LogicHelpers) extends FrontendController with I18nSupport {
 
   val agent: String => Action[AnyContent] = url => authorisedActions.authorisedAgentAction {
     implicit user =>
       implicit request =>
 
-        def bindAndValidateCallbackUrl(url: String): Future[Boolean] = {
-          val bindModel = Future {
-            CallbackUrlModel(url)
-          }
-          val result = for {
-            model <- bindModel
-            saveResult <- keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model)
-          } yield saveResult
-
-          result.map(_ => true)
-            .recoverWith {
-              case _: Exception => Future.successful(false)
-            }
-        }
+        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
 
         def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent,
                                                                         isEnrolled: Boolean,
@@ -75,7 +62,7 @@ class AgentController @Inject()(appConfig: AppConfig,
         }
 
         for {
-          isValid <- bindAndValidateCallbackUrl(url)
+          isValid <- isValidRequest
           enrolments <- authService.getEnrolments
           isEnrolled <- EnrolmentToCGTCheck.checkAgentEnrolments(enrolments)
           redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, isValid)

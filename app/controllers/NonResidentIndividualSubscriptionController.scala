@@ -19,7 +19,7 @@ package controllers
 import auth.{AuthorisedActions, CgtIndividual}
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
-import helpers.EnrolmentToCGTCheck
+import helpers.{EnrolmentToCGTCheck, LogicHelpers}
 import common.Constants.ErrorMessages._
 import common.Keys.KeystoreKeys
 import connectors.KeystoreConnector
@@ -36,7 +36,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
                                                             appConfig: AppConfig,
                                                             subscriptionService: SubscriptionService,
                                                             authorisationService: AuthorisationService,
-                                                            keystoreConnector: KeystoreConnector,
+                                                            logicHelpers: LogicHelpers,
                                                             val messagesApi: MessagesApi)
   extends FrontendController with I18nSupport {
 
@@ -44,20 +44,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
     implicit user =>
       implicit request =>
 
-        def bindAndValidateCallbackUrl(url: String): Future[Boolean] = {
-          val bindModel = Future {
-            CallbackUrlModel(url)
-          }
-          val result = for {
-            model <- bindModel
-            saveResult <- keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model)
-          } yield saveResult
-
-          result.map(_ => true)
-            .recoverWith {
-              case _: Exception => Future.successful(false)
-            }
-        }
+        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
 
         def routeRequest(alreadyEnrolled: Boolean, isValid: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
           if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
@@ -67,7 +54,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
         }
 
         for {
-          isValid <- bindAndValidateCallbackUrl(url)
+          isValid <- isValidRequest
           enrolments <- authorisationService.getEnrolments(hc(request))
           checkEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
           route <- routeRequest(checkEnrolled, isValid)

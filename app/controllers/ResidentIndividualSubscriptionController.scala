@@ -22,7 +22,7 @@ import auth.{AuthorisedActions, CgtIndividual}
 import common.Keys.KeystoreKeys
 import config.AppConfig
 import connectors.KeystoreConnector
-import helpers.EnrolmentToCGTCheck
+import helpers.{EnrolmentToCGTCheck, LogicHelpers}
 import models.CallbackUrlModel
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.libs.json.Json
@@ -39,32 +39,23 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
                                                          appConfig: AppConfig,
                                                          subscriptionService: SubscriptionService,
                                                          authService: AuthorisationService,
-                                                         keystoreConnector: KeystoreConnector,
+                                                         logicHelpers: LogicHelpers,
                                                          val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   val residentIndividualSubscription: String => Action[AnyContent] = url =>
     actions.authorisedResidentIndividualAction {
       implicit user =>
         implicit request =>
+
+          val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+
           for {
-            validate <- bindAndValidateCallbackUrl(url)
+            validate <- isValidRequest
             enrolments <- authService.getEnrolments
             isEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
             redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, validate, url)
           } yield redirect
     }
-
-  def bindAndValidateCallbackUrl(url: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
-    val bindModel = Future {CallbackUrlModel(url)}
-    val result = for {
-      model <- bindModel
-      saveResult <- keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model)
-    } yield saveResult
-    result.map(_ => true)
-      .recoverWith {
-        case _: Exception => Future.successful(false)
-      }
-  }
 
   def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual,
                                                                   isEnrolled: Boolean,
