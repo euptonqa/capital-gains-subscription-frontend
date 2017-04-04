@@ -40,7 +40,7 @@ import scala.util.Failure
 class UserDetailsControllerSpec extends ControllerTestSpec {
 
   val unauthorisedLoginUri = "some-url"
-  val form = app.injector.instanceOf[UserFactsForm]
+  val form: UserFactsForm = app.injector.instanceOf[UserFactsForm]
 
   def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithNINO): AuthorisedActions = {
 
@@ -65,7 +65,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
     mockActions
   }
 
-  def createMockService(cgtRef: String) = {
+  def createMockService(cgtRef: String): SubscriptionService = {
     val mockService = mock[SubscriptionService]
 
     when(mockService.getSubscriptionResponseGhost(ArgumentMatchers.any())(ArgumentMatchers.any()))
@@ -79,7 +79,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
 
     "using correct authorisation" should {
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val actions = createMockActions(true, TestUserBuilder.strongUserAuthContext)
+      lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
       lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
       lazy val result = controller.userDetails(fakeRequest)
       lazy val document = Jsoup.parse(bodyOf(result))
@@ -95,7 +95,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
 
     "using incorrect authorisation" should {
       val fakeRequest = FakeRequest("GET", "/")
-      lazy val actions = createMockActions(false, TestUserBuilder.noCredUserAuthContext)
+      lazy val actions = createMockActions(valid = false, TestUserBuilder.noCredUserAuthContext)
       lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
       lazy val result = controller.userDetails(fakeRequest)
 
@@ -114,7 +114,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
     val fakeRequest = FakeRequest("POST", "/")
       .withFormUrlEncodedBody()
 
-    lazy val actions = createMockActions(true, TestUserBuilder.strongUserAuthContext)
+    lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
     lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
     lazy val result = controller.submitUserDetails(fakeRequest)
     lazy val document = Jsoup.parse(bodyOf(result))
@@ -133,9 +133,9 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
     "using a valid form with correct response" should {
       val fakeRequest = FakeRequest("POST", "/")
         .withFormUrlEncodedBody("firstName" -> "Name", "lastName" -> "Surname", "addressLineOne" -> "LineOne",
-          "addressLineTwo" -> "", "townOrCity" -> "Town", "county" -> "County", "postCode" -> "Postcode", "country" -> "Country")
+          "addressLineTwo" -> "LineTwo", "townOrCity" -> "City", "county" -> "County", "postCode" -> "Postcode", "country" -> "Country")
 
-      lazy val actions = createMockActions(true, TestUserBuilder.strongUserAuthContext)
+      lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
       lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
       lazy val result = controller.submitUserDetails(fakeRequest)
 
@@ -151,15 +151,16 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
     "using a valid form with an incorrect response" should {
       val fakeRequest = FakeRequest("POST", "/")
         .withFormUrlEncodedBody("firstName" -> "Name", "lastName" -> "Surname", "addressLineOne" -> "LineOne",
-          "addressLineTwo" -> "", "townOrCity" -> "Town", "county" -> "County", "postCode" -> "Postcode", "country" -> "Country")
+          "addressLineTwo" -> "LineTwo", "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Country")
 
-      lazy val actions = createMockActions(true, TestUserBuilder.strongUserAuthContext)
+      lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
       lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service) {
-        val mockException = mock[Exception]
+        val mockException: Exception = mock[Exception]
         when(mockException.getMessage)
           .thenReturn("test")
 
-        override def subscribeUser(fullDetailsModel: UserFactsModel)(implicit hc: HeaderCarrier) = Future.successful(Failure(mockException))
+        override def subscribeUser(fullDetailsModel: UserFactsModel)
+                                  (implicit hc: HeaderCarrier): Future[scala.util.Try[String]] = Future.successful(Failure(mockException))
       }
 
       lazy val ex = intercept[Exception] {
@@ -173,7 +174,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
 
     "using incorrect authorisation" should {
       val fakeRequest = FakeRequest("POST", "/")
-      lazy val actions = createMockActions(false, TestUserBuilder.noCredUserAuthContext)
+      lazy val actions = createMockActions(valid = false, TestUserBuilder.noCredUserAuthContext)
       lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
       lazy val result = controller.submitUserDetails(fakeRequest)
 

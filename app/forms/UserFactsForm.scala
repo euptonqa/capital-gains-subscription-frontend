@@ -30,10 +30,10 @@ class UserFactsForm @Inject()(val messagesApi: MessagesApi, validation: FormVali
       "firstName" -> text.verifying(Messages("errors.required"), validation.nonEmptyCheck),
       "lastName" -> text.verifying(Messages("errors.required"), validation.nonEmptyCheck),
       "addressLineOne" -> text.verifying(Messages("errors.required"), validation.nonEmptyCheck),
-      "addressLineTwo" -> text.transform(validation.textToOptional, validation.optionalToText),
-      "townOrCity" -> text.verifying(Messages("errors.required"), validation.nonEmptyCheck),
+      "addressLineTwo" -> text.verifying(Messages("errors.required"), validation.nonEmptyCheck),
+      "townOrCity" -> text.transform(validation.textToOptional, validation.optionalToText),
       "county" -> text.transform(validation.textToOptional, validation.optionalToText),
-      "postCode" -> text.verifying(Messages("errors.required"), validation.nonEmptyCheck),
+      "postCode" -> text.transform(validation.textToOptional, validation.optionalToText),
       "country" -> text.verifying(Messages("errors.required"), validation.nonEmptyCheck)
     )(UserFactsModel.apply)(UserFactsModel.unapply)
   )
