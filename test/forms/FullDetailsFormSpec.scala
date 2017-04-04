@@ -27,8 +27,8 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
     val form = app.injector.instanceOf[UserFactsForm]
 
     "provided with a valid map with no optional values" should {
-      val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "",
-        "townOrCity" -> "Fakeville", "county" -> "", "postCode" -> "XX22 1XX", "country" -> "Fakeland")
+      val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "Fakeville",
+        "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Fakeland")
       lazy val result = form.fullDetailsForm.bind(map)
 
       "return a valid model" in {
@@ -36,7 +36,7 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "return a model containing the stored data" in {
-        result.value.get shouldBe UserFactsModel("Bob", "Smith", "XX Fake Lane", None, "Fakeville", None, "XX22 1XX", "Fakeland")
+        result.value.get shouldBe UserFactsModel("Bob", "Smith", "XX Fake Lane", "Fakeville", None, None, None, "Fakeland")
       }
 
       "contain no errors" in {
@@ -54,7 +54,7 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "return a model containing the stored data" in {
-        result.value.get shouldBe UserFactsModel("Bob", "Smith", "XX", Some("Fake Lane"), "Fakeville", Some("Fake"), "XX22 1XX", "Fakeland")
+        result.value.get shouldBe UserFactsModel("Bob", "Smith", "XX", "Fake Lane", Some("Fakeville"), Some("Fake"), Some("XX22 1XX"), "Fakeland")
       }
 
       "contain no errors" in {
@@ -63,8 +63,8 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
     }
 
     "provided with an invalid map with no firstName" should {
-      val map = Map("firstName" -> "", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "",
-        "townOrCity" -> "Fakeville", "county" -> "", "postCode" -> "XX22 1XX", "country" -> "Fakeland")
+      val map = Map("firstName" -> "", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "Fakeville",
+        "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Fakeland")
       lazy val result = form.fullDetailsForm.bind(map)
 
       "return an invalid model" in {
@@ -81,8 +81,8 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
     }
 
     "provided with an invalid map with no lastName" should {
-      val map = Map("firstName" -> "Bob", "lastName" -> "", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "",
-        "townOrCity" -> "Fakeville", "county" -> "", "postCode" -> "XX22 1XX", "country" -> "Fakeland")
+      val map = Map("firstName" -> "Bob", "lastName" -> "", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "Fakeville",
+        "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Fakeland")
       lazy val result = form.fullDetailsForm.bind(map)
 
       "return an invalid model" in {
@@ -99,62 +99,8 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
     }
 
     "provided with an invalid map with no first address line" should {
-      val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "","addressLineTwo" -> "",
-        "townOrCity" -> "Fakeville", "county" -> "", "postCode" -> "XX22 1XX", "country" -> "Fakeland")
-      lazy val result = form.fullDetailsForm.bind(map)
-
-      "return an invalid model" in {
-        result.value.isDefined shouldBe false
-      }
-
-      "contain one error" in {
-        result.errors.size shouldBe 1
-      }
-
-      "contain an error message for a required field" in {
-        result.errors.head.message shouldBe Errors.errorRequired
-      }
-    }
-
-    "provided with an invalid map with no townOrCity" should {
-      val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "",
-        "townOrCity" -> "", "county" -> "", "postCode" -> "XX22 1XX", "country" -> "Fakeland")
-      lazy val result = form.fullDetailsForm.bind(map)
-
-      "return an invalid model" in {
-        result.value.isDefined shouldBe false
-      }
-
-      "contain one error" in {
-        result.errors.size shouldBe 1
-      }
-
-      "contain an error message for a required field" in {
-        result.errors.head.message shouldBe Errors.errorRequired
-      }
-    }
-
-    "provided with an invalid map with no postCode" should {
-      val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "",
-        "townOrCity" -> "Fakeville", "county" -> "", "postCode" -> "", "country" -> "Fakeland")
-      lazy val result = form.fullDetailsForm.bind(map)
-
-      "return an invalid model" in {
-        result.value.isDefined shouldBe false
-      }
-
-      "contain one error" in {
-        result.errors.size shouldBe 1
-      }
-
-      "contain an error message for a required field" in {
-        result.errors.head.message shouldBe Errors.errorRequired
-      }
-    }
-
-    "provided with an invalid map with no country" should {
-      val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "",
-        "townOrCity" -> "Fakeville", "county" -> "", "postCode" -> "XX22 1XX", "country" -> "")
+      val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "","addressLineTwo" -> "Fakeville",
+        "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Fakeland")
       lazy val result = form.fullDetailsForm.bind(map)
 
       "return an invalid model" in {
