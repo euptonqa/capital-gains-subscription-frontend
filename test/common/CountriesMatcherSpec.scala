@@ -19,9 +19,6 @@ package common
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.Environment
 
-/**
-  * Created by emma on 03/04/17.
-  */
 class CountriesMatcherSpec extends PlaySpec with OneServerPerSuite {
   val countriesHelper = new CountriesMatcher(Environment.simple())
 
