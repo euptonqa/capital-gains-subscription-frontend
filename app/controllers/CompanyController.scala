@@ -37,24 +37,22 @@ class CompanyController @Inject()(appConfig: AppConfig,
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 
-  val subscribe: String => Action[AnyContent] = url => authorisedActions.authorisedNonResidentOrganisationAction {
+  val subscribe: String => Action[AnyContent] = url => authorisedActions.authorisedNonResidentOrganisationAction(Some(url)) {
     implicit user =>
       implicit request =>
 
-        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+        val saveUrl = logicHelpers.bindAndValidateCallbackUrl(url)
 
-        def checkForEnrolmentsAndRedirect(user: CgtNROrganisation, isEnrolled: Boolean, isValid: Boolean)(): Future[Result] = {
-          if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
-            Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
-          else if (isEnrolled) Future.successful(Redirect(url))
+        def checkForEnrolmentsAndRedirect(user: CgtNROrganisation, isEnrolled: Boolean)(): Future[Result] = {
+          if (isEnrolled) Future.successful(Redirect(url))
           else Future.successful(Redirect(businessCustomerFrontendUrl))
         }
 
         for {
-          isValid <- isValidRequest
+          save <- saveUrl
           enrolments <- authService.getEnrolments
           isEnrolled <- EnrolmentToCGTCheck.checkCompanyEnrolments(enrolments)
-          redirect <- checkForEnrolmentsAndRedirect(user, isEnrolled, isValid)
+          redirect <- checkForEnrolmentsAndRedirect(user, isEnrolled)
         } yield redirect
 
   }

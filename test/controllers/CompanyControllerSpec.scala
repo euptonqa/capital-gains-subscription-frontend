@@ -50,18 +50,18 @@ class CompanyControllerSpec extends ControllerTestSpec {
     val mockActions = mock[AuthorisedActions]
 
     if (valid) {
-      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenAnswer(new Answer[Action[AnyContent]] {
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedNROrganisationAction](0)
+            val action = invocation.getArgument[AuthenticatedNROrganisationAction](1)
             val organisation = CgtNROrganisation(authContext)
             Action.async(action(organisation))
           }
         })
     }
     else {
-      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
     }
 
@@ -97,22 +97,6 @@ class CompanyControllerSpec extends ControllerTestSpec {
 
     lazy val fakeRequest = FakeRequest("GET", "/")
     lazy val action = createMockActions(valid = true)
-
-    "provided with an invalid callback URL" should {
-      val enrolments = Option(Seq(Enrolment("key", Seq(), "")))
-      lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
-      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, mockLogicHelper(false), messagesApi)
-      lazy val result = await(companyController.subscribe("http://www.google.com")(fakeRequest))
-      lazy val body = Jsoup.parse(bodyOf(result))
-
-      "return a status of 400" in {
-        status(result) shouldBe 400
-      }
-
-      "redirect to the Bad Request error page" in {
-        body.title() shouldBe MessageLookup.Common.badRequest
-      }
-    }
 
     "the company is authorised and unenrolled" should {
       val enrolments = Option(Seq(Enrolment("key", Seq(), "")))

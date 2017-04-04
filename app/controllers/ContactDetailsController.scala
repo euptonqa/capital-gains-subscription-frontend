@@ -38,7 +38,7 @@ class ContactDetailsController @Inject()(appConfig: AppConfig,
                                          keystoreConnector: KeystoreConnector,
                                          actions: AuthorisedActions) extends FrontendController with I18nSupport {
 
-  val contactDetails: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction { implicit user =>
+  val contactDetails: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction() { implicit user =>
     implicit request =>
       keystoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetailsKey).map {
         case Some(data) => Ok(views.html.contactDetails(appConfig, contactDetailsForm.contactDetailsForm.fill(data)))
@@ -46,7 +46,7 @@ class ContactDetailsController @Inject()(appConfig: AppConfig,
       }
   }
 
-  val submitContactDetails: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction { implicit user =>
+  val submitContactDetails: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction() { implicit user =>
     implicit request =>
 
       val errorAction: Form[ContactDetailsModel] => Future[Result] = form => {
