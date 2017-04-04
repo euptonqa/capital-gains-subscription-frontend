@@ -24,7 +24,7 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
 
 class TestForm @Inject()(formValidation: FormValidation) {
-  //// POTENTIAL ISSUES NO MESSAGES API :)
+
   private val bindingError: TestModel => Boolean = model => model.anotherField == ""
 
   val testForm = Form(

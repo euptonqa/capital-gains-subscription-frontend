@@ -24,9 +24,6 @@ import play.api.Environment
 import scala.collection.JavaConverters
 import scala.io.Source
 
-/**
-  * Created by emma on 03/04/17.
-  */
 class CountriesMatcher @Inject()(environment: Environment) {
   lazy val p = new Properties
   p.load(Source.fromInputStream(environment.classLoader.getResourceAsStream("country-code.properties"), "UTF-8").bufferedReader())
