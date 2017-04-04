@@ -33,8 +33,9 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
 
   override val authConnector: FrontendAuthorisationConnector = frontendAuthorisationConnector
 
-  private val composeAuthorisedAgentAction: AuthenticatedAgentAction => Action[AnyContent] = {
-    val postSignInRedirectUrl = applicationConfig.agentPostSignIn
+  private def composeAuthorisedAgentAction(url: Option[String]): AuthenticatedAgentAction => Action[AnyContent] = {
+    val redirectUrl = if (url.isDefined) s"?callbackUrl=${url.get}" else ""
+    val postSignInRedirectUrl = applicationConfig.agentPostSignIn + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
       override def authenticationType: AuthenticationProvider = ggProvider
@@ -147,7 +148,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   def authorisedNonResidentOrganisationAction(action: AuthenticatedNROrganisationAction): Action[AnyContent] =
     composeAuthorisedNonResidentOrganisationAction(action)
 
-  def authorisedAgentAction(action: AuthenticatedAgentAction): Action[AnyContent] = composeAuthorisedAgentAction(action)
+  def authorisedAgentAction(url: Option[String] = None)(action: AuthenticatedAgentAction): Action[AnyContent] = composeAuthorisedAgentAction(url)(action)
 
   trait CgtRegime extends TaxRegime {
     override def isAuthorised(accounts: Accounts): Boolean = true

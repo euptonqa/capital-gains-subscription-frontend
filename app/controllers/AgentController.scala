@@ -45,26 +45,23 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 val messagesApi: MessagesApi,
                                 logicHelpers: LogicHelpers) extends FrontendController with I18nSupport {
 
-  val agent: String => Action[AnyContent] = url => authorisedActions.authorisedAgentAction {
+  val agent: String => Action[AnyContent] = url => authorisedActions.authorisedAgentAction(Some(url)) {
     implicit user =>
       implicit request =>
 
-        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+        val saveUrl = logicHelpers.bindAndValidateCallbackUrl(url)
 
         def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent,
-                                                                        isEnrolled: Boolean,
-                                                                        isValid: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-          if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
-            Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
-          else if (isEnrolled) Future.successful(Redirect(url))
+                                                                        isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
+          if (isEnrolled) Future.successful(Redirect(url))
           else Future.successful(Ok(views.html.setupYourAgency(appConfig)))
         }
 
         for {
-          isValid <- isValidRequest
+          save <- saveUrl
           enrolments <- authService.getEnrolments
           isEnrolled <- EnrolmentToCGTCheck.checkAgentEnrolments(enrolments)
-          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, isValid)
+          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
         } yield redirect
   }
 
@@ -96,7 +93,7 @@ class AgentController @Inject()(appConfig: AppConfig,
     }
   }
 
-  val registeredAgent: Action[AnyContent] = authorisedActions.authorisedAgentAction { implicit user =>
+  val registeredAgent: Action[AnyContent] = authorisedActions.authorisedAgentAction() { implicit user =>
     implicit request =>
       val result = {
         for {
