@@ -16,10 +16,21 @@
 
 package models
 
+import java.net.URI
+
 import play.api.libs.json.{Json, OFormat}
 
-case class CallbackUrlModel (url: String)
+case class CallbackUrlModel(url: String) {
+  require(CallbackUrlModel.validateUrl(new URI(url)), "Failed to bind as a URI")
+}
 
 object CallbackUrlModel {
   implicit val formats: OFormat[CallbackUrlModel] = Json.format[CallbackUrlModel]
+
+  val localhost: String = "localhost"
+
+  val validateUrl: URI => Boolean = { url =>
+    if (Option(url.getHost).isDefined) url.getHost.contains(localhost)
+    else true
+  }
 }

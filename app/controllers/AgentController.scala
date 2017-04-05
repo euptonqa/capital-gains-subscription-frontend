@@ -49,19 +49,22 @@ class AgentController @Inject()(appConfig: AppConfig,
     implicit user =>
       implicit request =>
 
-        val saveUrl = logicHelpers.saveCallbackUrl(url)
+        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
 
         def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent,
-                                                                        isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-          if (isEnrolled) Future.successful(Redirect(url))
+                                                                        isEnrolled: Boolean,
+                                                                        isValid: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
+          if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
+            Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
+          else if (isEnrolled) Future.successful(Redirect(url))
           else Future.successful(Ok(views.html.setupYourAgency(appConfig)))
         }
 
         for {
-          save <- saveUrl
+          isValid <- isValidRequest
           enrolments <- authService.getEnrolments
           isEnrolled <- EnrolmentToCGTCheck.checkAgentEnrolments(enrolments)
-          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
+          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, isValid)
         } yield redirect
   }
 

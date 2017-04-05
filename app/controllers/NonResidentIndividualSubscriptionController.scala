@@ -41,18 +41,20 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
     implicit user =>
       implicit request =>
 
-        val saveUrl = logicHelpers.saveCallbackUrl(url)
+        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
 
-        def routeRequest(alreadyEnrolled: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
-          if (alreadyEnrolled) Future.successful(Redirect(url))
+        def routeRequest(alreadyEnrolled: Boolean, isValid: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
+          if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
+            Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
+          else if (alreadyEnrolled) Future.successful(Redirect(url))
           else notEnrolled()
         }
 
         for {
-          save <- saveUrl
+          isValid <- isValidRequest
           enrolments <- authorisationService.getEnrolments(hc(request))
           checkEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
-          route <- routeRequest(checkEnrolled)
+          route <- routeRequest(checkEnrolled, isValid)
         } yield route
   }
 

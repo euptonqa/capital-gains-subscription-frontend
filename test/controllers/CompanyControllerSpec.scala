@@ -84,7 +84,7 @@ class CompanyControllerSpec extends ControllerTestSpec {
   def mockLogicHelper(valid: Boolean) = {
     val helper = mock[LogicHelpers]
 
-    when(helper.saveCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(helper.bindAndValidateCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(valid))
 
     helper
@@ -97,6 +97,22 @@ class CompanyControllerSpec extends ControllerTestSpec {
 
     lazy val fakeRequest = FakeRequest("GET", "/")
     lazy val action = createMockActions(valid = true)
+
+    "provided with an invalid callback URL" should {
+      val enrolments = Option(Seq(Enrolment("key", Seq(), "")))
+      lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, mockLogicHelper(false), messagesApi)
+      lazy val result = await(companyController.subscribe("http://www.google.com")(fakeRequest))
+      lazy val body = Jsoup.parse(bodyOf(result))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+
+      "redirect to the Bad Request error page" in {
+        body.title() shouldBe MessageLookup.Common.badRequest
+      }
+    }
 
     "the company is authorised and unenrolled" should {
       val enrolments = Option(Seq(Enrolment("key", Seq(), "")))

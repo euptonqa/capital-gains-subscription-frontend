@@ -40,7 +40,6 @@ import traits.ControllerTestSpec
 import auth._
 import common.Constants.ErrorMessages._
 import helpers.LogicHelpers
-import play.api.Logger
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -145,7 +144,7 @@ class AgentControllerSpec extends ControllerTestSpec {
   def mockLogicHelper(valid: Boolean) = {
     val helper = mock[LogicHelpers]
 
-    when(helper.saveCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(helper.bindAndValidateCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(valid))
 
     helper
@@ -156,6 +155,25 @@ class AgentControllerSpec extends ControllerTestSpec {
 
     val authorisationDataModelPass = Some(AuthorisationDataModel(CredentialStrength.Weak, AffinityGroup.Agent,
       ConfidenceLevel.L50, "example.com", Accounts()))
+
+    "provided with an invalid callback URL" should {
+
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      val enrolments = Option(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
+      lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass,
+        isValidRequest = false)
+
+      lazy val result = agentController.agent("http://www.google.com")(fakeRequest)
+      lazy val body = Jsoup.parse(bodyOf(result))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+
+      "redirect to the Bad Request error page" in {
+        body.title() shouldBe MessageLookup.Common.badRequest
+      }
+    }
 
     "the agent is authorised and enrolled" should {
 
