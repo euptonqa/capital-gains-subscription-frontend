@@ -21,7 +21,7 @@ import javax.inject.{Inject, Singleton}
 import auth.{AuthorisedActions, CgtIndividual}
 import config.AppConfig
 import helpers.{EnrolmentToCGTCheck, LogicHelpers}
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -39,28 +39,24 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
                                                          val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
   val residentIndividualSubscription: String => Action[AnyContent] = url =>
-    actions.authorisedResidentIndividualAction {
+    actions.authorisedResidentIndividualAction(Some(url)) {
       implicit user =>
         implicit request =>
 
-          val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+          val saveUrl = logicHelpers.bindAndValidateCallbackUrl(url)
 
           for {
-            validate <- isValidRequest
+            save <- saveUrl
             enrolments <- authService.getEnrolments
             isEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
-            redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, validate, url)
+            redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, url)
           } yield redirect
     }
 
   def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual,
                                                                   isEnrolled: Boolean,
-                                                                  isValid: Boolean,
                                                                   url: String)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
-    if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
-      Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
-    else if (isEnrolled) Future.successful(Redirect(url))
-    //TODO: you're already enrolled to CGT!
+    if (isEnrolled) Future.successful(Redirect(url))
     else checkForCgtRefAndRedirectToConfirmation(user)
   }
 

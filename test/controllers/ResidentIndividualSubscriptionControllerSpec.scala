@@ -49,18 +49,18 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
     val mockActions = mock[AuthorisedActions]
 
     if (valid) {
-      when(mockActions.authorisedResidentIndividualAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenAnswer(new Answer[Action[AnyContent]] {
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedIndividualAction](0)
+            val action = invocation.getArgument[AuthenticatedIndividualAction](1)
             val individual = CgtIndividual(authContext)
             Action.async(action(individual))
           }
         })
     }
     else {
-      when(mockActions.authorisedResidentIndividualAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Action.async(Results.Redirect(unauthorisedLoginUri)))
     }
 
@@ -112,28 +112,6 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
 
     val authorisationDataModelFail = AuthorisationDataModel(CredentialStrength.None, AffinityGroup.Organisation,
       ConfidenceLevel.L50, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$nino", Nino(nino)))))
-
-    "provided with an invalid callback URL" should {
-      val fakeRequest = FakeRequest("GET", "/")
-      lazy val actions = createMockActions(valid = true)
-      val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
-      val enrolments = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
-      lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
-
-      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
-        authorisationService, mockLogicHelper(false), messagesApi)
-
-      lazy val result = target.residentIndividualSubscription("http://www.google.com")(fakeRequest)
-      lazy val body = Jsoup.parse(bodyOf(result))
-
-      "return a status of 400" in {
-        status(result) shouldBe 400
-      }
-
-      "redirect to the Bad Request error page" in {
-        body.title() shouldBe MessageLookup.Common.badRequest
-      }
-    }
 
     "provided with a valid user who has a nino and a subscription service that has a CGT reference" should {
 
