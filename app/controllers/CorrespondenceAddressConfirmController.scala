@@ -41,7 +41,7 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
   extends FrontendController with I18nSupport {
 
   val correspondenceAddressConfirm: Action[AnyContent] =
-    actions.authorisedNonResidentOrganisationAction { implicit user =>
+    actions.authorisedNonResidentOrganisationAction() { implicit user =>
       implicit request => {
 
         for {
@@ -67,7 +67,7 @@ class CorrespondenceAddressConfirmController @Inject()(appConfig: AppConfig,
     }
 
   val submitCorrespondenceAddressConfirm: Action[AnyContent] =
-    actions.authorisedNonResidentOrganisationAction { implicit user =>
+    actions.authorisedNonResidentOrganisationAction() { implicit user =>
       implicit request => {
 
         def processRequest(address: CompanyAddressModel): Future[Result] = form.validate(

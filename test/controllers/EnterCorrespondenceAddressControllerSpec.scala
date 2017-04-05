@@ -42,18 +42,18 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
     val mockActions = mock[AuthorisedActions]
 
     if (valid) {
-      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenAnswer(new Answer[Action[AnyContent]] {
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedNROrganisationAction](0)
+            val action = invocation.getArgument[AuthenticatedNROrganisationAction](1)
             val organisation = CgtNROrganisation(authContext)
             Action.async(action(organisation))
           }
         })
     }
     else {
-      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
     }
     mockActions

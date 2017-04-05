@@ -20,9 +20,9 @@ import auth.{AuthorisedActions, CgtNROrganisation}
 import common.Constants.AffinityGroup
 import common.Keys
 import config.WSHttp
-import connectors.AuthorisationConnector
-import data.TestUserBuilder
-import helpers.EnrolmentToCGTCheck
+import connectors.{AuthorisationConnector, KeystoreConnector}
+import data.{MessageLookup, TestUserBuilder}
+import helpers.{EnrolmentToCGTCheck, LogicHelpers}
 import models.{AuthorisationDataModel, Enrolment}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
@@ -35,6 +35,7 @@ import play.api.test.Helpers._
 import services.AuthorisationService
 import traits.ControllerTestSpec
 import auth.AuthenticatedNROrganisationAction
+import org.jsoup.Jsoup
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 
@@ -49,18 +50,18 @@ class CompanyControllerSpec extends ControllerTestSpec {
     val mockActions = mock[AuthorisedActions]
 
     if (valid) {
-      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenAnswer(new Answer[Action[AnyContent]] {
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedNROrganisationAction](0)
+            val action = invocation.getArgument[AuthenticatedNROrganisationAction](1)
             val organisation = CgtNROrganisation(authContext)
             Action.async(action(organisation))
           }
         })
     }
     else {
-      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
     }
 
@@ -80,6 +81,15 @@ class CompanyControllerSpec extends ControllerTestSpec {
     new AuthorisationService(mockConnector)
   }
 
+  def mockLogicHelper(valid: Boolean): LogicHelpers = {
+    val helper = mock[LogicHelpers]
+
+    when(helper.bindAndValidateCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(valid))
+
+    helper
+  }
+
   "Calling .registerCompany" when {
 
     val authorisationDataModelPass = Some(AuthorisationDataModel(CredentialStrength.Weak, AffinityGroup.Organisation,
@@ -88,11 +98,27 @@ class CompanyControllerSpec extends ControllerTestSpec {
     lazy val fakeRequest = FakeRequest("GET", "/")
     lazy val action = createMockActions(valid = true)
 
+    "provided with an invalid callback URL" should {
+      val enrolments = Option(Seq(Enrolment("key", Seq(), "")))
+      lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, mockLogicHelper(false), messagesApi)
+      lazy val result = await(companyController.subscribe("http://www.google.com")(fakeRequest))
+      lazy val body = Jsoup.parse(bodyOf(result))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+
+      "redirect to the Bad Request error page" in {
+        body.title() shouldBe MessageLookup.Common.badRequest
+      }
+    }
+
     "the company is authorised and unenrolled" should {
       val enrolments = Option(Seq(Enrolment("key", Seq(), "")))
       lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
-      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService)
-      lazy val result = await(companyController.subscribe(fakeRequest))
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, mockLogicHelper(true), messagesApi)
+      lazy val result = await(companyController.subscribe("/test/route")(fakeRequest))
 
       "return a status of 303" in {
         status(result) shouldBe 303
@@ -105,14 +131,14 @@ class CompanyControllerSpec extends ControllerTestSpec {
     "the company is authorised and enrolled" should {
       lazy val enrolments = Option(Seq(Enrolment(Keys.cgtCompanyEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
-      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService)
-      lazy val result = await(companyController.subscribe(fakeRequest))
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, mockLogicHelper(true), messagesApi)
+      lazy val result = await(companyController.subscribe("/test/route")(fakeRequest))
       "return a status of 303" in {
         status(result) shouldBe 303
       }
 
       "redirect to the iForm" in {
-        redirectLocation(result).get.toString shouldBe ""
+        redirectLocation(result).get.toString shouldBe "/test/route"
       }
     }
     }
@@ -125,8 +151,8 @@ class CompanyControllerSpec extends ControllerTestSpec {
       val enrolments = Option(Seq(Enrolment("key", Seq(), "")))
       lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelFail)
 
-      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService)
-      lazy val result = await(companyController.subscribe(fakeRequest))
+      lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, mockLogicHelper(true), messagesApi)
+      lazy val result = await(companyController.subscribe("/test/route")(fakeRequest))
 
       "return a status of 303" in {
         status(result) shouldBe 303

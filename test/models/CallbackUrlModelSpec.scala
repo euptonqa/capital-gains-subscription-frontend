@@ -32,17 +32,19 @@ class CallbackUrlModelSpec extends UnitSpec {
       }
     }
 
-    "passed an invalid non-context url" should {
+    "passed an invalid noncontext url" should {
       val url = "http://www.google.com"
 
       "return an exception" in {
-        val exception = intercept[Exception] {CallbackUrlModel(url)}
+        val exception = intercept[Exception] {
+          CallbackUrlModel(url)
+        }
 
         exception.getMessage shouldBe "requirement failed: Failed to bind as a URI"
       }
     }
 
-    "passed a valid non-context url" should {
+    "passed a valid noncontext url" should {
       val url = "http://localhost:9000/test/route"
 
       "return a valid model" in {

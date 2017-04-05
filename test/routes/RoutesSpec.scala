@@ -36,8 +36,8 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
 
   "The URL for the nonResidentIndividualSubscription Action" should {
     "be equal to /capital-gains-tax/subscription/non-resident/individual" in {
-      val path = controllers.routes.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription().url
-      path shouldEqual "/capital-gains-tax/subscription/non-resident/individual"
+      val path = controllers.routes.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription("/test/route").url
+      path shouldEqual "/capital-gains-tax/subscription/non-resident/individual?url=%2Ftest%2Froute"
     }
   }
 
@@ -50,8 +50,8 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
 
   "The URL for the residentIndividualSubscription action" should {
     "be equal to /capital-gains-tax/subscription/resident/individual" in {
-      val path = controllers.routes.ResidentIndividualSubscriptionController.residentIndividualSubscription().url
-      path shouldEqual "/capital-gains-tax/subscription/resident/individual"
+      val path = controllers.routes.ResidentIndividualSubscriptionController.residentIndividualSubscription("/test/route").url
+      path shouldEqual "/capital-gains-tax/subscription/resident/individual?url=%2Ftest%2Froute"
     }
   }
 
@@ -71,8 +71,8 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
 
   "The URL for the company action" should {
     "be equal to /capital-gains-tax/subscription/company" in {
-      val path = controllers.routes.CompanyController.subscribe().url
-      path shouldEqual "/capital-gains-tax/subscription/company"
+      val path = controllers.routes.CompanyController.subscribe("/test/route").url
+      path shouldEqual "/capital-gains-tax/subscription/company?url=%2Ftest%2Froute"
     }
   }
 
@@ -125,9 +125,9 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
 
   "The URL for the agent action" should {
     "be equal to /capital-gains-tax/subscription/agent/subscribe" in {
-      val path = controllers.routes.AgentController.agent().url
+      val path = controllers.routes.AgentController.agent("/test/route").url
 
-      path shouldEqual "/capital-gains-tax/subscription/agent/subscribe"
+      path shouldEqual "/capital-gains-tax/subscription/agent/subscribe?url=%2Ftest%2Froute"
     }
   }
 

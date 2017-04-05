@@ -48,18 +48,18 @@ class CorrespondenceAddressConfirmControllerSpec extends ControllerTestSpec {
     val mockActions = mock[AuthorisedActions]
 
     if (valid) {
-      when(mockActions.authorisedNonResidentOrganisationAction(any()))
+      when(mockActions.authorisedNonResidentOrganisationAction(any())(ArgumentMatchers.any()))
         .thenAnswer(new Answer[Action[AnyContent]] {
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedNROrganisationAction](0)
+            val action = invocation.getArgument[AuthenticatedNROrganisationAction](1)
             val organisation = CgtNROrganisation(mock[AuthContext])
             Action.async(action(organisation))
           }
         })
     }
     else {
-      when(mockActions.authorisedNonResidentOrganisationAction(any()))
+      when(mockActions.authorisedNonResidentOrganisationAction(any())(ArgumentMatchers.any()))
         .thenReturn(Action.async(Results.Redirect(unauthorisedLoginUri)))
     }
 

@@ -39,6 +39,7 @@ import services.{AgentService, AuthorisationService, SubscriptionService}
 import traits.ControllerTestSpec
 import auth._
 import common.Constants.ErrorMessages._
+import helpers.LogicHelpers
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, ConfidenceLevel, CredentialStrength}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -105,23 +106,24 @@ class AgentControllerSpec extends ControllerTestSpec {
                       businessDetails: Option[ReviewDetails] = Some(TestData.validBusinessDetails),
                       enrolmentResponse: AgentEnrolmentResponse = SuccessAgentEnrolmentResponse,
                       enrolmentsResponse: Option[Seq[Enrolment]] = None,
-                      authResponse: Option[AuthorisationDataModel] = None): AgentController = {
+                      authResponse: Option[AuthorisationDataModel] = None,
+                      isValidRequest: Boolean = true): AgentController = {
 
     val mockActions = mock[AuthorisedActions]
 
     if (valid) {
-      when(mockActions.authorisedAgentAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedAgentAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenAnswer(new Answer[Action[AnyContent]] {
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedAgentAction](0)
+            val action = invocation.getArgument[AuthenticatedAgentAction](1)
             val agent = CgtAgent(authContext)
             Action.async(action(agent))
           }
         })
     }
     else {
-      when(mockActions.authorisedAgentAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedAgentAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
     }
 
@@ -134,8 +136,18 @@ class AgentControllerSpec extends ControllerTestSpec {
     when(sessionService.fetchAndGetBusinessData()(any())).thenReturn(Future.successful(businessDetails))
     when(service.getAgentEnrolmentResponse(any())(any())).thenReturn(Future.successful(enrolmentResponse))
 
-    new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService, mockSubscriptionService, messagesApi)
+    new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService,
+      mockSubscriptionService, messagesApi,mockLogicHelper(isValidRequest))
 
+  }
+
+  def mockLogicHelper(valid: Boolean): LogicHelpers = {
+    val helper = mock[LogicHelpers]
+
+    when(helper.bindAndValidateCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
+      .thenReturn(Future.successful(valid))
+
+    helper
   }
 
 
@@ -144,20 +156,39 @@ class AgentControllerSpec extends ControllerTestSpec {
     val authorisationDataModelPass = Some(AuthorisationDataModel(CredentialStrength.Weak, AffinityGroup.Agent,
       ConfidenceLevel.L50, "example.com", Accounts()))
 
+    "provided with an invalid callback URL" should {
+
+      lazy val fakeRequest = FakeRequest("GET", "/")
+      val enrolments = Option(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
+      lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass,
+        isValidRequest = false)
+
+      lazy val result = agentController.agent("http://www.google.com")(fakeRequest)
+      lazy val body = Jsoup.parse(bodyOf(result))
+
+      "return a status of 400" in {
+        status(result) shouldBe 400
+      }
+
+      "redirect to the Bad Request error page" in {
+        body.title() shouldBe MessageLookup.Common.badRequest
+      }
+    }
+
     "the agent is authorised and enrolled" should {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       val enrolments = Option(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
 
-      lazy val result = await(agentController.agent(fakeRequest))
+      lazy val result = await(agentController.agent("/test/route")(fakeRequest))
 
       "return a status of 303" in {
         status(result) shouldBe 303
       }
 
       "load the iForm page" in {
-        redirectLocation(result).get.toString shouldBe "http://www.gov.uk"
+        redirectLocation(result).get.toString shouldBe "/test/route"
       }
     }
 
@@ -168,7 +199,7 @@ class AgentControllerSpec extends ControllerTestSpec {
       val enrolments = Option(Seq(Enrolment("other key", Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
 
-      lazy val result = await(agentController.agent(fakeRequest))
+      lazy val result = await(agentController.agent("/test/route")(fakeRequest))
       lazy val document = Jsoup.parse(bodyOf(result))
 
       "return a status of 200" in {
@@ -186,7 +217,7 @@ class AgentControllerSpec extends ControllerTestSpec {
       val enrolments = Some(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val agentController = setupController(enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
 
-      lazy val result = await(agentController.agent(fakeRequest))
+      lazy val result = await(agentController.agent("/test/route")(fakeRequest))
 
       "return a status of 303" in {
         status(result) shouldBe 303

@@ -23,10 +23,10 @@ import auth.{AuthorisedActions, CgtAgent}
 import common.Constants.ErrorMessages._
 import config.AppConfig
 import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
-import helpers.EnrolmentToCGTCheck
+import helpers.{EnrolmentToCGTCheck, LogicHelpers}
 import models.{AgentSubmissionModel, ReviewDetails}
 import play.api.Logger
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{AgentService, AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -42,21 +42,29 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 sessionService: KeystoreConnector,
                                 authService: AuthorisationService,
                                 subscriptionService: SubscriptionService,
-                                val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
+                                val messagesApi: MessagesApi,
+                                logicHelpers: LogicHelpers) extends FrontendController with I18nSupport {
 
-  val agent: Action[AnyContent] = authorisedActions.authorisedAgentAction {
+  val agent: String => Action[AnyContent] = url => authorisedActions.authorisedAgentAction(Some(url)) {
     implicit user =>
       implicit request =>
 
-        def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-          if (isEnrolled) Future.successful(Redirect("http://www.gov.uk"))
+        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+
+        def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent,
+                                                                        isEnrolled: Boolean,
+                                                                        isValid: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
+          if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
+            Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
+          else if (isEnrolled) Future.successful(Redirect(url))
           else Future.successful(Ok(views.html.setupYourAgency(appConfig)))
         }
 
         for {
+          isValid <- isValidRequest
           enrolments <- authService.getEnrolments
           isEnrolled <- EnrolmentToCGTCheck.checkAgentEnrolments(enrolments)
-          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
+          redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, isValid)
         } yield redirect
   }
 
@@ -88,7 +96,7 @@ class AgentController @Inject()(appConfig: AppConfig,
     }
   }
 
-  val registeredAgent: Action[AnyContent] = authorisedActions.authorisedAgentAction { implicit user =>
+  val registeredAgent: Action[AnyContent] = authorisedActions.authorisedAgentAction() { implicit user =>
     implicit request =>
       val result = {
         for {

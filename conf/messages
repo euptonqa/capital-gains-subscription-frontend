@@ -81,6 +81,10 @@ errors.email = Please enter a valid email
 ## Error Summary Messages ##
 error.summary.heading = This page has errors
 
+## Default Error Messages ##
+errors.badRequest = Bad request
+errors.checkAddress = Please check that you have entered the correct web address.
+
 ## Common Messages ##
 common.continue = Continue
 common.yes = Yes

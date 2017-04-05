@@ -38,13 +38,13 @@ class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
                                                      val messagesApi: MessagesApi)
   extends FrontendController with I18nSupport {
 
-  val enterCorrespondenceAddress: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
+  val enterCorrespondenceAddress: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction() {
     implicit user =>
       implicit request =>
         Future.successful(Ok(views.html.address.enterCorrespondenceAddress(appConfig, correspondenceAddressForm.correspondenceAddressForm)))
   }
 
-  val submitCorrespondenceAddress: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction {
+  val submitCorrespondenceAddress: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction() {
     implicit user =>
       implicit request =>
 

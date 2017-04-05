@@ -40,7 +40,7 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
                                                                  subscriptionService: SubscriptionService,
                                                                  keystoreConnector: KeystoreConnector) extends FrontendController with I18nSupport {
 
-  val correspondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction { implicit user =>
+  val correspondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction() { implicit user =>
     implicit request =>
 
       val businessData = keystoreConnector.fetchAndGetBusinessData()
@@ -65,7 +65,7 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
       }
   }
 
-  val submitCorrespondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction {
+  val submitCorrespondenceAddressFinalConfirmation: Action[AnyContent] = actions.authorisedNonResidentOrganisationAction() {
     implicit user =>
       implicit request =>
 

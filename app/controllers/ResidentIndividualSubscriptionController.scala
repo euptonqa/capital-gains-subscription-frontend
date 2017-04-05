@@ -20,8 +20,9 @@ import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtIndividual}
 import config.AppConfig
-import helpers.EnrolmentToCGTCheck
-import play.api.mvc.{Action, AnyContent, Result}
+import helpers.{EnrolmentToCGTCheck, LogicHelpers}
+import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -33,31 +34,40 @@ import scala.concurrent.Future
 class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActions,
                                                          appConfig: AppConfig,
                                                          subscriptionService: SubscriptionService,
-                                                         authService: AuthorisationService) extends FrontendController {
+                                                         authService: AuthorisationService,
+                                                         logicHelpers: LogicHelpers,
+                                                         val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  val residentIndividualSubscription: Action[AnyContent] =
-    actions.authorisedResidentIndividualAction {
+  val residentIndividualSubscription: String => Action[AnyContent] = url =>
+    actions.authorisedResidentIndividualAction(Some(url)) {
       implicit user =>
         implicit request =>
+
+          val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+
           for {
+            validate <- isValidRequest
             enrolments <- authService.getEnrolments
             isEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
-            redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled)
+            redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, validate, url)
           } yield redirect
     }
 
-
-  def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual, isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
-    if (isEnrolled) Future.successful(Redirect("http://www.gov.uk"))
-    //TODO: you're already enrolled to CGT!
-    else checkForCgtRefAndRedirectToConfirmation(user)
+  def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual,
+                                                                  isEnrolled: Boolean,
+                                                                  isValid: Boolean,
+                                                                  url: String)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
+    if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
+      Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
+    else if (isEnrolled) Future.successful(Redirect(url))
+    else checkForCgtRefAndRedirectToConfirmation(user, url)
   }
 
-  def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual)(implicit hc: HeaderCarrier): Future[Result] = {
+  def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual, url: String)(implicit hc: HeaderCarrier): Future[Result] = {
 
     subscriptionService.getSubscriptionResponse(user.nino.get).map {
       case Some(response) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(response.cgtRef))
-      case _ => Redirect("http://www.gov.uk")
+      case _ => Redirect(url)
     }
   }
 }
