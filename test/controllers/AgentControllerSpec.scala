@@ -145,7 +145,7 @@ class AgentControllerSpec extends ControllerTestSpec {
   def mockLogicHelper(valid: Boolean) = {
     val helper = mock[LogicHelpers]
 
-    when(helper.bindAndValidateCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
+    when(helper.saveCallbackUrl(ArgumentMatchers.any())(ArgumentMatchers.any()))
       .thenReturn(Future.successful(valid))
 
     helper

@@ -49,7 +49,7 @@ class AgentController @Inject()(appConfig: AppConfig,
     implicit user =>
       implicit request =>
 
-        val saveUrl = logicHelpers.bindAndValidateCallbackUrl(url)
+        val saveUrl = logicHelpers.saveCallbackUrl(url)
 
         def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent,
                                                                         isEnrolled: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {

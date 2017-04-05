@@ -44,7 +44,7 @@ class LogicHelpersSpec extends UnitSpec with OneAppPerSuite with MockitoSugar {
 
     "an error occurs during keystore saving the data" should {
       lazy val helper = setupHelper(Future.failed(new Exception("error message")))
-      lazy val result = helper.bindAndValidateCallbackUrl("/test/route")
+      lazy val result = helper.saveCallbackUrl("/test/route")
 
       "return an exception" in {
         lazy val exception = intercept[Exception]{await(result)}
@@ -55,7 +55,7 @@ class LogicHelpersSpec extends UnitSpec with OneAppPerSuite with MockitoSugar {
 
     "a valid url is bound and saved" should {
       lazy val helper = setupHelper(Future.successful(mock[CacheMap]))
-      lazy val result = helper.bindAndValidateCallbackUrl("/test/route")
+      lazy val result = helper.saveCallbackUrl("/test/route")
 
       "return a true" in {
         await(result) shouldBe true

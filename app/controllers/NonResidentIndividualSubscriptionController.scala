@@ -41,7 +41,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
     implicit user =>
       implicit request =>
 
-        val saveUrl = logicHelpers.bindAndValidateCallbackUrl(url)
+        val saveUrl = logicHelpers.saveCallbackUrl(url)
 
         def routeRequest(alreadyEnrolled: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
           if (alreadyEnrolled) Future.successful(Redirect(url))

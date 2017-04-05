@@ -41,7 +41,7 @@ class CompanyController @Inject()(appConfig: AppConfig,
     implicit user =>
       implicit request =>
 
-        val saveUrl = logicHelpers.bindAndValidateCallbackUrl(url)
+        val saveUrl = logicHelpers.saveCallbackUrl(url)
 
         def checkForEnrolmentsAndRedirect(user: CgtNROrganisation, isEnrolled: Boolean)(): Future[Result] = {
           if (isEnrolled) Future.successful(Redirect(url))

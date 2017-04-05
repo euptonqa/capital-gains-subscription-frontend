@@ -29,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Singleton
 class LogicHelpers @Inject()(keystoreConnector: KeystoreConnector) {
 
-  def bindAndValidateCallbackUrl(url: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def saveCallbackUrl(url: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val model = CallbackUrlModel(url)
     keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model).map(_ => true)
   }

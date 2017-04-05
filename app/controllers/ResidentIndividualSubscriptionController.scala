@@ -43,7 +43,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
       implicit user =>
         implicit request =>
 
-          val saveUrl = logicHelpers.bindAndValidateCallbackUrl(url)
+          val saveUrl = logicHelpers.saveCallbackUrl(url)
 
           for {
             save <- saveUrl
