@@ -39,7 +39,7 @@ class CGTSubscriptionController @Inject()(keystoreConnector: KeystoreConnector,
 
   val submitConfirmationOfSubscription: Action[AnyContent] = Action.async { implicit request =>
     keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
-      case Some(model) => Future successful Redirect(model.url)
+      case Some(model) => Future.successful(Redirect(model.url))
       case _ => throw new Exception("Failed to find a callback URL")
     }
   }

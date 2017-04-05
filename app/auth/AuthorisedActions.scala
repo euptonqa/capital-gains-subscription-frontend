@@ -34,7 +34,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   override val authConnector: FrontendAuthorisationConnector = frontendAuthorisationConnector
 
   private def composeAuthorisedAgentAction(url: Option[String]): AuthenticatedAgentAction => Action[AnyContent] = {
-    val redirectUrl = if (url.isDefined) s"?callbackUrl=${url.get}" else ""
+    val redirectUrl = if (url.isDefined) s"?url=${url.get}" else ""
     val postSignInRedirectUrl = applicationConfig.agentPostSignIn + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
@@ -58,7 +58,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   }
 
   private def composeAuthorisedResidentIndividualAction(url: Option[String]): AuthenticatedIndividualAction => Action[AnyContent] = {
-    val redirectUrl = if (url.isDefined) s"?callbackUrl=${url.get}" else ""
+    val redirectUrl = if (url.isDefined) s"?url=${url.get}" else ""
     val postSignInRedirectUrl: String = applicationConfig.individualResident + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
@@ -89,7 +89,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   }
 
   private def composeAuthorisedNonResidentIndividualAction(url: Option[String]): AuthenticatedIndividualAction => Action[AnyContent] = {
-    val redirectUrl = if (url.isDefined) s"?callbackUrl=${url.get}" else ""
+    val redirectUrl = if (url.isDefined) s"?url=${url.get}" else ""
     val postSignInRedirectUrl: String = applicationConfig.individualNonResident + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
@@ -118,7 +118,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
   }
 
   private def composeAuthorisedNonResidentOrganisationAction(url: Option[String]): AuthenticatedNROrganisationAction => Action[AnyContent] = {
-    val redirectUrl = if (url.isDefined) s"?callbackUrl=${url.get}" else ""
+    val redirectUrl = if (url.isDefined) s"?url=${url.get}" else ""
     val postSignInRedirectUrl: String = applicationConfig.companySignIn + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
 
