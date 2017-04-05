@@ -20,15 +20,15 @@ import auth.{AuthorisedActions, CgtNROrganisation}
 import common.Constants.AffinityGroup
 import common.Keys
 import config.WSHttp
-import connectors.{AuthorisationConnector, KeystoreConnector}
-import data.{MessageLookup, TestUserBuilder}
-import helpers.{EnrolmentToCGTCheck, LogicHelpers}
+import connectors.AuthorisationConnector
+import data.MessageLookup
+import helpers.LogicHelpers
+import data.TestUserBuilder
 import models.{AuthorisationDataModel, Enrolment}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.mockito.invocation.InvocationOnMock
 import org.mockito.stubbing.Answer
-import play.api.inject.Injector
 import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -68,7 +68,7 @@ class CompanyControllerSpec extends ControllerTestSpec {
     mockActions
   }
 
-  def mockAuthorisationService(enrolmentsResponse: Option[Seq[Enrolment]], authResponse: Option[AuthorisationDataModel]): AuthorisationService ={
+  def mockAuthorisationService(enrolmentsResponse: Option[Seq[Enrolment]], authResponse: Option[AuthorisationDataModel]): AuthorisationService = {
     implicit val mockHttp = mock[WSHttp]
 
     val mockConnector = mock[AuthorisationConnector]
@@ -128,11 +128,13 @@ class CompanyControllerSpec extends ControllerTestSpec {
         redirectLocation(result).get.toString shouldBe "http://localhost:9923/business-customer/business-verification/capital-gains-tax"
       }
     }
-    "the company is authorised and enrolled" should {
+
+    "the company is authorised and enrolled and there is a callback url" should {
       lazy val enrolments = Option(Seq(Enrolment(Keys.cgtCompanyEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
       lazy val authService = mockAuthorisationService(enrolments, authorisationDataModelPass)
       lazy val companyController: CompanyController = new CompanyController(mockConfig, action, authService, mockLogicHelper(true), messagesApi)
       lazy val result = await(companyController.subscribe("/test/route")(fakeRequest))
+
       "return a status of 303" in {
         status(result) shouldBe 303
       }
@@ -140,7 +142,6 @@ class CompanyControllerSpec extends ControllerTestSpec {
       "redirect to the iForm" in {
         redirectLocation(result).get.toString shouldBe "/test/route"
       }
-    }
     }
 
     "the company is unauthorised" should {
@@ -162,5 +163,6 @@ class CompanyControllerSpec extends ControllerTestSpec {
         redirectLocation(result).get.toString shouldBe "just-a-test"
       }
     }
+  }
 
 }

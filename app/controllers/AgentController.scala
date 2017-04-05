@@ -23,7 +23,8 @@ import auth.{AuthorisedActions, CgtAgent}
 import common.Constants.ErrorMessages._
 import config.AppConfig
 import connectors.{KeystoreConnector, SuccessAgentEnrolmentResponse}
-import helpers.{EnrolmentToCGTCheck, LogicHelpers}
+import helpers.LogicHelpers
+import helpers.EnrolmentToCGTCheck
 import models.{AgentSubmissionModel, ReviewDetails}
 import play.api.Logger
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}

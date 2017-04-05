@@ -20,9 +20,11 @@ import javax.inject.{Inject, Singleton}
 
 import auth.{AuthorisedActions, CgtIndividual}
 import config.AppConfig
-import helpers.{EnrolmentToCGTCheck, LogicHelpers}
+import helpers.LogicHelpers
 import play.api.i18n.{I18nSupport, Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.Request
+import helpers.EnrolmentToCGTCheck
+import play.api.mvc.{Action, AnyContent, Result}
 import services.{AuthorisationService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -61,6 +63,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
       Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
     else if (isEnrolled) Future.successful(Redirect(url))
     else checkForCgtRefAndRedirectToConfirmation(user, url)
+
   }
 
   def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual, url: String)(implicit hc: HeaderCarrier): Future[Result] = {

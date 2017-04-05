@@ -20,11 +20,13 @@ import auth.{AuthenticatedIndividualAction, AuthorisedActions, CgtIndividual}
 import common.Constants.AffinityGroup
 import common.Keys
 import config.WSHttp
-import connectors.{AuthorisationConnector, SubscriptionConnector}
-import data.{MessageLookup, TestUserBuilder}
+import data.MessageLookup
 import helpers.LogicHelpers
 import models.{AuthorisationDataModel, Enrolment, Identifier, SubscriptionReference}
 import org.jsoup.Jsoup
+import connectors.{AuthorisationConnector, KeystoreConnector, SubscriptionConnector}
+import data.TestUserBuilder
+import models._
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.invocation.InvocationOnMock
@@ -103,6 +105,14 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
     helper
   }
 
+  def mockKeystore(keystoreResponse: Option[CallbackUrlModel] = None): KeystoreConnector = {
+    val mockKeystoreConnector = mock[KeystoreConnector]
+    when(mockKeystoreConnector.fetchAndGetFormData[CallbackUrlModel](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(keystoreResponse))
+
+    mockKeystoreConnector
+  }
+
   "Calling .residentIndividualSubscription" when {
 
     val nino = TestUserBuilder.createRandomNino
@@ -157,7 +167,7 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
       }
     }
 
-    "provided with a valid user who has a nino but a preexisting CGT enrolment" should {
+    "provided with a valid user who has a nino, a preexisting CGT enrolment and a callback-url" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val actions = createMockActions(valid = true)
       val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
@@ -174,12 +184,12 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
         status(result) shouldBe 303
       }
 
-      "redirect to the callback page" in {
+      "redirect to the I-form screen" in {
         redirectLocation(result).get.toString shouldBe "/test/route"
       }
     }
 
-    "provided with a valid user but no CGT reference" should {
+    "provided with a valid user but the subscription fails" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val actions = createMockActions(valid = true)
       val mockSubscriptionService = createMockSubscriptionService(None)
@@ -189,30 +199,6 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
       lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
         authorisationService, mockLogicHelper(true), messagesApi)
       lazy val result = target.residentIndividualSubscription("/test/route")(fakeRequest)
-
-      "return a status of 303" in {
-        status(result) shouldBe 303
-      }
-
-      "redirect to the callback page" in {
-        redirectLocation(result).get.toString shouldBe "/test/route"
-      }
-    }
-
-    "provided with no CGT reference or nino" should {
-      val fakeRequest = FakeRequest("GET", "/")
-      lazy val actions = createMockActions(valid = true, TestUserBuilder.userWithNINO)
-      val mockSubscriptionService = createMockSubscriptionService(None)
-      val enrolments = Seq(Enrolment("otherKey", Seq(), ""), Enrolment("key", Seq(), ""))
-      lazy val authorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
-
-      lazy val target = new ResidentIndividualSubscriptionController(actions, mockConfig, mockSubscriptionService,
-        authorisationService, mockLogicHelper(true), messagesApi)
-      lazy val result = target.residentIndividualSubscription("/test/route")(fakeRequest)
-
-      "return a status of 303" in {
-        status(result) shouldBe 303
-      }
 
       "redirect to the callback page" in {
         redirectLocation(result).get.toString shouldBe "/test/route"

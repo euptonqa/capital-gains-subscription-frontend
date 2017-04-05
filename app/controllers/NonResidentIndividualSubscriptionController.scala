@@ -34,8 +34,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
                                                             subscriptionService: SubscriptionService,
                                                             authorisationService: AuthorisationService,
                                                             logicHelpers: LogicHelpers,
-                                                            val messagesApi: MessagesApi)
-  extends FrontendController with I18nSupport {
+                                                            val messagesApi: MessagesApi)  extends FrontendController with I18nSupport {
 
   val nonResidentIndividualSubscription: String => Action[AnyContent] = url => actions.authorisedNonResidentIndividualAction(Some(url)) {
     implicit user =>

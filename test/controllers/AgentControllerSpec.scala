@@ -138,7 +138,6 @@ class AgentControllerSpec extends ControllerTestSpec {
 
     new AgentController(mockConfig, mockActions, service, sessionService, mockAuthorisationService,
       mockSubscriptionService, messagesApi,mockLogicHelper(isValidRequest))
-
   }
 
   def mockLogicHelper(valid: Boolean): LogicHelpers = {
@@ -175,11 +174,15 @@ class AgentControllerSpec extends ControllerTestSpec {
       }
     }
 
-    "the agent is authorised and enrolled" should {
+    "the agent is authorised and enrolled and a callback URL is supplied" should {
 
       lazy val fakeRequest = FakeRequest("GET", "/")
       val enrolments = Option(Seq(Enrolment(Keys.cgtAgentEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), "")))
-      lazy val agentController = setupController(valid = true, enrolmentsResponse = enrolments, authResponse = authorisationDataModelPass)
+      lazy val agentController = setupController(
+        valid = true,
+        enrolmentsResponse = enrolments,
+        authResponse = authorisationDataModelPass
+      )
 
       lazy val result = await(agentController.agent("/test/route")(fakeRequest))
 

@@ -17,15 +17,21 @@
 package controllers
 
 import config.AppConfig
+import connectors.KeystoreConnector
 import data.MessageLookup.{CGTSubscriptionConfirm => messages}
+import models.CallbackUrlModel
 import org.jsoup._
+import org.mockito.ArgumentMatchers
 import org.scalatest.mock.MockitoSugar
+import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.i18n.MessagesApi
 import play.api.inject.Injector
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+
+import scala.concurrent.Future
 
 class CGTSubscriptionControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
 
@@ -36,7 +42,17 @@ class CGTSubscriptionControllerSpec extends UnitSpec with MockitoSugar with With
 
   def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
 
-  val target = new CGTSubscriptionController(appConfig, messagesApi)
+  val mockKeystoreConnector: KeystoreConnector = mock[KeystoreConnector]
+
+  def setupPostController(keystoreResponse: Option[CallbackUrlModel]): CGTSubscriptionController = {
+
+    when(mockKeystoreConnector.fetchAndGetFormData[CallbackUrlModel](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      .thenReturn(Future.successful(keystoreResponse))
+
+    new CGTSubscriptionController(mockKeystoreConnector, appConfig, messagesApi)
+  }
+
+  val target = new CGTSubscriptionController(mockKeystoreConnector, appConfig, messagesApi)
 
   implicit val mat: akka.stream.Materializer = mock[akka.stream.Materializer]
 
@@ -54,16 +70,30 @@ class CGTSubscriptionControllerSpec extends UnitSpec with MockitoSugar with With
     }
   }
 
-  "POST /resident/confirmation" should {
+  "POST /resident/confirmation" when {
 
-    lazy val result = target.submitConfirmationOfSubscription(fakeRequest)
+    "keystore manages to retrieve a callback url" should {
+      lazy val mockController = setupPostController(Some(CallbackUrlModel("returned-url")))
+      lazy val result = mockController.submitConfirmationOfSubscription(fakeRequest)
 
-    "return 303" in {
-      status(result) shouldBe Status.SEE_OTHER
+      "return 303" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to the iForm page" in {
+        redirectLocation(result).get should include("returned-url")
+      }
     }
 
-    "redirect to the iForm page" in {
-      redirectLocation(result).get should include("http://www.gov.uk")
+    "keystore fails to retrieve a callbackUrl" should {
+      lazy val mockController = setupPostController(None)
+      lazy val ex = intercept[Exception] {
+        await(mockController.submitConfirmationOfSubscription(fakeRequest))
+      }
+
+      s"return an Exception with text Failed to find a callback URL" in {
+        ex.getMessage shouldEqual "Failed to find a callback URL"
+      }
     }
   }
 }
