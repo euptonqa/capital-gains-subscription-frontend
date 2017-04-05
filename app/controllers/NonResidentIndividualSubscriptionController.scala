@@ -37,24 +37,22 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
                                                             val messagesApi: MessagesApi)
   extends FrontendController with I18nSupport {
 
-  val nonResidentIndividualSubscription: String => Action[AnyContent] = url => actions.authorisedNonResidentIndividualAction {
+  val nonResidentIndividualSubscription: String => Action[AnyContent] = url => actions.authorisedNonResidentIndividualAction(Some(url)) {
     implicit user =>
       implicit request =>
 
-        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+        val saveUrl = logicHelpers.bindAndValidateCallbackUrl(url)
 
-        def routeRequest(alreadyEnrolled: Boolean, isValid: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
-          if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
-            Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
-          else if (alreadyEnrolled) Future.successful(Redirect(url))
+        def routeRequest(alreadyEnrolled: Boolean)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
+          if (alreadyEnrolled) Future.successful(Redirect(url))
           else notEnrolled()
         }
 
         for {
-          isValid <- isValidRequest
+          save <- saveUrl
           enrolments <- authorisationService.getEnrolments(hc(request))
           checkEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
-          route <- routeRequest(checkEnrolled, isValid)
+          route <- routeRequest(checkEnrolled)
         } yield route
   }
 

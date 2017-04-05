@@ -47,18 +47,18 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
     val mockActions = mock[AuthorisedActions]
 
     if (valid) {
-      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenAnswer(new Answer[Action[AnyContent]] {
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedIndividualAction](0)
+            val action = invocation.getArgument[AuthenticatedIndividualAction](1)
             val individual = CgtIndividual(authContext)
             Action.async(action(individual))
           }
         })
     }
     else {
-      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Action.async(Results.Redirect(unauthorisedLoginUri)))
     }
 

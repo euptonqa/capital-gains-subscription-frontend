@@ -53,18 +53,18 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
     val mockActions = mock[AuthorisedActions]
 
     if (valid) {
-      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenAnswer(new Answer[Action[AnyContent]] {
 
           override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
-            val action = invocation.getArgument[AuthenticatedIndividualAction](0)
+            val action = invocation.getArgument[AuthenticatedIndividualAction](1)
             val individual = CgtIndividual(authContext)
             Action.async(action(individual))
           }
         })
     }
     else {
-      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any()))
+      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
         .thenReturn(Action.async(Results.Redirect(unauthorisedLoginUri)))
     }
 
@@ -116,28 +116,6 @@ class NonResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec
 
     val authorisationDataModelPass = AuthorisationDataModel(CredentialStrength.Strong, AffinityGroup.Individual,
       ConfidenceLevel.L500, "example.com", Accounts(paye = Some(PayeAccount(s"/paye/$nino", Nino(nino)))))
-
-    "provided with an invalid callback URL" should {
-      val fakeRequest = FakeRequest("GET", "/")
-      lazy val mockActions = createMockActions(valid = true)
-      val mockSubscriptionService = createMockSubscriptionService(Some("eee"))
-      val enrolments = Seq(Enrolment(Keys.cgtIndividualEnrolmentKey, Seq(), ""), Enrolment("key", Seq(), ""))
-      lazy val mockAuthorisationService = createMockAuthorisationService(Some(enrolments), Some(authorisationDataModelPass))
-
-      lazy val target = new NonResidentIndividualSubscriptionController(mockActions, mockConfig, mockSubscriptionService,
-        mockAuthorisationService, mockLogicHelper(false), messagesApi)
-
-      lazy val result = target.nonResidentIndividualSubscription("http://www.google.com")(fakeRequest)
-      lazy val body = Jsoup.parse(bodyOf(result))
-
-      "return a status of 400" in {
-        status(result) shouldBe 400
-      }
-
-      "redirect to the Bad Request error page" in {
-        body.title() shouldBe MessageLookup.Common.badRequest
-      }
-    }
 
     "provided with a valid user who has a nino and the user is already subscribed" should {
 

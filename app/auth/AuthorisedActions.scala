@@ -88,8 +88,9 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     authenticatedAction
   }
 
-  private val composeAuthorisedNonResidentIndividualAction: AuthenticatedIndividualAction => Action[AnyContent] = {
-    val postSignInRedirectUrl: String = applicationConfig.individualNonResident
+  private def composeAuthorisedNonResidentIndividualAction(url: Option[String]): AuthenticatedIndividualAction => Action[AnyContent] = {
+    val redirectUrl = if (url.isDefined) s"?callbackUrl=${url.get}" else ""
+    val postSignInRedirectUrl: String = applicationConfig.individualNonResident + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
       override def authenticationType: AuthenticationProvider = ggProvider
@@ -144,7 +145,8 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
 
   def authorisedResidentIndividualAction(action: AuthenticatedIndividualAction): Action[AnyContent] = composeAuthorisedResidentIndividualAction(action)
 
-  def authorisedNonResidentIndividualAction(action: AuthenticatedIndividualAction): Action[AnyContent] = composeAuthorisedNonResidentIndividualAction(action)
+  def authorisedNonResidentIndividualAction(url: Option[String] = None)(action: AuthenticatedIndividualAction): Action[AnyContent] =
+    composeAuthorisedNonResidentIndividualAction(url)(action)
 
   def authorisedNonResidentOrganisationAction(url: Option[String] = None)(action: AuthenticatedNROrganisationAction): Action[AnyContent] =
     composeAuthorisedNonResidentOrganisationAction(url)(action)
