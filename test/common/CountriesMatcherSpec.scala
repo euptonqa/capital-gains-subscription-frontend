@@ -19,6 +19,8 @@ package common
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.Environment
 
+import scala.None
+
 class CountriesMatcherSpec extends PlaySpec with OneServerPerSuite {
   val countriesHelper = new CountriesMatcher(Environment.simple())
 
@@ -26,11 +28,11 @@ class CountriesMatcherSpec extends PlaySpec with OneServerPerSuite {
 
     "getSelectedCountry" must {
       "bring the correct country from the file" in {
-        countriesHelper.getSelectedCountry("GB") must be("United Kingdom")
-        countriesHelper.getSelectedCountry("US") must be("USA")
-        countriesHelper.getSelectedCountry("VG") must be("British Virgin Islands")
-        countriesHelper.getSelectedCountry("UG") must be("Uganda")
-        countriesHelper.getSelectedCountry("zz") must be("zz")
+        countriesHelper.getCountryName("GB") must be("United Kingdom")
+        countriesHelper.getCountryName("US") must be("USA")
+        countriesHelper.getCountryName("VG") must be("British Virgin Islands")
+        countriesHelper.getCountryName("UG") must be("Uganda")
+        countriesHelper.getCountryName("zz") must be("zz")
       }
     }
 
@@ -39,6 +41,15 @@ class CountriesMatcherSpec extends PlaySpec with OneServerPerSuite {
         countriesHelper.getIsoCodeTupleList must contain(("US" , "USA :United States of America"))
         countriesHelper.getIsoCodeTupleList must contain(("GB" , "United Kingdom :UK, GB, Great Britain"))
         countriesHelper.getIsoCodeTupleList must contain(("UG" , "Uganda"))
+      }
+    }
+
+    "getCountryCode" must {
+      "return the correct code from the file" in {
+        countriesHelper.getCountryCode("United Kingdom") must be("GB")
+        countriesHelper.getCountryCode("Great Britain") must be("GB")
+        countriesHelper.getCountryCode("Uganda") must be("UG")
+        countriesHelper.getCountryCode("England") must be(None)
       }
     }
   }
