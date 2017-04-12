@@ -67,76 +67,105 @@ class CGTSubscriptionConfirmationViewSpec extends UnitSpec with WithFakeApplicat
 
         s"has the first paragraph" which {
 
-          s"has text ${messages.title}" in {
-            greenBanner.select("p").get(0).text shouldEqual messages.title
+          lazy val p = greenBanner.select("p")
+
+          "has the class confirm-padding-below" in {
+            p.hasClass("confirm-padding-below") shouldEqual true
           }
 
-          "has the class bold-large" in {
-            greenBanner.select("p").get(0).hasClass("bold-large") shouldEqual true
+          "has a strong tag" which {
+
+            lazy val strong = p.select("strong")
+
+            s"has text ${messages.title}" in {
+              strong.select("strong").text shouldEqual messages.title
+            }
+
+            "has the class bold-large" in {
+              strong.hasClass("bold-large") shouldEqual true
+            }
           }
         }
 
-        "has a second paragraph" which {
+        "has a strong tag" which {
 
-          "has the text 'Generic CGT reference'" in {
-            greenBanner.select("p").get(1).text shouldEqual "Generic CGT reference"
+          lazy val strong = greenBanner.select("strong").get(1)
+
+          s"has text 'Generic CGT reference'" in {
+            strong.select("strong").text shouldEqual "Generic CGT reference"
           }
 
           "has the class heading-medium" in {
-            greenBanner.select("p").get(1).hasClass("heading-medium") shouldEqual true
+            strong.hasClass("heading-medium") shouldEqual true
           }
         }
       }
 
       "has a div" which {
 
-        lazy val content = doc.select("div #instruction-information")
+        lazy val content = doc.select("div #write-this-down")
 
-        "has the class form-group" in {
-          content.hasClass("form-group") shouldEqual true
+        "has the class form-group instruction-margin" in {
+          content.attr("class") shouldEqual "form-group instruction-margin"
         }
 
         "has content" which {
 
-          "has a first paragraph that" should {
+          "has a span that" should {
 
             "have the class lede" in {
-              content.select("p").get(0).hasClass("lede") shouldEqual true
+              content.select("span").get(0).hasClass("lede") shouldEqual true
             }
 
             s"have the text ${messages.writeDown}" in {
-              content.select("p").get(0).text shouldEqual messages.writeDown
+              content.select("span").get(0).text shouldEqual messages.writeDown
             }
           }
 
-          s"has a second paragraph with the text ${messages.forgetGGID}" in {
-            content.select("p").get(1).text shouldEqual messages.forgetGGID
+          s"has a paragraph with the text ${messages.forgetGGID}" in {
+            content.select("p").text shouldEqual messages.forgetGGID
           }
+        }
+      }
 
-          "has a third paragraph that" should {
+      "has a second div" which {
+
+        lazy val content = doc.select("div #what-happens-next")
+
+        "has the class form-group instruction-margin" in {
+          content.attr("class") shouldEqual "form-group instruction-margin"
+        }
+
+        "has a first paragraph" which {
+
+          lazy val p = content.select("p").get(0)
+
+          "has a strong tag" which {
 
             "have the class heading-medium" in {
-              content.select("p").get(2).hasClass("heading-medium") shouldEqual true
+              p.select("strong").hasClass("heading-medium") shouldEqual true
             }
 
             s"have the text ${messages.whatNext}" in {
-              content.select("p").get(2).text shouldEqual messages.whatNext
+              p.select("strong").text shouldEqual messages.whatNext
             }
           }
+        }
 
-          s"has a fourth paragraph with the text ${messages.whatNextContent}" in {
-            content.select("p").get(3).text shouldEqual messages.whatNextContent
+        s"has a second paragraph with the text ${messages.whatNextContent}" in {
+          content.select("p").get(1).text shouldEqual messages.whatNextContent
+        }
+
+        "has a third paragraph that" should {
+
+          lazy val p = content.select("p").get(2)
+
+          "have the class indent" in {
+            p.hasClass("indent") shouldEqual true
           }
 
-          "has a fifth paragraph that" should {
-
-            "have the class indent" in {
-              content.select("p").get(4).hasClass("indent") shouldEqual true
-            }
-
-            s"have the text ${messages.figuresReady}" in {
-              content.select("p").get(4).text shouldEqual messages.figuresReady
-            }
+          s"have the text ${messages.figuresReady}" in {
+            p.text shouldEqual messages.figuresReady
           }
         }
       }

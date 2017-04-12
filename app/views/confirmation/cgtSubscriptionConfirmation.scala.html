@@ -7,17 +7,22 @@
     <h1 class="visuallyhidden">@Messages("confirmation.yourReference")</h1>
 
     <div id="confirmation-banner" class="transaction-banner--complete">
-        <p class="bold-large">@Messages("confirmation.yourReference")</p>
-
-        <p class="heading-medium">
-            <strong class="heading-medium">@cgtReferenceNumber</strong>
+        <p class="confirm-padding-below">
+            <strong class="bold-large">@Messages("confirmation.yourReference")</strong>
         </p>
+
+        <strong class="heading-medium">@cgtReferenceNumber</strong>
     </div>
 
-    <div id="instruction-information" class="form-group">
-        <p class="lede">@Messages("confirmation.writeThisDown")</p>
+    <div id="write-this-down" class="form-group instruction-margin">
+        <span class="lede">@Messages("confirmation.writeThisDown")</span>
         <p>@Messages("confirmation.writeThisDown.reasonToWriteDown")</p>
-        <p class="heading-medium">@Messages("confirmation.whatNext")</p>
+    </div>
+
+    <div id="what-happens-next" class="form-group instruction-margin">
+        <p>
+            <strong class="heading-medium">@Messages("confirmation.whatNext")</strong>
+        </p>
         <p>@Messages("confirmation.continue")</p>
         <p class="indent indent-width-thin">@Messages("confirmation.whatNext.informationForForm")</p>
     </div>
