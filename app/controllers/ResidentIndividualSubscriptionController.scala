@@ -69,7 +69,7 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
   def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual, url: String)(implicit hc: HeaderCarrier): Future[Result] = {
 
     subscriptionService.getSubscriptionResponse(user.nino.get).map {
-      case Some(response) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(response.cgtRef))
+      case Some(response) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscriptionResidentIndv(response.cgtRef))
       case _ => Redirect(url)
     }
   }

@@ -89,7 +89,7 @@ class CorrespondenceAddressFinalConfirmationController @Inject()(appConfig: AppC
           }
 
           result.map {
-            case Some(x) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscription(x.cgtRef))
+            case Some(x) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscriptionOrganisation(x.cgtRef))
             case None => throw new Exception(failedToEnrolCompany)
           } recoverWith {
             case error => Future.failed(error)
