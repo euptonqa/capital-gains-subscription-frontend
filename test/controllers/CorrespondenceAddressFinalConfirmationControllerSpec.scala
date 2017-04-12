@@ -191,7 +191,7 @@ class CorrespondenceAddressFinalConfirmationControllerSpec extends ControllerTes
         }
 
         "load the cgt confirmation page" in {
-          redirectLocation(result) shouldBe Some(controllers.routes.CGTSubscriptionController.confirmationOfSubscriptionOrganisation("CGT123456").url)
+          redirectLocation(result) shouldBe Some(controllers.routes.CGTSubscriptionController.confirmationOfSubscriptionCompany("CGT123456").url)
         }
       }
 

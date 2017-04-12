@@ -14,8 +14,8 @@ POST       /individual/confirmation                                 controllers.
 GET        /non-resident/individual/confirmation                    controllers.CGTSubscriptionController.confirmationOfSubscriptionNonResIndv(cgtReference: String)
 POST       /non-resident/individual/confirmation                    controllers.CGTSubscriptionController.submitConfirmationOfSubscriptionNonResIndv
 
-GET        /company/confirmation                                    controllers.CGTSubscriptionController.confirmationOfSubscriptionOrganisation(cgtReference: String)
-POST       /company/confirmation                                    controllers.CGTSubscriptionController.submitConfirmationOfSubscriptionOrganisation
+GET        /company/confirmation                                    controllers.CGTSubscriptionController.confirmationOfSubscriptionCompany(cgtReference: String)
+POST       /company/confirmation                                    controllers.CGTSubscriptionController.submitConfirmationOfSubscriptionCompany
 
 GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription(url: String)
 

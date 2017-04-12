@@ -54,11 +54,11 @@ class CGTSubscriptionController @Inject()(keystoreConnector: KeystoreConnector,
           routes.CGTSubscriptionController.submitConfirmationOfSubscriptionNonResIndv())))
   }
 
-  val confirmationOfSubscriptionOrganisation: String => Action[AnyContent] = cgtReference => authorisedActions.authorisedNonResidentOrganisationAction() {
+  val confirmationOfSubscriptionCompany: String => Action[AnyContent] = cgtReference => authorisedActions.authorisedNonResidentOrganisationAction() {
     implicit user =>
       implicit request =>
         Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference,
-          routes.CGTSubscriptionController.submitConfirmationOfSubscriptionOrganisation())))
+          routes.CGTSubscriptionController.submitConfirmationOfSubscriptionCompany())))
   }
 
   val submitConfirmationOfSubscriptionResidentIndv: Action[AnyContent] = authorisedActions.authorisedResidentIndividualAction() {
@@ -79,7 +79,7 @@ class CGTSubscriptionController @Inject()(keystoreConnector: KeystoreConnector,
     }
   }
 
-  val submitConfirmationOfSubscriptionOrganisation: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction() {
+  val submitConfirmationOfSubscriptionCompany: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction() {
     implicit user =>
       implicit request =>
         keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
