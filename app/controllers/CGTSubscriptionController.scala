@@ -35,11 +35,6 @@ class CGTSubscriptionController @Inject()(keystoreConnector: KeystoreConnector,
                                           appConfig: AppConfig,
                                           val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-//  val confirmationOfSubscription: String => Action[AnyContent] = cgtReference => Action.async {
-//      implicit request =>
-//        Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference)))
-//  }
-
   val confirmationOfSubscriptionResidentIndv: String => Action[AnyContent] = cgtReference => authorisedActions.authorisedResidentIndividualAction() {
     implicit user =>
       implicit request =>
