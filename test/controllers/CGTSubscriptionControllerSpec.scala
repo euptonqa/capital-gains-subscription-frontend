@@ -16,79 +16,348 @@
 
 package controllers
 
-import config.AppConfig
+import auth._
+import common.Keys.KeystoreKeys._
 import connectors.KeystoreConnector
 import data.MessageLookup.{CGTSubscriptionConfirm => messages}
+import data.TestUserBuilder
 import models.CallbackUrlModel
 import org.jsoup._
 import org.mockito.ArgumentMatchers
-import org.scalatest.mock.MockitoSugar
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito._
+import org.mockito.invocation.InvocationOnMock
+import org.mockito.stubbing.Answer
 import play.api.http.Status
-import play.api.i18n.MessagesApi
-import play.api.inject.Injector
+import play.api.mvc.{Action, AnyContent, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import traits.ControllerTestSpec
+import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 import scala.concurrent.Future
 
-class CGTSubscriptionControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
+class CGTSubscriptionControllerSpec extends ControllerTestSpec {
 
-  val fakeRequest = FakeRequest("GET", "/")
-  val injector: Injector = fakeApplication.injector
+  val testOnlyUnauthorisedLoginUri = "just-a-test"
 
-  def appConfig: AppConfig = injector.instanceOf[AppConfig]
+  def createNROrgMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.strongUserAuthContext): AuthorisedActions = {
 
-  def messagesApi: MessagesApi = injector.instanceOf[MessagesApi]
+    val mockActions = mock[AuthorisedActions]
 
-  val mockKeystoreConnector: KeystoreConnector = mock[KeystoreConnector]
+    if (valid) {
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenAnswer(new Answer[Action[AnyContent]] {
 
-  def setupPostController(keystoreResponse: Option[CallbackUrlModel]): CGTSubscriptionController = {
-
-    when(mockKeystoreConnector.fetchAndGetFormData[CallbackUrlModel](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
-      .thenReturn(Future.successful(keystoreResponse))
-
-    new CGTSubscriptionController(mockKeystoreConnector, appConfig, messagesApi)
-  }
-
-  val target = new CGTSubscriptionController(mockKeystoreConnector, appConfig, messagesApi)
-
-  implicit val mat: akka.stream.Materializer = mock[akka.stream.Materializer]
-
-  "GET /resident/confirmation" should {
-
-    lazy val result = target.confirmationOfSubscription("testString")(fakeRequest)
-    lazy val view = Jsoup.parse(bodyOf(result))
-
-    "return 200" in {
-      status(result) shouldBe Status.OK
+          override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
+            val action = invocation.getArgument[AuthenticatedNROrganisationAction](1)
+            val organisation = CgtNROrganisation(authContext)
+            Action.async(action(organisation))
+          }
+        })
+    }
+    else {
+      when(mockActions.authorisedNonResidentOrganisationAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
     }
 
-    "display the confirmationOfSubscription screen" in {
-      view.title() shouldEqual messages.title
+    mockActions
+  }
+
+  def createNonResidentIndvMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithoutNINO):
+    AuthorisedActions = {
+
+    val mockActions = mock[AuthorisedActions]
+    if (valid) {
+      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenAnswer(new Answer[Action[AnyContent]] {
+
+          override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
+            val action = invocation.getArgument[AuthenticatedIndividualAction](1)
+            val individual = CgtIndividual(authContext)
+            Action.async(action(individual))
+          }
+        })
+    }
+    else {
+      when(mockActions.authorisedNonResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
+    }
+
+    mockActions
+  }
+
+  def createResidentIndvMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithNINO): AuthorisedActions = {
+
+    val mockActions = mock[AuthorisedActions]
+    if (valid) {
+      when(mockActions.authorisedResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenAnswer(new Answer[Action[AnyContent]] {
+
+          override def answer(invocation: InvocationOnMock): Action[AnyContent] = {
+            val action = invocation.getArgument[AuthenticatedIndividualAction](1)
+            val individual = CgtIndividual(authContext)
+            Action.async(action(individual))
+          }
+        })
+    }
+    else {
+      when(mockActions.authorisedResidentIndividualAction(ArgumentMatchers.any())(ArgumentMatchers.any()))
+        .thenReturn(Action.async(Results.Redirect(testOnlyUnauthorisedLoginUri)))
+    }
+
+    mockActions
+  }
+
+  def setupController(mockActions: AuthorisedActions,
+                     callbackUrl: Option[CallbackUrlModel] = Some(CallbackUrlModel("context/test"))): CGTSubscriptionController = {
+
+    val sessionService = mock[KeystoreConnector]
+
+    when(sessionService.fetchAndGetFormData[CallbackUrlModel](ArgumentMatchers.eq(callbackUrlKey))(any(), any()))
+      .thenReturn(Future.successful(callbackUrl))
+
+    new CGTSubscriptionController(sessionService, mockActions, mockConfig, messagesApi)
+  }
+
+  "GET /individual/confirmation" should {
+
+    "an authorised user made the request" should {
+      lazy val actions = createResidentIndvMockActions(valid = true)
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("GET", "")
+      lazy val result = controller.confirmationOfSubscriptionResidentIndv("testString")(fakeRequest)
+      lazy val view = Jsoup.parse(bodyOf(result))
+
+      "return 200" in {
+        status(result) shouldBe Status.OK
+      }
+
+      "display the confirmationOfSubscription screen" in {
+        view.title() shouldEqual messages.title
+      }
+    }
+
+    "an unauthorised user made the request" should {
+      lazy val actions = createResidentIndvMockActions()
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("GET", "/")
+      lazy val result = controller.confirmationOfSubscriptionResidentIndv("testString")(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to 'just-a-test'" in {
+        redirectLocation(result) shouldBe Some("just-a-test")
+      }
     }
   }
 
-  "POST /resident/confirmation" when {
+  "GET /non-resident/confirmation" should {
 
-    "keystore manages to retrieve a callback url" should {
-      lazy val mockController = setupPostController(Some(CallbackUrlModel("returned-url")))
-      lazy val result = mockController.submitConfirmationOfSubscription(fakeRequest)
+    "an authorised user made the request" should {
+      lazy val actions = createNonResidentIndvMockActions(valid = true)
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("GET", "")
+      lazy val result = controller.confirmationOfSubscriptionNonResIndv("testString")(fakeRequest)
+      lazy val view = Jsoup.parse(bodyOf(result))
+
+      "return 200" in {
+        status(result) shouldBe Status.OK
+      }
+
+      "display the confirmationOfSubscription screen" in {
+        view.title() shouldEqual messages.title
+      }
+    }
+
+    "an unauthorised user made the request" should {
+      lazy val actions = createNonResidentIndvMockActions()
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("GET", "/")
+      lazy val result = controller.confirmationOfSubscriptionNonResIndv("testString")(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to 'just-a-test'" in {
+        redirectLocation(result) shouldBe Some("just-a-test")
+      }
+    }
+  }
+
+  "GET /organisation/confirmation" should {
+
+    "an authorised user made the request" should {
+      lazy val actions = createNROrgMockActions(valid = true)
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("GET", "")
+      lazy val result = controller.confirmationOfSubscriptionCompany("testString")(fakeRequest)
+      lazy val view = Jsoup.parse(bodyOf(result))
+
+      "return 200" in {
+        status(result) shouldBe Status.OK
+      }
+
+      "display the confirmationOfSubscription screen" in {
+        view.title() shouldEqual messages.title
+      }
+    }
+
+    "an unauthorised user made the request" should {
+      lazy val actions = createNROrgMockActions()
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("GET", "/")
+      lazy val result = controller.confirmationOfSubscriptionCompany("testString")(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe 303
+      }
+
+      "redirect to 'just-a-test'" in {
+        redirectLocation(result) shouldBe Some("just-a-test")
+      }
+    }
+  }
+
+  "POST /individual/confirmation" when {
+
+    "keystore manages to retrieve a callback url and the user is authorised" should {
+      lazy val actions = createResidentIndvMockActions(valid = true)
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("POST", "/")
+      lazy val result = controller.submitConfirmationOfSubscriptionResidentIndv(fakeRequest)
 
       "return 303" in {
         status(result) shouldBe Status.SEE_OTHER
       }
 
       "redirect to the iForm page" in {
-        redirectLocation(result).get should include("returned-url")
+        redirectLocation(result).get should include("context/test")
+      }
+    }
+
+    "keystore manages to retrieve a callback url and the user is not authorised" should {
+      lazy val actions = createResidentIndvMockActions()
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("POST", "/")
+      lazy val result = controller.submitConfirmationOfSubscriptionResidentIndv(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to the iForm page" in {
+        redirectLocation(result).get should include("just-a-test")
       }
     }
 
     "keystore fails to retrieve a callbackUrl" should {
-      lazy val mockController = setupPostController(None)
+      lazy val actions = createResidentIndvMockActions(valid = true)
+      lazy val controller = setupController(mockActions = actions, callbackUrl = None)
+      val fakeRequest = FakeRequest("POST", "/")
+      lazy val result = controller.submitConfirmationOfSubscriptionResidentIndv(fakeRequest)
+
       lazy val ex = intercept[Exception] {
-        await(mockController.submitConfirmationOfSubscription(fakeRequest))
+        await(result)
+      }
+
+      s"return an Exception with text Failed to find a callback URL" in {
+        ex.getMessage shouldEqual "Failed to find a callback URL"
+      }
+    }
+  }
+
+  "POST /non-resident/confirmation" when {
+
+    "keystore manages to retrieve a callback url and the user is authorised" should {
+      lazy val actions = createNonResidentIndvMockActions(valid = true)
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("POST", "/")
+      lazy val result = controller.submitConfirmationOfSubscriptionNonResIndv(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to the iForm page" in {
+        redirectLocation(result).get should include("context/test")
+      }
+    }
+
+    "keystore manages to retrieve a callback url and the user is not authorised" should {
+      lazy val actions = createNonResidentIndvMockActions()
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("POST", "/")
+      lazy val result = controller.submitConfirmationOfSubscriptionNonResIndv(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to the iForm page" in {
+        redirectLocation(result).get should include("just-a-test")
+      }
+    }
+
+    "keystore fails to retrieve a callbackUrl" should {
+      lazy val actions = createNonResidentIndvMockActions(valid = true)
+      lazy val controller = setupController(mockActions = actions, callbackUrl = None)
+      val fakeRequest = FakeRequest("POST", "/")
+      lazy val result = controller.submitConfirmationOfSubscriptionNonResIndv(fakeRequest)
+
+      lazy val ex = intercept[Exception] {
+        await(result)
+      }
+
+      s"return an Exception with text Failed to find a callback URL" in {
+        ex.getMessage shouldEqual "Failed to find a callback URL"
+      }
+    }
+  }
+
+  "POST /organisation/confirmation" when {
+
+    "keystore manages to retrieve a callback url and the user is authorised" should {
+      lazy val actions = createNROrgMockActions(valid = true)
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("POST", "/")
+      lazy val result = controller.submitConfirmationOfSubscriptionCompany(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to the iForm page" in {
+        redirectLocation(result).get should include("context/test")
+      }
+    }
+
+    "keystore manages to retrieve a callback url and the user is not authorised" should {
+      lazy val actions = createNROrgMockActions()
+      lazy val controller = setupController(actions)
+      val fakeRequest = FakeRequest("POST", "/")
+      lazy val result = controller.submitConfirmationOfSubscriptionCompany(fakeRequest)
+
+      "return 303" in {
+        status(result) shouldBe Status.SEE_OTHER
+      }
+
+      "redirect to the iForm page" in {
+        redirectLocation(result).get should include("just-a-test")
+      }
+    }
+
+    "keystore fails to retrieve a callbackUrl" should {
+      lazy val actions = createNROrgMockActions(valid = true)
+      lazy val controller = setupController(mockActions = actions, callbackUrl = None)
+      val fakeRequest = FakeRequest("POST", "/")
+      lazy val result = controller.submitConfirmationOfSubscriptionCompany(fakeRequest)
+
+      lazy val ex = intercept[Exception] {
+        await(result)
       }
 
       s"return an Exception with text Failed to find a callback URL" in {

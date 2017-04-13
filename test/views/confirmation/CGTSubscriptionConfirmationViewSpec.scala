@@ -37,8 +37,45 @@ class CGTSubscriptionConfirmationViewSpec extends UnitSpec with WithFakeApplicat
 
   "The cgtSubscriptionConfirmationView" should {
 
-    lazy val view = cgtSubscriptionConfirmation(appConfig, "Generic CGT reference")
+    lazy val view = cgtSubscriptionConfirmation(appConfig, "Generic CGT reference",
+      controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionCompany())
     lazy val doc = Jsoup.parse(view.body)
+
+    "for a resident individual" should {
+
+      lazy val view = cgtSubscriptionConfirmation(appConfig, "Generic CGT reference",
+        controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionResidentIndv())
+      lazy val document = Jsoup.parse(view.body)
+
+      lazy val form = document.select("form")
+
+
+      s"have the action ${controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionResidentIndv().url} "in {
+        form.attr("action") shouldEqual controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionResidentIndv().url
+      }
+
+      "have the action type POST" in {
+        form.attr("method") shouldEqual "POST"
+      }
+    }
+
+    "for a non-resident individual" should {
+
+      lazy val view = cgtSubscriptionConfirmation(appConfig, "Generic CGT reference",
+        controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionNonResIndv())
+      lazy val document = Jsoup.parse(view.body)
+
+      lazy val form = document.select("form")
+
+
+      s"have the action ${controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionNonResIndv().url} "in {
+        form.attr("action") shouldEqual controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionNonResIndv().url
+      }
+
+      "have the action type POST" in {
+        form.attr("method") shouldEqual "POST"
+      }
+    }
 
     s"display a title of ${messages.title}" in {
       doc.title shouldEqual messages.title
@@ -146,8 +183,8 @@ class CGTSubscriptionConfirmationViewSpec extends UnitSpec with WithFakeApplicat
 
       lazy val form = doc.select("form")
 
-      "have the action /capital-gains-tax/subscription/confirmation" in {
-        form.attr("action") shouldEqual "/capital-gains-tax/subscription/confirmation"
+      s"have the action ${controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionCompany().url}" in {
+        form.attr("action") shouldEqual controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionCompany().url
       }
 
       "have the action type POST" in {

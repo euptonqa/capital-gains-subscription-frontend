@@ -65,7 +65,7 @@ class NonResidentIndividualSubscriptionController @Inject()(actions: AuthorisedA
   def subscribeAndEnrolWithNino(nino: String)(implicit request: Request[AnyContent], user: CgtIndividual): Future[Result] = {
 
     subscriptionService.getSubscriptionNonResidentNinoResponse(nino)(hc).map {
-      case Some(result) => Redirect(routes.CGTSubscriptionController.confirmationOfSubscription(result.cgtRef))
+      case Some(result) => Redirect(routes.CGTSubscriptionController.confirmationOfSubscriptionNonResIndv(result.cgtRef))
       case None => throw new Exception(failedToEnrolIndividual)
     }
   }

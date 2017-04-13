@@ -163,7 +163,7 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
       }
 
       "redirect to the CGT confirmation screen" in {
-        redirectLocation(result).get.toString shouldBe Some(routes.CGTSubscriptionController.confirmationOfSubscription("eee")).get.url
+        redirectLocation(result).get.toString shouldBe Some(routes.CGTSubscriptionController.confirmationOfSubscriptionResidentIndv("eee")).get.url
       }
     }
 

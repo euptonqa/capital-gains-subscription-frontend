@@ -5,8 +5,14 @@ GET        /assets/*file                                            controllers.
 
 GET        /individual/invalid-user                                 controllers.IncorrectAffinityGroupController.incorrectAffinityGroup(userType: String)
 
-GET        /confirmation                                            controllers.CGTSubscriptionController.confirmationOfSubscription(cgtReference: String)
-POST       /confirmation                                            controllers.CGTSubscriptionController.submitConfirmationOfSubscription
+GET        /individual/confirmation                                 controllers.CGTSubscriptionController.confirmationOfSubscriptionResidentIndv(cgtReference: String)
+POST       /individual/confirmation                                 controllers.CGTSubscriptionController.submitConfirmationOfSubscriptionResidentIndv
+
+GET        /non-resident/individual/confirmation                    controllers.CGTSubscriptionController.confirmationOfSubscriptionNonResIndv(cgtReference: String)
+POST       /non-resident/individual/confirmation                    controllers.CGTSubscriptionController.submitConfirmationOfSubscriptionNonResIndv
+
+GET        /company/confirmation                                    controllers.CGTSubscriptionController.confirmationOfSubscriptionCompany(cgtReference: String)
+POST       /company/confirmation                                    controllers.CGTSubscriptionController.submitConfirmationOfSubscriptionCompany
 
 GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription(url: String)
 

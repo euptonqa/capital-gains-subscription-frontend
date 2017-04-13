@@ -18,6 +18,7 @@ package controllers
 
 import javax.inject.{Inject, Singleton}
 
+import auth.AuthorisedActions
 import common.Keys.{KeystoreKeys => keys}
 import config.AppConfig
 import connectors.KeystoreConnector
@@ -30,17 +31,55 @@ import scala.concurrent.Future
 
 @Singleton
 class CGTSubscriptionController @Inject()(keystoreConnector: KeystoreConnector,
+                                          authorisedActions: AuthorisedActions,
                                           appConfig: AppConfig,
                                           val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  val confirmationOfSubscription: String => Action[AnyContent] = cgtReference => Action.async { implicit request =>
-    Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference)))
+  val confirmationOfSubscriptionResidentIndv: String => Action[AnyContent] = cgtReference => authorisedActions.authorisedResidentIndividualAction() {
+    implicit user =>
+      implicit request =>
+        Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference,
+          routes.CGTSubscriptionController.submitConfirmationOfSubscriptionResidentIndv())))
   }
 
-  val submitConfirmationOfSubscription: Action[AnyContent] = Action.async { implicit request =>
-    keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
-      case Some(model) => Future.successful(Redirect(model.url))
-      case _ => throw new Exception("Failed to find a callback URL")
+  val confirmationOfSubscriptionNonResIndv: String => Action[AnyContent] = cgtReference => authorisedActions.authorisedNonResidentIndividualAction() {
+    implicit user =>
+      implicit request =>
+        Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference,
+          routes.CGTSubscriptionController.submitConfirmationOfSubscriptionNonResIndv())))
+  }
+
+  val confirmationOfSubscriptionCompany: String => Action[AnyContent] = cgtReference => authorisedActions.authorisedNonResidentOrganisationAction() {
+    implicit user =>
+      implicit request =>
+        Future.successful(Ok(views.html.confirmation.cgtSubscriptionConfirmation(appConfig, cgtReference,
+          routes.CGTSubscriptionController.submitConfirmationOfSubscriptionCompany())))
+  }
+
+  val submitConfirmationOfSubscriptionResidentIndv: Action[AnyContent] = authorisedActions.authorisedResidentIndividualAction() {
+    implicit user =>
+      implicit request =>
+        keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
+          case Some(model) => Future.successful(Redirect(model.url))
+          case _ => throw new Exception("Failed to find a callback URL")
+    }
+  }
+
+  val submitConfirmationOfSubscriptionNonResIndv: Action[AnyContent] = authorisedActions.authorisedNonResidentIndividualAction() {
+    implicit user =>
+      implicit request =>
+        keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
+          case Some(model) => Future.successful(Redirect(model.url))
+          case _ => throw new Exception("Failed to find a callback URL")
+    }
+  }
+
+  val submitConfirmationOfSubscriptionCompany: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction() {
+    implicit user =>
+      implicit request =>
+        keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
+          case Some(model) => Future.successful(Redirect(model.url))
+          case _ => throw new Exception("Failed to find a callback URL")
     }
   }
 }

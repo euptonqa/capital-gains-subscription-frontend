@@ -144,7 +144,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
       }
 
       "display the cgt reference page" in {
-        redirectLocation(result) shouldBe Some("/capital-gains-tax/subscription/confirmation?cgtReference=CGT123456")
+        redirectLocation(result) shouldBe Some(controllers.routes.CGTSubscriptionController.confirmationOfSubscriptionNonResIndv("CGT123456").toString)
       }
     }
 

@@ -1,6 +1,6 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 
-@(appConfig: config.AppConfig, cgtReferenceNumber: String)(implicit request: Request[_], messages: Messages)
+@(appConfig: config.AppConfig, cgtReferenceNumber: String, call: Call)(implicit request: Request[_], messages: Messages)
 
 @views.html.main_template(title = Messages("confirmation.title"), bodyClasses = None, appConfig = appConfig) {
 
@@ -22,7 +22,7 @@
         <p class="indent indent-width-thin">@Messages("confirmation.whatNext.informationForForm")</p>
     </div>
 
-    @form(action = controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscription()) {
+    @form(action = call) {
         <button class="button yes-no-button" type="submit" id="continue-button">@Messages("common.continue")</button>
     }
 }

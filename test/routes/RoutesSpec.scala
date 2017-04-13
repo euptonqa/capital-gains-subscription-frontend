@@ -55,17 +55,45 @@ class RoutesSpec extends UnitSpec with WithFakeApplication {
     }
   }
 
-  "The URL for the CGTSubscriptionConfirmation action" should {
-    "be equal to /capital-gains-tax/subscription/confirmation" in {
-      val path = controllers.routes.CGTSubscriptionController.confirmationOfSubscription("cgtRef").url
-      path shouldEqual "/capital-gains-tax/subscription/confirmation?cgtReference=cgtRef"
+  "The URL for the confirmationOfSubscriptionResidentIndv action" should {
+    "be equal to /capital-gains-tax/subscription/individual/confirmation" in {
+      val path = controllers.routes.CGTSubscriptionController.confirmationOfSubscriptionResidentIndv("cgtRef").url
+      path shouldEqual "/capital-gains-tax/subscription/individual/confirmation?cgtReference=cgtRef"
     }
   }
 
-  "The URL for the submitCGTSubscriptionConfirmation action" should {
-    "be equal to /capital-gains-tax/subscription/confirmation" in {
-      val path = controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscription().url
-      path shouldEqual "/capital-gains-tax/subscription/confirmation"
+  "The URL for the submitCGTSubscriptionConfirmationResidentIndv action" should {
+    "be equal to /capital-gains-tax/subscription/individual/confirmation" in {
+      val path = controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionResidentIndv().url
+      path shouldEqual "/capital-gains-tax/subscription/individual/confirmation"
+    }
+  }
+
+  "The URL for the confirmationOfSubscriptionNonResIndv action" should {
+    "be equal to /capital-gains-tax/subscription/non-resident/individual/confirmation" in {
+      val path = controllers.routes.CGTSubscriptionController.confirmationOfSubscriptionNonResIndv("cgtRef").url
+      path shouldEqual "/capital-gains-tax/subscription/non-resident/individual/confirmation?cgtReference=cgtRef"
+    }
+  }
+
+  "The URL for the submitConfirmationOfSubscriptionNonResIndv action" should {
+    "be equal to /capital-gains-tax/subscription/non-resident/individual/confirmation" in {
+      val path = controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionNonResIndv().url
+      path shouldEqual "/capital-gains-tax/subscription/non-resident/individual/confirmation"
+    }
+  }
+
+  "The URL for the confirmationOfSubscriptionCompany action" should {
+    "be equal to /capital-gains-tax/subscription/company/confirmation" in {
+      val path = controllers.routes.CGTSubscriptionController.confirmationOfSubscriptionCompany("cgtRef").url
+      path shouldEqual "/capital-gains-tax/subscription/company/confirmation?cgtReference=cgtRef"
+    }
+  }
+
+  "The URL for the submitConfirmationOfSubscriptionCompany action" should {
+    "be equal to /capital-gains-tax/subscription/company/confirmation" in {
+      val path = controllers.routes.CGTSubscriptionController.submitConfirmationOfSubscriptionCompany().url
+      path shouldEqual "/capital-gains-tax/subscription/company/confirmation"
     }
   }
 
