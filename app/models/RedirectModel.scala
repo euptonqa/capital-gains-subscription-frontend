@@ -20,12 +20,12 @@ import java.net.URI
 
 import play.api.libs.json.{Json, OFormat}
 
-case class CallbackUrlModel(url: String) {
-  require(CallbackUrlModel.validateUrl(new URI(url)), "Failed to bind as a URI")
+case class RedirectModel(url: String) {
+  require(RedirectModel.validateUrl(new URI(url)), "Failed to bind as a URI")
 }
 
-object CallbackUrlModel {
-  implicit val formats: OFormat[CallbackUrlModel] = Json.format[CallbackUrlModel]
+object RedirectModel {
+  implicit val formats: OFormat[RedirectModel] = Json.format[RedirectModel]
 
   val localhost: String = "localhost"
 

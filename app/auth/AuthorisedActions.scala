@@ -33,8 +33,8 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
 
   override val authConnector: FrontendAuthorisationConnector = frontendAuthorisationConnector
 
-  private def composeAuthorisedAgentAction(url: Option[String]): AuthenticatedAgentAction => Action[AnyContent] = {
-    val redirectUrl = if (url.isDefined) s"?url=${url.get}" else ""
+  private def composeAuthorisedAgentAction(redirect: Option[String]): AuthenticatedAgentAction => Action[AnyContent] = {
+    val redirectUrl = if (redirect.isDefined) s"?redirect=${redirect.get}" else ""
     val postSignInRedirectUrl = applicationConfig.agentPostSignIn + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
@@ -57,8 +57,8 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     authenticatedAction
   }
 
-  private def composeAuthorisedResidentIndividualAction(url: Option[String]): AuthenticatedIndividualAction => Action[AnyContent] = {
-    val redirectUrl = if (url.isDefined) s"?url=${url.get}" else ""
+  private def composeAuthorisedResidentIndividualAction(redirect: Option[String]): AuthenticatedIndividualAction => Action[AnyContent] = {
+    val redirectUrl = if (redirect.isDefined) s"?redirect=${redirect.get}" else ""
     val postSignInRedirectUrl: String = applicationConfig.individualResident + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
@@ -88,8 +88,8 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     authenticatedAction
   }
 
-  private def composeAuthorisedNonResidentIndividualAction(url: Option[String]): AuthenticatedIndividualAction => Action[AnyContent] = {
-    val redirectUrl = if (url.isDefined) s"?url=${url.get}" else ""
+  private def composeAuthorisedNonResidentIndividualAction(redirect: Option[String]): AuthenticatedIndividualAction => Action[AnyContent] = {
+    val redirectUrl = if (redirect.isDefined) s"?redirect=${redirect.get}" else ""
     val postSignInRedirectUrl: String = applicationConfig.individualNonResident + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
     val regime = new CgtRegime {
@@ -117,8 +117,8 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     authenticatedAction
   }
 
-  private def composeAuthorisedNonResidentOrganisationAction(url: Option[String]): AuthenticatedNROrganisationAction => Action[AnyContent] = {
-    val redirectUrl = if (url.isDefined) s"?url=${url.get}" else ""
+  private def composeAuthorisedNonResidentOrganisationAction(redirect: Option[String]): AuthenticatedNROrganisationAction => Action[AnyContent] = {
+    val redirectUrl = if (redirect.isDefined) s"?redirect=${redirect.get}" else ""
     val postSignInRedirectUrl: String = applicationConfig.companySignIn + redirectUrl
     val ggProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.governmentGateway)
 
@@ -127,7 +127,7 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     }
 
     lazy val visibilityPredicate = new NonResidentOrganisationVisibilityPredicate(
-      authorisationService)("http://www.gov.uk" //TODO: add url for error page
+      authorisationService)("http://www.gov.uk" //TODO: add redirect for error page
     )
 
     lazy val guardedAction: AuthenticatedBy = AuthorisedFor(regime, visibilityPredicate)
@@ -143,16 +143,16 @@ class AuthorisedActions @Inject()(applicationConfig: ApplicationConfig,
     authenticatedAction
   }
 
-  def authorisedResidentIndividualAction(url: Option[String] = None)(action: AuthenticatedIndividualAction): Action[AnyContent] =
-    composeAuthorisedResidentIndividualAction(url)(action)
+  def authorisedResidentIndividualAction(redirect: Option[String] = None)(action: AuthenticatedIndividualAction): Action[AnyContent] =
+    composeAuthorisedResidentIndividualAction(redirect)(action)
 
-  def authorisedNonResidentIndividualAction(url: Option[String] = None)(action: AuthenticatedIndividualAction): Action[AnyContent] =
-    composeAuthorisedNonResidentIndividualAction(url)(action)
+  def authorisedNonResidentIndividualAction(redirect: Option[String] = None)(action: AuthenticatedIndividualAction): Action[AnyContent] =
+    composeAuthorisedNonResidentIndividualAction(redirect)(action)
 
-  def authorisedNonResidentOrganisationAction(url: Option[String] = None)(action: AuthenticatedNROrganisationAction): Action[AnyContent] =
-    composeAuthorisedNonResidentOrganisationAction(url)(action)
+  def authorisedNonResidentOrganisationAction(redirect: Option[String] = None)(action: AuthenticatedNROrganisationAction): Action[AnyContent] =
+    composeAuthorisedNonResidentOrganisationAction(redirect)(action)
 
-  def authorisedAgentAction(url: Option[String] = None)(action: AuthenticatedAgentAction): Action[AnyContent] = composeAuthorisedAgentAction(url)(action)
+  def authorisedAgentAction(redirect: Option[String] = None)(action: AuthenticatedAgentAction): Action[AnyContent] = composeAuthorisedAgentAction(redirect)(action)
 
   trait CgtRegime extends TaxRegime {
     override def isAuthorised(accounts: Accounts): Boolean = true
