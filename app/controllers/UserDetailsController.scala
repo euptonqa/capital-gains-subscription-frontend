@@ -21,6 +21,7 @@ import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import common.Constants.ErrorMessages._
 import forms.UserFactsForm
+import helpers.CountryHelper
 import models.UserFactsModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
@@ -34,7 +35,7 @@ import scala.util.{Failure, Success, Try}
 @Singleton
 class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: UserFactsForm,
                                       val messagesApi: MessagesApi, actions: AuthorisedActions,
-                                      subscriptionService: SubscriptionService)
+                                      subscriptionService: SubscriptionService, countryHelper: CountryHelper)
   extends FrontendController with I18nSupport {
 
   def subscribeUser(userFactsModel: UserFactsModel)(implicit hc: HeaderCarrier): Future[Try[String]] = {
@@ -46,7 +47,7 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
 
   val userDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction() { implicit user =>
     implicit request =>
-      Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.fullDetailsForm)))
+      Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.fullDetailsForm, countryHelper.getListOfCountries)))
   }
 
   val submitUserDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction() { implicit user =>
@@ -67,7 +68,8 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
         } yield action
       }
 
-      fullDetailsForm.fullDetailsForm.bindFromRequest.fold(errors => Future.successful(BadRequest(views.html.userDetails(appConfig, errors))),
+      fullDetailsForm.fullDetailsForm.bindFromRequest.fold(errors =>
+        Future.successful(BadRequest(views.html.userDetails(appConfig, errors, countryHelper.getListOfCountries))),
         successAction)
   }
 }

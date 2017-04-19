@@ -31,6 +31,7 @@ import play.api.test.Helpers._
 import services.SubscriptionService
 import traits.ControllerTestSpec
 import auth.AuthenticatedIndividualAction
+import helpers.CountryHelper
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -41,6 +42,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
 
   val unauthorisedLoginUri = "some-url"
   val form: UserFactsForm = app.injector.instanceOf[UserFactsForm]
+  val countryHelper: CountryHelper = app.injector.instanceOf[CountryHelper]
 
   def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.userWithNINO): AuthorisedActions = {
 
@@ -80,7 +82,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
     "using correct authorisation" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
-      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
+      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service, countryHelper)
       lazy val result = controller.userDetails(fakeRequest)
       lazy val document = Jsoup.parse(bodyOf(result))
 
@@ -96,7 +98,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
     "using incorrect authorisation" should {
       val fakeRequest = FakeRequest("GET", "/")
       lazy val actions = createMockActions(valid = false, TestUserBuilder.noCredUserAuthContext)
-      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
+      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service, countryHelper)
       lazy val result = controller.userDetails(fakeRequest)
 
       "return a status of 303" in {
@@ -115,7 +117,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
       .withFormUrlEncodedBody()
 
     lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
-    lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
+    lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service, countryHelper)
     lazy val result = controller.submitUserDetails(fakeRequest)
     lazy val document = Jsoup.parse(bodyOf(result))
 
@@ -136,7 +138,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
           "addressLineTwo" -> "LineTwo", "townOrCity" -> "City", "county" -> "County", "postCode" -> "Postcode", "country" -> "Country")
 
       lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
-      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
+      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service, countryHelper)
       lazy val result = controller.submitUserDetails(fakeRequest)
 
       "return a status of 303" in {
@@ -154,7 +156,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
           "addressLineTwo" -> "LineTwo", "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Country")
 
       lazy val actions = createMockActions(valid = true, TestUserBuilder.strongUserAuthContext)
-      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service) {
+      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service, countryHelper) {
         val mockException: Exception = mock[Exception]
         when(mockException.getMessage)
           .thenReturn("test")
@@ -175,7 +177,7 @@ class UserDetailsControllerSpec extends ControllerTestSpec {
     "using incorrect authorisation" should {
       val fakeRequest = FakeRequest("POST", "/")
       lazy val actions = createMockActions(valid = false, TestUserBuilder.noCredUserAuthContext)
-      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service)
+      lazy val controller = new UserDetailsController(mockConfig, form, messagesApi, actions, service, countryHelper)
       lazy val result = controller.submitUserDetails(fakeRequest)
 
       "return a status of 303" in {
