@@ -44,6 +44,7 @@ userDetails.townOrCity = Town or city
 userDetails.county = County
 userDetails.postCode = Postcode
 userDetails.country = Country
+userDetails.country.select = Select a country...
 
 ##Contact Details Messages ##
 contactDetails.title = Capital Gains Tax contact details

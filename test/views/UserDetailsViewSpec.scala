@@ -36,7 +36,7 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
 
   "The User Details view when supplied with a form with no errors" should {
     lazy val form = new UserFactsForm(messagesApi)
-    lazy val view = userDetails(appConfig, form.fullDetailsForm)
+    lazy val view = userDetails(appConfig, form.fullDetailsForm, List(("Test", "Test")))
     lazy val doc = Jsoup.parse(view.body)
 
     "contain a header" which {
@@ -226,23 +226,24 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
     }
 
     "has an input for country" which {
-      lazy val label = doc.body().select("label[for=country]")
-      lazy val input = label.select("input#country")
+      lazy val input = doc.body().select("#country_div")
+      lazy val label = input.select("label")
+      lazy val select = input.select("select")
 
       s"has the text '${UserDetails.country}'" in {
         label.text() shouldBe UserDetails.country
       }
 
       "has a label class of 'form-group'" in {
-        label.attr("class") should include("form-group")
+        label.attr("class") should include("form-label")
       }
 
-      "has a type of text" in {
-        input.attr("type") shouldBe "text"
+      "has a class of 'form-control'" in {
+        select.attr("class") shouldBe " form-control "
       }
 
-      "has a class of 'shim input grid-1-2'" in {
-        input.attr("class") shouldBe "shim input grid-1-2"
+      "has a name of 'country'" in {
+        select.attr("name") shouldBe "country"
       }
     }
 
@@ -271,7 +272,7 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
 
     lazy val form = new UserFactsForm(messagesApi)
     lazy val map = Map("firstName" -> "", "lastName" -> "")
-    lazy val view = userDetails(appConfig, form.fullDetailsForm.bind(map))
+    lazy val view = userDetails(appConfig, form.fullDetailsForm.bind(map), List(("Test", "Test")))
     lazy val doc = Jsoup.parse(view.body).toString
 
     "display an error summary" in {

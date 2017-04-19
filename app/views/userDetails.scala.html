@@ -1,8 +1,10 @@
-@import uk.gov.hmrc.play.views.html.helpers.{form, input}
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import uk.gov.hmrc.play.views.html.helpers.input
 @import models.UserFactsModel
 @import views.html.helpers.errorSummary
+@import views.html.helpers.countryDropdown
 
-@(appConfig: config.AppConfig, userDetailsForm: Form[UserFactsModel])(implicit request: Request[_], messages: Messages)
+@(appConfig: config.AppConfig, userDetailsForm: Form[UserFactsModel], countryList: List[(String, String)])(implicit request: Request[_], messages: Messages)
 
 @userInput(label: String, identifier: String, size: Int = 2, hiddenLabel: Boolean = false) = {
 
@@ -26,7 +28,28 @@
     }}
 }
 
-@views.html.main_template(title = Messages("userDetails.title"), bodyClasses = None, appConfig = appConfig) {
+@implicitFormInstance = @{ Some(userDetailsForm) }
+
+@pageScripts = {
+    <link rel="stylesheet" href='@controllers.routes.Assets.at("jquery/jquery-ui.min.css")'/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.at("jquery/jquery-ui.structure.min.css")'/>
+    <script type="text/javascript" src='@controllers.routes.Assets.at("jquery/jquery-ui.min.js")'></script>
+    <script type="text/javascript" src='@controllers.routes.Assets.at("jquery/jquery-ui-1.12.1.min.js")'></script>
+    <script type="text/javascript" src='@controllers.routes.Assets.at("javascript/countryMatching.js")'></script>
+    <script>
+            $(document).ready(function() {
+                countryCodeAutoComplete("#country")
+                var classOfSelect1 = $('#country_').attr('class');
+                $("#country").addClass(classOfSelect1)
+                var labelText1 = $("#country_field").text();
+                var divId1 = "country_div"
+                var fieldId1 = "country_"
+                createLabelForHiddenSelect(divId1, fieldId1, labelText1);
+            });
+    </script>
+}
+
+@views.html.main_template(title = Messages("userDetails.title"), bodyClasses = None, appConfig = appConfig, scriptElem = Some(pageScripts)) {
 
     @errorSummary(userDetailsForm, "enter-user-details", "userDetails")
 
@@ -50,7 +73,13 @@
 
         @userInput(Messages("userDetails.postCode"), "postCode", size = 4)
 
-        @userInput(Messages("userDetails.country"), "country")
+        @countryDropdown(userDetailsForm("country"),
+            elementOptions = countryList,
+            displayEmptyValue = true,
+            '_id -> "country",
+            '_emptyValueText -> Messages("userDetails.country.select"),
+            '_labelClass -> "form-label",
+            '_label -> Html(Messages("userDetails.country")))
 
         <button class="button" type="submit" id="continue-button">@Messages("common.continue")</button>
     }
