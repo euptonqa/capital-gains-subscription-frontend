@@ -35,7 +35,7 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
 
   "The Enter Correspondence Address view with a form with no errors" should {
     lazy val form = new CorrespondenceAddressForm(messagesApi)
-    lazy val view = enterCorrespondenceAddress(appConfig, form.correspondenceAddressForm)
+    lazy val view = enterCorrespondenceAddress(appConfig, form.correspondenceAddressForm, List(("test", "test")))
     lazy val doc = Jsoup.parse(view.body)
 
     "contain a header" which {
@@ -146,23 +146,24 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
     }
 
     "has an input for country" which {
-      lazy val label = doc.select("label[for=country]")
-      lazy val input = label.select("input#country")
+      lazy val input = doc.body().select("#country_div")
+      lazy val label = input.select("label")
+      lazy val select = input.select("select")
 
       s"has the text '${EnterCorrespondenceAddress.country}'" in {
         label.text() shouldBe EnterCorrespondenceAddress.country
       }
 
       "has a label class of 'form-group'" in {
-        label.attr("class") should include("form-group")
+        label.attr("class") should include("form-label")
       }
 
-      "has a type of text" in {
-        input.attr("type") shouldBe "text"
+      "has a class of 'form-control'" in {
+        select.attr("class") shouldBe " form-control "
       }
 
-      "has a class of 'shim input grid-1-2'" in {
-        input.attr("class") shouldBe "shim input grid-1-2"
+      "has a name of 'country'" in {
+        select.attr("name") shouldBe "country"
       }
     }
 
@@ -211,7 +212,7 @@ class EnterCorrespondenceAddressViewSpec extends UnitSpec with OneAppPerSuite wi
   "The Enter Correspondence Address view with a form with errors" should {
     lazy val form = new CorrespondenceAddressForm(messagesApi)
     lazy val map = Map("addressLineOne" -> "Something", "addressLineTwo" -> "Something else")
-    lazy val view = enterCorrespondenceAddress(appConfig, form.correspondenceAddressForm.bind(map))
+    lazy val view = enterCorrespondenceAddress(appConfig, form.correspondenceAddressForm.bind(map), List(("test", "test")))
     lazy val doc = Jsoup.parse(view.body).toString
 
     "display an error summary" in {

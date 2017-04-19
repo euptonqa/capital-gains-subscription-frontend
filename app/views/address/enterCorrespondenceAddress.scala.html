@@ -1,8 +1,11 @@
-@import uk.gov.hmrc.play.views.html.helpers.{form, input}
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import uk.gov.hmrc.play.views.html.helpers.input
 @import models.CompanyAddressModel
 @import views.html.helpers.errorSummary
+@import views.html.helpers.countryScriptsHelper
+@import views.html.helpers.countryDropdown
 
-@(appConfig: config.AppConfig, correspondenceAddressForm: Form[CompanyAddressModel])(implicit request: Request[_], messages: Messages)
+@(appConfig: config.AppConfig, correspondenceAddressForm: Form[CompanyAddressModel], countryList: List[(String, String)])(implicit request: Request[_], messages: Messages)
 
 @userInput(label: String, identifier: String, size: Int = 2) = {
     @input(
@@ -14,7 +17,7 @@
     )
 }
 
-@views.html.main_template(title = Messages("enterCorrespondenceAddress.title"), bodyClasses = None, appConfig = appConfig) {
+@views.html.main_template(title = Messages("enterCorrespondenceAddress.title"), bodyClasses = None, appConfig = appConfig, scriptElem = Some(countryScriptsHelper())) {
 
     @errorSummary(correspondenceAddressForm, "enter-correspondence-address", "enterCorrespondenceAddress")
 
@@ -30,7 +33,13 @@
 
         @userInput(Messages("enterCorrespondenceAddress.addressLineFour"), "addressLineFour")
 
-        @userInput(Messages("enterCorrespondenceAddress.country"), "country")
+        @countryDropdown(correspondenceAddressForm("country"),
+            elementOptions = countryList,
+            displayEmptyValue = true,
+            '_id -> "country",
+            '_emptyValueText -> Messages("userDetails.country.select"),
+            '_labelClass -> "form-label",
+            '_label -> Html(Messages("userDetails.country")))
 
         @userInput(Messages("enterCorrespondenceAddress.postcode"), "postcode", size = 4)
 

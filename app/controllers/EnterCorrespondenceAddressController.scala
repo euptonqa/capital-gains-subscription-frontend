@@ -23,6 +23,7 @@ import common.Keys.{KeystoreKeys => keystoreKeys}
 import config.AppConfig
 import connectors.KeystoreConnector
 import forms.CorrespondenceAddressForm
+import helpers.CountryHelper
 import models.CompanyAddressModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, Result}
@@ -35,13 +36,15 @@ class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
                                                      correspondenceAddressForm: CorrespondenceAddressForm,
                                                      keystoreConnector: KeystoreConnector,
                                                      authorisedActions: AuthorisedActions,
-                                                     val messagesApi: MessagesApi)
+                                                     val messagesApi: MessagesApi,
+                                                     countryHelper: CountryHelper)
   extends FrontendController with I18nSupport {
 
   val enterCorrespondenceAddress: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction() {
     implicit user =>
       implicit request =>
-        Future.successful(Ok(views.html.address.enterCorrespondenceAddress(appConfig, correspondenceAddressForm.correspondenceAddressForm)))
+        Future.successful(Ok(views.html.address.enterCorrespondenceAddress(appConfig,
+          correspondenceAddressForm.correspondenceAddressForm, countryHelper.getListOfCountries)))
   }
 
   val submitCorrespondenceAddress: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction() {
@@ -54,7 +57,7 @@ class EnterCorrespondenceAddressController @Inject()(appConfig: AppConfig,
         }
 
         correspondenceAddressForm.correspondenceAddressForm.bindFromRequest.fold(errors =>
-          Future.successful(BadRequest(views.html.address.enterCorrespondenceAddress(appConfig, errors))),
+          Future.successful(BadRequest(views.html.address.enterCorrespondenceAddress(appConfig, errors, countryHelper.getListOfCountries))),
           successAction)
   }
 }
