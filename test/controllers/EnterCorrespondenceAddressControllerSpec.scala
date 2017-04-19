@@ -31,11 +31,13 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import traits.ControllerTestSpec
 import auth.AuthenticatedNROrganisationAction
+import helpers.CountryHelper
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
 class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
 
   val testOnlyUnauthorisedLoginUri = "just-a-test"
+  lazy val countryHelper: CountryHelper = app.injector.instanceOf[CountryHelper]
 
   def createMockActions(valid: Boolean = false, authContext: AuthContext = TestUserBuilder.strongUserAuthContext): AuthorisedActions = {
 
@@ -74,7 +76,7 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
       lazy val keystoreConnector = createMockKeystoreConnector
       lazy val action = createMockActions(valid = true)
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi, countryHelper)
       lazy val result = controller.enterCorrespondenceAddress(fakeRequest)
       lazy val document = Jsoup.parse(bodyOf(result))
 
@@ -92,7 +94,7 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
       lazy val keystoreConnector = createMockKeystoreConnector
       lazy val action = createMockActions()
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi, countryHelper)
       lazy val result = controller.enterCorrespondenceAddress(fakeRequest)
 
       "return a status of 303" in {
@@ -114,7 +116,7 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
       lazy val keystoreConnector = createMockKeystoreConnector
       lazy val action = createMockActions(valid = true)
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi, countryHelper)
       lazy val result = controller.submitCorrespondenceAddress(fakeRequest)
       lazy val document = Jsoup.parse(bodyOf(result))
 
@@ -135,7 +137,7 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
       lazy val keystoreConnector = createMockKeystoreConnector
       lazy val action = createMockActions(valid = true)
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi, countryHelper)
       lazy val result = controller.submitCorrespondenceAddress(fakeRequest)
 
       "return a status of 303" in {
@@ -154,7 +156,7 @@ class EnterCorrespondenceAddressControllerSpec extends ControllerTestSpec {
       lazy val form = app.injector.instanceOf[CorrespondenceAddressForm]
       lazy val keystoreConnector = createMockKeystoreConnector
       lazy val action = createMockActions()
-      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi)
+      lazy val controller = new EnterCorrespondenceAddressController(mockConfig, form, keystoreConnector, action, messagesApi, countryHelper)
       lazy val result = controller.submitCorrespondenceAddress(fakeRequest)
 
       "return a status of 303" in {

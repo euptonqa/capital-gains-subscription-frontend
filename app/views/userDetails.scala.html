@@ -3,6 +3,7 @@
 @import models.UserFactsModel
 @import views.html.helpers.errorSummary
 @import views.html.helpers.countryDropdown
+@import views.html.helpers.countryScriptsHelper
 
 @(appConfig: config.AppConfig, userDetailsForm: Form[UserFactsModel], countryList: List[(String, String)])(implicit request: Request[_], messages: Messages)
 
@@ -28,28 +29,7 @@
     }}
 }
 
-@implicitFormInstance = @{ Some(userDetailsForm) }
-
-@pageScripts = {
-    <link rel="stylesheet" href='@controllers.routes.Assets.at("jquery/jquery-ui.min.css")'/>
-    <link rel="stylesheet" href='@controllers.routes.Assets.at("jquery/jquery-ui.structure.min.css")'/>
-    <script type="text/javascript" src='@controllers.routes.Assets.at("jquery/jquery-ui.min.js")'></script>
-    <script type="text/javascript" src='@controllers.routes.Assets.at("jquery/jquery-ui-1.12.1.min.js")'></script>
-    <script type="text/javascript" src='@controllers.routes.Assets.at("javascript/countryMatching.js")'></script>
-    <script>
-            $(document).ready(function() {
-                countryCodeAutoComplete("#country")
-                var classOfSelect1 = $('#country_').attr('class');
-                $("#country").addClass(classOfSelect1)
-                var labelText1 = $("#country_field").text();
-                var divId1 = "country_div"
-                var fieldId1 = "country_"
-                createLabelForHiddenSelect(divId1, fieldId1, labelText1);
-            });
-    </script>
-}
-
-@views.html.main_template(title = Messages("userDetails.title"), bodyClasses = None, appConfig = appConfig, scriptElem = Some(pageScripts)) {
+@views.html.main_template(title = Messages("userDetails.title"), bodyClasses = None, appConfig = appConfig, scriptElem = Some(countryScriptsHelper())) {
 
     @errorSummary(userDetailsForm, "enter-user-details", "userDetails")
 
