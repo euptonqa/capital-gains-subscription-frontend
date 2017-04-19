@@ -17,16 +17,18 @@
 package helpers
 
 import java.util.Properties
+import javax.inject.{Inject, Singleton}
 
-import play.api.Play
+import play.api.Environment
 
 import scala.collection.JavaConverters
 import scala.io.Source
 
-object CountryHelper {
+@Singleton
+class CountryHelper @Inject()(environment: Environment) {
 
   lazy val p = new Properties
-  p.load(Source.fromInputStream(Play.classloader(Play.current).getResourceAsStream("country-code.properties"), "UTF-8").bufferedReader())
+  p.load(Source.fromInputStream(environment.classLoader.getResourceAsStream("country-code.properties"), "UTF-8").bufferedReader())
 
   def getListOfCountries: List[(String, String)] = {
     JavaConverters.propertiesAsScalaMapConverter(p).asScala.toList.sortBy(_._2)
@@ -44,11 +46,11 @@ object CountryHelper {
 
     def getCountry(isoCode: String): Option[String] = {
       val country = Option(p.getProperty(isoCode.toUpperCase))
-      country.map{ selectedCountry =>
+      country.map { selectedCountry =>
         trimCountry(selectedCountry)
       }
     }
 
-    getCountry(isoCode.toUpperCase).fold(isoCode){x=>x}
+    getCountry(isoCode.toUpperCase).fold(isoCode) { x => x }
   }
 }
