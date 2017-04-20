@@ -45,7 +45,7 @@ class FormValidationSpec extends UnitSpec {
       FormValidation.textToOptional("") shouldEqual None
     }
 
-    "when called with a string of 'qwerty' return Some('querty')" in {
+    "when called with a string of 'qwerty' return Some('qwerty')" in {
       FormValidation.textToOptional("qwerty") shouldEqual Some("qwerty")
     }
 
@@ -69,4 +69,38 @@ class FormValidationSpec extends UnitSpec {
     }
   }
 
+  "Calling .postcodeCheck" when {
+
+    "called with no postcode and a non-UK country" should {
+      lazy val result = FormValidation.postcodeCheck(None, "DE")
+
+      "return a true" in {
+        result shouldBe true
+      }
+    }
+
+    "called with a postcode and a non-UK country" should {
+      lazy val result = FormValidation.postcodeCheck(Some("XX11 1XX"), "DE")
+
+      "return a true" in {
+        result shouldBe true
+      }
+    }
+
+    "called with no postcode and a country of UK" should {
+      lazy val result = FormValidation.postcodeCheck(None, "GB")
+
+      "return a false" in {
+        result shouldBe false
+      }
+    }
+
+    "called with a postcode and a country of UK" should {
+      lazy val result = FormValidation.postcodeCheck(Some("XX11 1XX"), "GB")
+
+      "return a true" in {
+        result shouldBe true
+      }
+    }
+  }
 }
