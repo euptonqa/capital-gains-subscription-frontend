@@ -21,7 +21,7 @@ import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import data.MessageLookup.Errors
 
-class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
+class UserFactsFormSpec extends UnitSpec with OneAppPerSuite {
 
   "Creating a form" when {
     val form = app.injector.instanceOf[UserFactsForm]
@@ -29,7 +29,7 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
     "provided with a valid map with no optional values" should {
       val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "Fakeville",
         "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Fakeland")
-      lazy val result = form.fullDetailsForm.bind(map)
+      lazy val result = form.userFactsForm.bind(map)
 
       "return a valid model" in {
         result.value.isDefined shouldBe true
@@ -47,7 +47,7 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
     "provided with a valid map with all optional values" should {
       val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "XX", "addressLineTwo" -> "Fake Lane",
         "townOrCity" -> "Fakeville", "county" -> "Fake", "postCode" -> "XX22 1XX", "country" -> "Fakeland")
-      lazy val result = form.fullDetailsForm.bind(map)
+      lazy val result = form.userFactsForm.bind(map)
 
       "return a valid model" in {
         result.value.isDefined shouldBe true
@@ -65,7 +65,7 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
     "provided with an invalid map with no firstName" should {
       val map = Map("firstName" -> "", "lastName" -> "Smith", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "Fakeville",
         "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Fakeland")
-      lazy val result = form.fullDetailsForm.bind(map)
+      lazy val result = form.userFactsForm.bind(map)
 
       "return an invalid model" in {
         result.value.isDefined shouldBe false
@@ -83,7 +83,7 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
     "provided with an invalid map with no lastName" should {
       val map = Map("firstName" -> "Bob", "lastName" -> "", "addressLineOne" -> "XX Fake Lane","addressLineTwo" -> "Fakeville",
         "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Fakeland")
-      lazy val result = form.fullDetailsForm.bind(map)
+      lazy val result = form.userFactsForm.bind(map)
 
       "return an invalid model" in {
         result.value.isDefined shouldBe false
@@ -101,7 +101,7 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
     "provided with an invalid map with no first address line" should {
       val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "","addressLineTwo" -> "Fakeville",
         "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "Fakeland")
-      lazy val result = form.fullDetailsForm.bind(map)
+      lazy val result = form.userFactsForm.bind(map)
 
       "return an invalid model" in {
         result.value.isDefined shouldBe false
@@ -113,6 +113,24 @@ class FullDetailsFormSpec extends UnitSpec with OneAppPerSuite {
 
       "contain an error message for a required field" in {
         result.errors.head.message shouldBe Errors.errorRequired
+      }
+    }
+
+    "provided with an invalid map with no postcode for a country of UK" should {
+      val map = Map("firstName" -> "Bob", "lastName" -> "Smith", "addressLineOne" -> "68","addressLineTwo" -> "Fakeville",
+        "townOrCity" -> "", "county" -> "", "postCode" -> "", "country" -> "GB")
+      lazy val result = form.userFactsForm.bind(map)
+
+      "return an invalid model" in {
+        result.value.isDefined shouldBe false
+      }
+
+      "contain one error" in {
+        result.errors.size shouldBe 1
+      }
+
+      "contain an error message for a required field" in {
+        result.errors.head.message shouldBe Errors.errorPostcode
       }
     }
   }

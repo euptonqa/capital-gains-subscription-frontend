@@ -25,7 +25,7 @@ import play.api.data.Forms._
 
 class UserFactsForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport {
 
-  val fullDetailsForm = Form(
+  val userFactsForm = Form(
     mapping(
       "firstName" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
       "lastName" -> text.verifying(Messages("errors.required"), nonEmptyCheck),
@@ -36,5 +36,6 @@ class UserFactsForm @Inject()(val messagesApi: MessagesApi) extends I18nSupport 
       "postCode" -> text.transform(textToOptional, optionalToText),
       "country" -> text.verifying(Messages("errors.required"), nonEmptyCheck)
     )(UserFactsModel.apply)(UserFactsModel.unapply)
+    .verifying(Messages("errors.postcode"), model => postcodeCheck(model.postCode, model.country))
   )
 }

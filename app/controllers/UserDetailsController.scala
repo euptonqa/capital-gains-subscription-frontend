@@ -47,7 +47,7 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
 
   val userDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction() { implicit user =>
     implicit request =>
-      Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.fullDetailsForm, countryHelper.getListOfCountries)))
+      Future.successful(Ok(views.html.userDetails(appConfig, fullDetailsForm.userFactsForm, countryHelper.getListOfCountries)))
   }
 
   val submitUserDetails: Action[AnyContent] = actions.authorisedNonResidentIndividualAction() { implicit user =>
@@ -68,7 +68,7 @@ class UserDetailsController @Inject()(appConfig: AppConfig, fullDetailsForm: Use
         } yield action
       }
 
-      fullDetailsForm.fullDetailsForm.bindFromRequest.fold(errors =>
+      fullDetailsForm.userFactsForm.bindFromRequest.fold(errors =>
         Future.successful(BadRequest(views.html.userDetails(appConfig, errors, countryHelper.getListOfCountries))),
         successAction)
   }
