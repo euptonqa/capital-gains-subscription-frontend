@@ -22,7 +22,7 @@ import auth.AuthorisedActions
 import common.Keys.{KeystoreKeys => keys}
 import config.AppConfig
 import connectors.KeystoreConnector
-import models.CallbackUrlModel
+import models.RedirectModel
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -59,7 +59,7 @@ class CGTSubscriptionController @Inject()(keystoreConnector: KeystoreConnector,
   val submitConfirmationOfSubscriptionResidentIndv: Action[AnyContent] = authorisedActions.authorisedResidentIndividualAction() {
     implicit user =>
       implicit request =>
-        keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
+        keystoreConnector.fetchAndGetFormData[RedirectModel](keys.redirect) flatMap {
           case Some(model) => Future.successful(Redirect(model.url))
           case _ => throw new Exception("Failed to find a callback URL")
     }
@@ -68,7 +68,7 @@ class CGTSubscriptionController @Inject()(keystoreConnector: KeystoreConnector,
   val submitConfirmationOfSubscriptionNonResIndv: Action[AnyContent] = authorisedActions.authorisedNonResidentIndividualAction() {
     implicit user =>
       implicit request =>
-        keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
+        keystoreConnector.fetchAndGetFormData[RedirectModel](keys.redirect) flatMap {
           case Some(model) => Future.successful(Redirect(model.url))
           case _ => throw new Exception("Failed to find a callback URL")
     }
@@ -77,7 +77,7 @@ class CGTSubscriptionController @Inject()(keystoreConnector: KeystoreConnector,
   val submitConfirmationOfSubscriptionCompany: Action[AnyContent] = authorisedActions.authorisedNonResidentOrganisationAction() {
     implicit user =>
       implicit request =>
-        keystoreConnector.fetchAndGetFormData[CallbackUrlModel](keys.callbackUrlKey) flatMap {
+        keystoreConnector.fetchAndGetFormData[RedirectModel](keys.redirect) flatMap {
           case Some(model) => Future.successful(Redirect(model.url))
           case _ => throw new Exception("Failed to find a callback URL")
     }

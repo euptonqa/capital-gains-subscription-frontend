@@ -46,18 +46,18 @@ class AgentController @Inject()(appConfig: AppConfig,
                                 val messagesApi: MessagesApi,
                                 logicHelpers: LogicHelpers) extends FrontendController with I18nSupport {
 
-  val agent: String => Action[AnyContent] = url => authorisedActions.authorisedAgentAction(Some(url)) {
+  val agent: String => Action[AnyContent] = redirect => authorisedActions.authorisedAgentAction(Some(redirect)) {
     implicit user =>
       implicit request =>
 
-        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(redirect)
 
         def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtAgent,
                                                                         isEnrolled: Boolean,
                                                                         isValid: Boolean)(implicit hc: HeaderCarrier): Future[Result] = {
           if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
             Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
-          else if (isEnrolled) Future.successful(Redirect(url))
+          else if (isEnrolled) Future.successful(Redirect(redirect))
           else Future.successful(Ok(views.html.setupYourAgency(appConfig)))
         }
 

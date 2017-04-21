@@ -40,37 +40,38 @@ class ResidentIndividualSubscriptionController @Inject()(actions: AuthorisedActi
                                                          logicHelpers: LogicHelpers,
                                                          val messagesApi: MessagesApi) extends FrontendController with I18nSupport {
 
-  val residentIndividualSubscription: String => Action[AnyContent] = url =>
-    actions.authorisedResidentIndividualAction(Some(url)) {
+  val residentIndividualSubscription: String => Action[AnyContent] = redirect =>
+    actions.authorisedResidentIndividualAction(Some(redirect)) {
       implicit user =>
         implicit request =>
 
-          val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+          val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(redirect)
 
           for {
             validate <- isValidRequest
             enrolments <- authService.getEnrolments
             isEnrolled <- EnrolmentToCGTCheck.checkIndividualEnrolments(enrolments)
-            redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, validate, url)
+            redirect <- checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user, isEnrolled, validate, redirect)
           } yield redirect
     }
 
   def checkForEnrolmentAndRedirectToConfirmationOrAlreadyEnrolled(user: CgtIndividual,
                                                                   isEnrolled: Boolean,
                                                                   isValid: Boolean,
-                                                                  url: String)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[Result] = {
+                                                                  redirect: String)(implicit hc: HeaderCarrier,
+                                                                                    request: Request[AnyContent]): Future[Result] = {
     if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
       Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
-    else if (isEnrolled) Future.successful(Redirect(url))
-    else checkForCgtRefAndRedirectToConfirmation(user, url)
+    else if (isEnrolled) Future.successful(Redirect(redirect))
+    else checkForCgtRefAndRedirectToConfirmation(user, redirect)
 
   }
 
-  def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual, url: String)(implicit hc: HeaderCarrier): Future[Result] = {
+  def checkForCgtRefAndRedirectToConfirmation(user: CgtIndividual, redirect: String)(implicit hc: HeaderCarrier): Future[Result] = {
 
     subscriptionService.getSubscriptionResponse(user.nino.get).map {
       case Some(response) => Redirect(controllers.routes.CGTSubscriptionController.confirmationOfSubscriptionResidentIndv(response.cgtRef))
-      case _ => Redirect(url)
+      case _ => Redirect(redirect)
     }
   }
 }

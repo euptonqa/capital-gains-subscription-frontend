@@ -18,15 +18,15 @@ package models
 
 import uk.gov.hmrc.play.test.UnitSpec
 
-class CallbackUrlModelSpec extends UnitSpec {
+class RedirectModelSpec extends UnitSpec {
 
-  "Creating a CallbackUrlModel" when {
+  "Creating a RedirectModelModel" when {
 
     "passed a valid context url" should {
       val url = "/context/test"
 
       "return a valid model" in {
-        val model = CallbackUrlModel(url)
+        val model = RedirectModel(url)
 
         model.url shouldBe "/context/test"
       }
@@ -37,7 +37,7 @@ class CallbackUrlModelSpec extends UnitSpec {
 
       "return an exception" in {
         val exception = intercept[Exception] {
-          CallbackUrlModel(url)
+          RedirectModel(url)
         }
 
         exception.getMessage shouldBe "requirement failed: Failed to bind as a URI"
@@ -48,7 +48,7 @@ class CallbackUrlModelSpec extends UnitSpec {
       val url = "http://localhost:9000/test/route"
 
       "return a valid model" in {
-        val model = CallbackUrlModel(url)
+        val model = RedirectModel(url)
 
         model.url shouldBe "http://localhost:9000/test/route"
       }

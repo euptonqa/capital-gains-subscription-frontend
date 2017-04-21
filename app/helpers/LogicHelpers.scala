@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 
 import common.Keys.KeystoreKeys
 import connectors.KeystoreConnector
-import models.CallbackUrlModel
+import models.RedirectModel
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
@@ -31,11 +31,11 @@ class LogicHelpers @Inject()(keystoreConnector: KeystoreConnector) {
 
   def bindAndValidateCallbackUrl(url: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
     val bindModel = Future {
-      CallbackUrlModel(url)
+      RedirectModel(url)
     }
     val result = for {
       model <- bindModel
-      saveResult <- keystoreConnector.saveFormData(KeystoreKeys.callbackUrlKey, model)
+      saveResult <- keystoreConnector.saveFormData(KeystoreKeys.redirect, model)
     } yield saveResult
 
     result.map(_ => true)

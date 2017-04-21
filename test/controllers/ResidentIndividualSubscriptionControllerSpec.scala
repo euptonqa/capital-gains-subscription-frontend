@@ -105,9 +105,9 @@ class ResidentIndividualSubscriptionControllerSpec extends ControllerTestSpec {
     helper
   }
 
-  def mockKeystore(keystoreResponse: Option[CallbackUrlModel] = None): KeystoreConnector = {
+  def mockKeystore(keystoreResponse: Option[RedirectModel] = None): KeystoreConnector = {
     val mockKeystoreConnector = mock[KeystoreConnector]
-    when(mockKeystoreConnector.fetchAndGetFormData[CallbackUrlModel](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+    when(mockKeystoreConnector.fetchAndGetFormData[RedirectModel](ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
       .thenReturn(Future.successful(keystoreResponse))
 
     mockKeystoreConnector

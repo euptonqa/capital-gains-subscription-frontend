@@ -14,9 +14,9 @@ POST       /non-resident/individual/confirmation                    controllers.
 GET        /company/confirmation                                    controllers.CGTSubscriptionController.confirmationOfSubscriptionCompany(cgtReference: String)
 POST       /company/confirmation                                    controllers.CGTSubscriptionController.submitConfirmationOfSubscriptionCompany
 
-GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription(url: String)
+GET        /resident/individual                                     controllers.ResidentIndividualSubscriptionController.residentIndividualSubscription(redirect: String)
 
-GET        /non-resident/individual                                 controllers.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription(url: String)
+GET        /non-resident/individual                                 controllers.NonResidentIndividualSubscriptionController.nonResidentIndividualSubscription(redirect: String)
 
 GET        /individual/organisation-type                            controllers.OrganisationTypeController.organisationType
 POST       /individual/organisation-type                            controllers.OrganisationTypeController.submitOrganisationType
@@ -24,7 +24,7 @@ POST       /individual/organisation-type                            controllers.
 GET        /non-resident/individual/user-details                    controllers.UserDetailsController.userDetails
 POST       /non-resident/individual/user-details                    controllers.UserDetailsController.submitUserDetails
 
-GET        /company                                                 controllers.CompanyController.subscribe(url: String)
+GET        /company                                                 controllers.CompanyController.subscribe(redirect: String)
 
 GET        /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.correspondenceAddressConfirm
 POST       /company/correspondence-address-confirm                  controllers.CorrespondenceAddressConfirmController.submitCorrespondenceAddressConfirm
@@ -38,7 +38,7 @@ POST       /company/contact-details                                 controllers.
 GET        /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.correspondenceAddressFinalConfirmation
 POST       /company/correspondence-address-final-confirmation       controllers.CorrespondenceAddressFinalConfirmationController.submitCorrespondenceAddressFinalConfirmation
 
-GET        /agent/subscribe                                         controllers.AgentController.agent(url: String)
+GET        /agent/subscribe                                         controllers.AgentController.agent(redirect: String)
 
 GET        /agent/registered/subscribe                              controllers.AgentController.registeredAgent
 

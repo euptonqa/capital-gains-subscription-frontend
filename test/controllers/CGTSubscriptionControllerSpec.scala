@@ -21,7 +21,7 @@ import common.Keys.KeystoreKeys._
 import connectors.KeystoreConnector
 import data.MessageLookup.{CGTSubscriptionConfirm => messages}
 import data.TestUserBuilder
-import models.CallbackUrlModel
+import models.RedirectModel
 import org.jsoup._
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -110,11 +110,11 @@ class CGTSubscriptionControllerSpec extends ControllerTestSpec {
   }
 
   def setupController(mockActions: AuthorisedActions,
-                     callbackUrl: Option[CallbackUrlModel] = Some(CallbackUrlModel("context/test"))): CGTSubscriptionController = {
+                     callbackUrl: Option[RedirectModel] = Some(RedirectModel("context/test"))): CGTSubscriptionController = {
 
     val sessionService = mock[KeystoreConnector]
 
-    when(sessionService.fetchAndGetFormData[CallbackUrlModel](ArgumentMatchers.eq(callbackUrlKey))(any(), any()))
+    when(sessionService.fetchAndGetFormData[RedirectModel](ArgumentMatchers.eq(redirect))(any(), any()))
       .thenReturn(Future.successful(callbackUrl))
 
     new CGTSubscriptionController(sessionService, mockActions, mockConfig, messagesApi)

@@ -39,16 +39,16 @@ class CompanyController @Inject()(appConfig: AppConfig,
 
   val businessCustomerFrontendUrl: String = appConfig.businessCompanyFrontendRegister
 
-  val subscribe: String => Action[AnyContent] = url => authorisedActions.authorisedNonResidentOrganisationAction(Some(url)) {
+  val subscribe: String => Action[AnyContent] = redirect => authorisedActions.authorisedNonResidentOrganisationAction(Some(redirect)) {
     implicit user =>
       implicit request =>
 
-        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(url)
+        val isValidRequest = logicHelpers.bindAndValidateCallbackUrl(redirect)
 
         def checkForEnrolmentsAndRedirect(user: CgtNROrganisation, isEnrolled: Boolean, isValid: Boolean)(): Future[Result] = {
           if (!isValid) Future.successful(BadRequest(views.html.error_template(Messages("errors.badRequest"),
             Messages("errors.badRequest"), Messages("errors.checkAddress"), appConfig)))
-          else if (isEnrolled) Future.successful(Redirect(url))
+          else if (isEnrolled) Future.successful(Redirect(redirect))
           else Future.successful(Redirect(businessCustomerFrontendUrl))
         }
 
