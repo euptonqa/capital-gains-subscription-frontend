@@ -26,11 +26,12 @@ object MessageLookup {
   }
 
   object Errors {
-    val errorMandatory = "Please select an option"
+    val errorMandatory = "Select an option"
     val errorRequired = "This field is required"
-    val errorTelephone = "Please enter a valid telephone number"
-    val errorEmail = "Please enter a valid email"
+    val errorTelephone = "Enter a valid telephone number"
+    val errorEmail = "Enter a valid email"
     val dummyError = "Dummy error message"
+    val errorPostcode = "Enter a postcode for a UK address"
   }
 
   object ErrorSummary {

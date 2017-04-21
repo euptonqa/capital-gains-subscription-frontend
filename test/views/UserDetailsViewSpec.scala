@@ -36,7 +36,7 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
 
   "The User Details view when supplied with a form with no errors" should {
     lazy val form = new UserFactsForm(messagesApi)
-    lazy val view = userDetails(appConfig, form.fullDetailsForm, List(("Test", "Test")))
+    lazy val view = userDetails(appConfig, form.userFactsForm, List(("Test", "Test")))
     lazy val doc = Jsoup.parse(view.body)
 
     "contain a header" which {
@@ -272,7 +272,7 @@ class UserDetailsViewSpec extends UnitSpec with OneAppPerSuite with FakeRequestH
 
     lazy val form = new UserFactsForm(messagesApi)
     lazy val map = Map("firstName" -> "", "lastName" -> "")
-    lazy val view = userDetails(appConfig, form.fullDetailsForm.bind(map), List(("Test", "Test")))
+    lazy val view = userDetails(appConfig, form.userFactsForm.bind(map), List(("Test", "Test")))
     lazy val doc = Jsoup.parse(view.body).toString
 
     "display an error summary" in {

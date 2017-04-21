@@ -74,10 +74,11 @@ setupYourAgency.listOne = Enter your agency''s registered name and unique tax re
 setupYourAgency.listTwo = After setting up your agency, you can add your clients.
 
 ## Error Messages ##
-errors.mandatory = Please select an option
+errors.mandatory = Select an option
 errors.required = This field is required
-errors.telephone = Please enter a valid telephone number
-errors.email = Please enter a valid email
+errors.telephone = Enter a valid telephone number
+errors.email = Enter a valid email
+errors.postcode = Enter a postcode for a UK address
 
 ## Error Summary Messages ##
 error.summary.heading = This page has errors

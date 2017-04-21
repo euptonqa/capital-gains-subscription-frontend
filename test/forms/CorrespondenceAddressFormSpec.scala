@@ -28,7 +28,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
     "provided with a valid map with no optional values" should {
       val map = Map("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "",
-        "addressLineFour" -> "", "country" -> "Fakeland", "postcode" -> "XX22 1XX")
+        "addressLineFour" -> "", "country" -> "Fakeland", "postcode" -> "")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return a valid model" in {
@@ -36,7 +36,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "return a model containing the stored data" in {
-        result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), None, None, Some("Fakeland"), Some("XX22 1XX"))
+        result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), None, None, None, Some("Fakeland"))
       }
 
       "contain no errors" in {
@@ -55,7 +55,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
 
       "return a model containing the stored data" in {
         result.value.get shouldBe CompanyAddressModel(Some("XX Fake Lane"), Some("Fake Town"), Some("Fake City"),
-          Some("Fake County"), Some("Fakeland"), Some("XX22 1XX"))
+          Some("Fake County"), Some("XX22 1XX"), Some("Fakeland"))
       }
 
       "contain no errors" in {
@@ -117,9 +117,9 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
       }
     }
 
-    "provided with a invalid map without postcode" should {
+    "provided with a invalid map without postcode when a country of GB is selected" should {
       val map = Map("addressLineOne" -> "XX Fake Lane", "addressLineTwo" -> "Fake Town", "addressLineThree" -> "Fake City",
-        "addressLineFour" -> "Fake County", "country" -> "Fakeland", "postcode" -> "")
+        "addressLineFour" -> "Fake County", "country" -> "GB", "postcode" -> "")
       lazy val result = form.correspondenceAddressForm.bind(map)
 
       "return an invalid model" in {
@@ -131,7 +131,7 @@ class CorrespondenceAddressFormSpec extends UnitSpec with OneAppPerSuite {
       }
 
       "contain an error message for a required field" in {
-        result.errors.head.message shouldBe Errors.errorRequired
+        result.errors.head.message shouldBe Errors.errorPostcode
       }
     }
   }

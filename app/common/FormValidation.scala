@@ -29,4 +29,8 @@ object FormValidation {
     case _ => ""
   }
 
+  def postcodeCheck(postcode: Option[String], countryCode: String): Boolean = {
+    if (countryCode =="GB") postcode.isDefined
+    else true
+  }
 }
